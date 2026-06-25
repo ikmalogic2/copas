@@ -17,9 +17,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        /* Definisi Tema menggunakan RGB untuk mendukung Opacity di Tailwind */
+        /* Definisi 6 Tema Warna Dinamis */
         :root {
-            /* Default ke Copasional */
+            /* Default: Copasional */
             --neon-color-rgb: 57, 255, 20;
             --dim-color-rgb: 26, 74, 26;
             --text-color-rgb: 170, 170, 170;
@@ -28,25 +28,37 @@
         .theme-copasional {
             --neon-color-rgb: 57, 255, 20; /* Hijau Neon */
             --dim-color-rgb: 26, 74, 26;
-            --text-color-rgb: 170, 170, 170; /* Abu-abu */
+            --text-color-rgb: 170, 220, 170; 
         }
 
         .theme-kinerja {
             --neon-color-rgb: 0, 255, 255; /* Cyan Neon */
             --dim-color-rgb: 0, 77, 77;
-            --text-color-rgb: 255, 255, 255; /* Putih */
+            --text-color-rgb: 200, 255, 255; 
         }
 
         .theme-error {
-            --neon-color-rgb: 255, 255, 0; /* Kuning Neon */
-            --dim-color-rgb: 77, 77, 0;
-            --text-color-rgb: 255, 255, 255; /* Putih */
+            --neon-color-rgb: 255, 50, 50; /* Merah Neon */
+            --dim-color-rgb: 77, 0, 0;
+            --text-color-rgb: 255, 200, 200; 
         }
 
         .theme-myprompt {
             --neon-color-rgb: 255, 140, 0; /* Oranye Neon */
             --dim-color-rgb: 77, 42, 0;
-            --text-color-rgb: 0, 255, 255; /* Cyan */
+            --text-color-rgb: 255, 220, 180; 
+        }
+
+        .theme-mylink {
+            --neon-color-rgb: 212, 0, 255; /* Magenta/Ungu Neon */
+            --dim-color-rgb: 60, 0, 77;
+            --text-color-rgb: 240, 180, 255; 
+        }
+
+        .theme-memo {
+            --neon-color-rgb: 255, 255, 0; /* Kuning Neon */
+            --dim-color-rgb: 77, 77, 0;
+            --text-color-rgb: 255, 255, 180; 
         }
 
         body {
@@ -56,67 +68,41 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Efek Glow Terminal Dinamis */
-        .neon-text {
-            text-shadow: 0 0 5px rgba(var(--neon-color-rgb), 0.5);
-        }
-        
-        .neon-border {
-            box-shadow: 0 0 8px rgba(var(--neon-color-rgb), 0.2);
-        }
-        
+        /* Efek Glow Terminal */
+        .neon-text { text-shadow: 0 0 5px rgba(var(--neon-color-rgb), 0.5); }
+        .neon-border { box-shadow: 0 0 8px rgba(var(--neon-color-rgb), 0.2); }
         .neon-border-focus:focus {
             box-shadow: 0 0 12px rgba(var(--neon-color-rgb), 0.6);
             border-color: rgb(var(--neon-color-rgb));
         }
-
-        .neon-bg-glow {
-            box-shadow: inset 5px 0px 15px -5px rgba(var(--neon-color-rgb), 0.4);
-        }
+        .neon-bg-glow { box-shadow: inset 5px 0px 15px -5px rgba(var(--neon-color-rgb), 0.4); }
 
         /* Animasi Cursor Berkedip */
-        .blinking-cursor {
-            animation: blink 1s step-end infinite;
-        }
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
+        .blinking-cursor { animation: blink 1s step-end infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
-        /* Trik modern CSS Grid untuk animasi Akordion */
+        /* Animasi Akordion */
         .accordion-content, .accordion-toolbar {
             display: grid;
             grid-template-rows: 0fr;
             transition: grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .accordion-content.open, .accordion-toolbar.open {
-            grid-template-rows: 1fr;
-        }
-        .accordion-inner, .toolbar-inner {
-            overflow: hidden;
-        }
+        .accordion-content.open, .accordion-toolbar.open { grid-template-rows: 1fr; }
+        .accordion-inner, .toolbar-inner { overflow: hidden; }
 
-        .chevron-icon {
-            transition: transform 0.3s ease;
-        }
-        .chevron-icon.open {
-            transform: rotate(180deg);
-        }
+        .chevron-icon { transition: transform 0.3s ease; }
+        .chevron-icon.open { transform: rotate(180deg); }
 
-        /* Kustomisasi scrollbar tema terminal dinamis */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #000;
-            border-left: 1px solid rgb(var(--dim-color-rgb));
-        }
-        ::-webkit-scrollbar-thumb {
-            background: rgb(var(--neon-color-rgb));
-        }
-        .hide-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: thin;
+        /* Custom Scrollbar & Masonry Helpers */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #000; border-left: 1px solid rgb(var(--dim-color-rgb)); }
+        ::-webkit-scrollbar-thumb { background: rgb(var(--neon-color-rgb)); }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: thin; }
+        
+        /* Checkbox Khusus Tema */
+        input[type="checkbox"].theme-checkbox {
+            accent-color: rgb(var(--neon-color-rgb));
+            transform: scale(1.1);
         }
     </style>
 
@@ -135,9 +121,7 @@
                             red: '#ff003c'
                         }
                     },
-                    fontFamily: {
-                        sans: ['"Space Grotesk"', 'monospace', 'sans-serif']
-                    }
+                    fontFamily: { sans: ['"Space Grotesk"', 'monospace', 'sans-serif'] }
                 }
             }
         }
@@ -146,12 +130,11 @@
 
 <body class="bg-terminal-bg flex h-screen w-full font-sans transition-colors duration-500 selection:bg-terminal-neon selection:text-black theme-copasional overflow-hidden" id="app-body">
 
-    <!-- Overlay Backdrop untuk Sidebar -->
+    <!-- Overlay Sidebar -->
     <div id="sidebar-backdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/70 z-30 hidden backdrop-blur-sm transition-opacity duration-300 opacity-0"></div>
 
     <!-- Sidebar Layout -->
     <aside id="sidebar" class="fixed top-0 left-0 h-full w-[260px] border-r border-terminal-neon bg-terminal-bg/95 backdrop-blur-md flex flex-col transition-transform duration-300 z-40 -translate-x-full flex-shrink-0 shadow-[0_0_20px_rgba(var(--neon-color-rgb),0.2)]">
-        <!-- Logo / Menu Header -->
         <div class="p-4 border-b border-terminal-dim flex items-center justify-between h-[60px] md:h-[70px]">
             <div class="flex items-center cursor-pointer" onclick="toggleSidebar()">
                 <i class="fa-solid fa-terminal text-terminal-neon text-2xl mr-3 neon-text transition-colors duration-500"></i>
@@ -162,104 +145,101 @@
             </button>
         </div>
         
-        <!-- Navigasi Sidebar -->
-        <nav class="flex-1 flex flex-col pt-6 space-y-3 px-2 overflow-y-auto">
-            
-            <button id="nav-copasional" onclick="switchApp('copasional')" class="nav-btn flex items-center py-3.5 px-4 rounded-none text-terminal-neon/50 hover:bg-terminal-neon/10 hover:text-terminal-neon transition-all border-l-[3px] border-transparent relative">
+        <nav class="flex-1 flex flex-col pt-4 space-y-2 px-2 overflow-y-auto pb-4">
+            <button id="nav-copasional" onclick="switchApp('copasional')" class="nav-btn flex items-center py-3.5 px-4 text-terminal-neon/50 hover:bg-terminal-neon/10 hover:text-terminal-neon transition-all border-l-[3px] border-transparent">
                 <i class="fa-solid fa-clipboard text-xl w-6 text-center"></i>
                 <span class="ml-3 font-bold tracking-wide text-[14px]">COPASIONAL</span>
             </button>
-
-            <button id="nav-kinerja" onclick="switchApp('kinerja')" class="nav-btn flex items-center py-3.5 px-4 rounded-none text-terminal-neon/50 hover:bg-terminal-neon/10 hover:text-terminal-neon transition-all border-l-[3px] border-transparent relative">
+            <button id="nav-kinerja" onclick="switchApp('kinerja')" class="nav-btn flex items-center py-3.5 px-4 text-terminal-neon/50 hover:bg-terminal-neon/10 hover:text-terminal-neon transition-all border-l-[3px] border-transparent">
                 <i class="fa-solid fa-chart-line text-xl w-6 text-center"></i>
                 <span class="ml-3 font-bold tracking-wide text-[14px]">KINERJA HARIAN</span>
             </button>
-
-            <button id="nav-error" onclick="switchApp('error')" class="nav-btn flex items-center py-3.5 px-4 rounded-none text-terminal-neon/50 hover:bg-terminal-neon/10 hover:text-terminal-neon transition-all border-l-[3px] border-transparent relative">
+            <button id="nav-error" onclick="switchApp('error')" class="nav-btn flex items-center py-3.5 px-4 text-terminal-neon/50 hover:bg-terminal-neon/10 hover:text-terminal-neon transition-all border-l-[3px] border-transparent">
                 <i class="fa-solid fa-bug text-xl w-6 text-center"></i>
                 <span class="ml-3 font-bold tracking-wide text-[14px]">ERROR BOOK</span>
             </button>
-
-            <button id="nav-myprompt" onclick="switchApp('myprompt')" class="nav-btn flex items-center py-3.5 px-4 rounded-none text-terminal-neon/50 hover:bg-terminal-neon/10 hover:text-terminal-neon transition-all border-l-[3px] border-transparent relative">
+            <button id="nav-myprompt" onclick="switchApp('myprompt')" class="nav-btn flex items-center py-3.5 px-4 text-terminal-neon/50 hover:bg-terminal-neon/10 hover:text-terminal-neon transition-all border-l-[3px] border-transparent">
                 <i class="fa-solid fa-keyboard text-xl w-6 text-center"></i>
                 <span class="ml-3 font-bold tracking-wide text-[14px]">MY PROMPT</span>
             </button>
-
+            <!-- Menu Baru 5 & 6 -->
+            <button id="nav-mylink" onclick="switchApp('mylink')" class="nav-btn flex items-center py-3.5 px-4 text-terminal-neon/50 hover:bg-terminal-neon/10 hover:text-terminal-neon transition-all border-l-[3px] border-transparent">
+                <i class="fa-solid fa-link text-xl w-6 text-center"></i>
+                <span class="ml-3 font-bold tracking-wide text-[14px]">MY LINK</span>
+            </button>
+            <button id="nav-memo" onclick="switchApp('memo')" class="nav-btn flex items-center py-3.5 px-4 text-terminal-neon/50 hover:bg-terminal-neon/10 hover:text-terminal-neon transition-all border-l-[3px] border-transparent">
+                <i class="fa-solid fa-list-check text-xl w-6 text-center"></i>
+                <span class="ml-3 font-bold tracking-wide text-[14px]">MEMO TASKS</span>
+            </button>
         </nav>
         
-        <!-- Status Indikator Bawah -->
         <div class="p-4 border-t border-terminal-dim flex items-center justify-start">
             <div class="w-3 h-3 rounded-full bg-terminal-neon animate-pulse mr-2 shadow-[0_0_8px_rgba(var(--neon-color-rgb),0.8)]"></div>
             <span class="text-[11px] text-terminal-neon/70 font-mono">SYSTEM_ONLINE</span>
         </div>
     </aside>
 
-    <!-- Wrapper Utama Aplikasi -->
+    <!-- Wrapper Utama -->
     <div class="flex-1 bg-terminal-bg relative flex flex-col min-w-0 transition-colors duration-500 h-full">
         
-        <!-- Header (Navbar Area Utama) -->
         <header class="bg-terminal-bg shrink-0 z-10 border-b border-terminal-neon px-4 h-[60px] md:h-[70px] flex items-center justify-between transition-colors duration-500 shadow-[0_4px_20px_-10px_rgba(var(--neon-color-rgb),0.3)]">
             <button onclick="toggleSidebar()" class="text-terminal-neon hover:text-white transition-colors w-10 h-10 flex items-center justify-start text-2xl z-20 neon-text cursor-pointer">
                 <i class="fa-solid fa-terminal"></i>
             </button>
             <h1 id="app-title" class="text-[14px] md:text-[18px] font-bold text-terminal-neon tracking-widest absolute left-1/2 transform -translate-x-1/2 w-max neon-text uppercase">
-                &gt; MENGINISIALISASI...<span class="blinking-cursor">_</span>
+                &gt; INITIALIZING...<span class="blinking-cursor">_</span>
             </h1>
             <button onclick="openModal()" class="bg-transparent border border-terminal-neon text-terminal-neon w-9 h-9 md:w-10 md:h-10 shadow-[0_0_5px_rgba(var(--neon-color-rgb),0.3)] flex items-center justify-center text-lg active:scale-95 transition-all hover:bg-terminal-neon hover:text-black z-20">
                 <i class="fa-solid fa-plus"></i>
             </button>
         </header>
 
-        <!-- Toast Notification -->
         <div id="toast" class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-terminal-neon text-black px-5 py-2.5 rounded-none text-[14px] md:text-[15px] font-bold border-2 border-black z-50 transition-all duration-300 -translate-y-10 opacity-0 pointer-events-none shadow-[0_0_15px_rgba(var(--neon-color-rgb),0.8)]">
             [ OK ] Pesan
         </div>
 
-        <!-- Area Utama (Daftar Catatan) -->
-        <main class="flex-1 p-4 md:p-6 overflow-y-auto hide-scrollbar pb-24 md:pb-10" id="notes-container">
-            <!-- Kartu catatan akan dimasukkan ke sini melalui JavaScript -->
+        <!-- Area Utama (Daftar Catatan) - Menggunakan CSS Columns agar tidak overlap -->
+        <main class="flex-1 p-4 md:p-6 overflow-y-auto hide-scrollbar pb-24 md:pb-10" id="main-scroll-area">
+            <div id="notes-container" class="w-full">
+                <!-- Kartu catatan via JS -->
+            </div>
         </main>
 
-        <!-- Modal Tambah/Edit Catatan -->
+        <!-- Modal Tambah/Edit -->
         <div id="modal-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-30 hidden opacity-0 transition-opacity duration-300" onclick="closeModal()"></div>
         
         <div id="modal" class="fixed inset-x-0 bottom-0 z-40 bg-terminal-bg border-t-2 border-terminal-neon transform translate-y-full transition-transform duration-300 h-[85vh] flex flex-col w-full md:max-w-3xl lg:max-w-4xl mx-auto neon-border">
-            <!-- Modal Header -->
             <div class="bg-terminal-card flex justify-between items-center p-4 border-b border-terminal-neon shrink-0">
                 <button onclick="closeModal()" class="text-terminal-neon/70 text-[14px] md:text-[16px] hover:text-terminal-neon hover:underline transition-all font-mono">[ ESC ]</button>
-                <h2 class="font-bold text-[15px] md:text-[17px] text-terminal-neon tracking-wide neon-text" id="modal-title">NEW_ENTRY</h2>
+                <div class="flex items-center space-x-3">
+                    <!-- Tombol khusus untuk MEMO -->
+                    <button id="btn-insert-checkbox" onclick="insertCheckbox()" class="hidden border border-terminal-neon text-terminal-neon px-3 py-1 text-xs hover:bg-terminal-neon hover:text-black transition-colors font-mono font-bold">
+                        [+ Checkbox]
+                    </button>
+                    <h2 class="font-bold text-[15px] md:text-[17px] text-terminal-neon tracking-wide neon-text" id="modal-title">NEW_ENTRY</h2>
+                </div>
                 <button onclick="saveNote()" class="text-[#000000] px-4 py-2 font-bold text-[14px] md:text-[15px] hover:bg-white transition-all flex items-center shadow-[0_0_10px_rgba(var(--neon-color-rgb),0.6)]" style="background-color: rgb(var(--neon-color-rgb));">
                     SAVE <i class="fa-solid fa-play ml-2 text-xs"></i>
                 </button>
             </div>
             
-            <!-- Modal Body -->
             <div class="p-4 md:p-6 flex-1 flex flex-col overflow-y-auto hide-scrollbar">
                 <input type="hidden" id="note-id">
-                <input 
-                    type="text" 
-                    id="note-title" 
-                    placeholder="Judul_File..." 
-                    class="w-full bg-terminal-card border border-terminal-dim p-3.5 md:p-4 mb-4 text-[16px] md:text-[18px] font-medium focus:outline-none text-terminal-neon placeholder-terminal-dim neon-border-focus transition-all rounded-none"
-                >
-                <textarea 
-                    id="note-content" 
-                    placeholder="> Masukkan input data di sini..." 
-                    class="w-full flex-1 min-h-[200px] bg-terminal-card border border-terminal-dim p-3.5 md:p-4 text-[14px] md:text-[16px] focus:outline-none text-terminal-text placeholder-terminal-dim resize-none leading-relaxed neon-border-focus transition-all rounded-none font-mono"
-                ></textarea>
+                <input type="text" id="note-title" placeholder="Judul_File..." class="w-full bg-terminal-card border border-terminal-dim p-3.5 md:p-4 mb-4 text-[16px] md:text-[18px] font-medium focus:outline-none text-terminal-neon placeholder-terminal-dim neon-border-focus transition-all rounded-none">
+                <textarea id="note-content" placeholder="> Masukkan input data di sini..." class="w-full flex-1 min-h-[200px] bg-terminal-card border border-terminal-dim p-3.5 md:p-4 text-[14px] md:text-[16px] focus:outline-none text-terminal-text placeholder-terminal-dim resize-none leading-relaxed neon-border-focus transition-all rounded-none font-mono"></textarea>
             </div>
         </div>
 
         <!-- Alert Konfirmasi Hapus -->
-        <div id="alert-overlay" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center opacity-0 transition-opacity duration-300 pl-[70px] md:pl-64">
-            <div id="alert-box" class="bg-terminal-bg border border-terminal-red w-[280px] md:w-[320px] text-center overflow-hidden transform scale-95 transition-transform duration-300 shadow-[0_0_20px_rgba(255,0,60,0.4)] rounded-none">
+        <div id="alert-overlay" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center opacity-0 transition-opacity duration-300">
+            <div id="alert-box" class="bg-terminal-bg border border-terminal-red w-[280px] md:w-[320px] text-center overflow-hidden transform scale-95 transition-transform duration-300 shadow-[0_0_20px_rgba(255,50,50,0.4)] rounded-none">
                 <div class="p-5 md:p-6 border-b border-terminal-red/30">
                     <i class="fa-solid fa-triangle-exclamation text-terminal-red text-4xl mb-4 animate-pulse"></i>
                     <h3 class="font-bold text-[16px] md:text-[18px] text-terminal-red tracking-wider">SYSTEM_WARNING</h3>
-                    <p class="text-[12px] md:text-[13px] text-terminal-red/70 mt-2 font-mono leading-relaxed">Data akan dihancurkan secara permanen. Eksekusi?</p>
+                    <p class="text-[12px] md:text-[13px] text-terminal-red/70 mt-2 font-mono leading-relaxed">Data akan dihapus permanen. Eksekusi?</p>
                 </div>
                 <div class="flex">
-                    <button onclick="closeDeleteAlert()" class="flex-1 p-3.5 md:p-4 text-terminal-neon/70 text-[14px] font-bold hover:bg-terminal-card transition-colors border-r border-terminal-red/30">CANCEL</button>
+                    <button onclick="closeDeleteAlert()" class="flex-1 p-3.5 md:p-4 text-terminal-neon/70 text-[14px] font-bold hover:bg-terminal-card transition-colors border-r border-terminal-red/30" style="color:rgb(var(--neon-color-rgb))">CANCEL</button>
                     <button onclick="confirmDelete()" id="btn-confirm-delete" class="flex-1 p-3.5 md:p-4 bg-terminal-red text-black font-bold text-[14px] hover:bg-red-500 transition-colors">EXECUTE</button>
                 </div>
             </div>
@@ -271,43 +251,42 @@
         // --- KONFIGURASI MULTI-APP ---
         const appsConfig = {
             copasional: {
-                id: 'copasional',
-                title: "COPASIONAL",
-                themeClass: "theme-copasional",
+                id: 'copasional', title: "COPASIONAL", themeClass: "theme-copasional",
                 storageKey: "terminal_notes_copasional",
-                inputPlaceholder: "> Paste teks untuk disalin di sini...",
-                titlePlaceholder: "Judul_Copas..."
+                inputPlaceholder: "> Paste teks untuk disalin di sini...", titlePlaceholder: "Judul_Copas..."
             },
             kinerja: {
-                id: 'kinerja',
-                title: "LAPORAN_KINERJA_HARIAN",
-                themeClass: "theme-kinerja",
-                storageKey: "copasional_notes_html", // Mempertahankan key lama agar data sebelumnya tidak hilang
-                inputPlaceholder: "> Masukkan detail laporan kinerja harian di sini...",
-                titlePlaceholder: "Judul_Laporan..."
+                id: 'kinerja', title: "LAPORAN_KINERJA_HARIAN", themeClass: "theme-kinerja",
+                storageKey: "copasional_notes_html", 
+                inputPlaceholder: "> Masukkan detail laporan kinerja harian di sini...", titlePlaceholder: "Judul_Laporan..."
             },
             error: {
-                id: 'error',
-                title: "ERROR_BOOK",
-                themeClass: "theme-error",
+                id: 'error', title: "ERROR_BOOK", themeClass: "theme-error",
                 storageKey: "terminal_notes_error",
-                inputPlaceholder: "> Masukkan log error sistem di sini...",
-                titlePlaceholder: "Judul_Error..."
+                inputPlaceholder: "> Masukkan log error sistem di sini...", titlePlaceholder: "Judul_Error..."
             },
             myprompt: {
-                id: 'myprompt',
-                title: "MY_PROMPT",
-                themeClass: "theme-myprompt",
+                id: 'myprompt', title: "MY_PROMPT", themeClass: "theme-myprompt",
                 storageKey: "terminal_notes_myprompt",
-                inputPlaceholder: "> Masukkan prompt atau instruksi AI di sini...",
-                titlePlaceholder: "Judul_Prompt..."
+                inputPlaceholder: "> Masukkan prompt atau instruksi AI di sini...", titlePlaceholder: "Judul_Prompt..."
+            },
+            mylink: { // APP BARU
+                id: 'mylink', title: "MY_LINK", themeClass: "theme-mylink",
+                storageKey: "terminal_notes_mylink",
+                inputPlaceholder: "> Masukkan tautan URL dan deskripsinya di sini...", titlePlaceholder: "Judul_Link..."
+            },
+            memo: { // APP BARU
+                id: 'memo', title: "MEMO_TASKS", themeClass: "theme-memo",
+                storageKey: "terminal_notes_memo",
+                inputPlaceholder: "> Ketik catatan atau tekan tombol [+ Checkbox] untuk To-Do...", titlePlaceholder: "Judul_Memo_Task..."
             }
         };
 
         // State Global
-        let currentApp = 'copasional'; // Default aktif
+        let currentApp = 'copasional';
         let notes = [];
         let noteToDelete = null;
+        let openAccordions = new Set(); // Menyimpan state akordion yang terbuka
 
         // --- SISTEM SIDEBAR ---
         function toggleSidebar() {
@@ -315,12 +294,10 @@
             const backdrop = document.getElementById('sidebar-backdrop');
             
             if (sidebar.classList.contains('-translate-x-full')) {
-                // Buka Sidebar
                 sidebar.classList.remove('-translate-x-full');
                 backdrop.classList.remove('hidden');
                 setTimeout(() => backdrop.classList.remove('opacity-0'), 10);
             } else {
-                // Tutup Sidebar
                 sidebar.classList.add('-translate-x-full');
                 backdrop.classList.add('opacity-0');
                 setTimeout(() => backdrop.classList.add('hidden'), 300);
@@ -332,40 +309,39 @@
             currentApp = appId;
             const config = appsConfig[appId];
 
-            // 1. Ubah Tema CSS (Warna)
             const body = document.getElementById('app-body');
-            body.classList.remove('theme-copasional', 'theme-kinerja', 'theme-error', 'theme-myprompt');
-            body.classList.add(config.themeClass);
+            body.className = `bg-terminal-bg flex h-screen w-full font-sans transition-colors duration-500 selection:bg-terminal-neon selection:text-black overflow-hidden ${config.themeClass}`;
 
-            // 2. Ubah Judul Header dengan animasi kursor
             document.getElementById('app-title').innerHTML = `&gt; ${config.title}<span class="blinking-cursor">_</span>`;
             document.title = config.title;
 
-            // 3. Update Input Placeholders di Modal
             document.getElementById('note-title').placeholder = config.titlePlaceholder;
             document.getElementById('note-content').placeholder = config.inputPlaceholder;
 
-            // 4. Update UI Active State di Sidebar
-            updateSidebarUI();
+            // Tampilkan tombol checkbox khusus di Memo
+            const btnInsert = document.getElementById('btn-insert-checkbox');
+            if (currentApp === 'memo') {
+                btnInsert.classList.remove('hidden');
+                btnInsert.classList.add('block');
+            } else {
+                btnInsert.classList.add('hidden');
+                btnInsert.classList.remove('block');
+            }
 
-            // 5. Muat Data sesuai App yang dipilih
+            updateSidebarUI();
+            openAccordions.clear(); // Reset state terbuka
             loadNotes();
             
-            // 6. Tutup sidebar otomatis jika sedang terbuka
             const sidebar = document.getElementById('sidebar');
-            if (!sidebar.classList.contains('-translate-x-full')) {
-                toggleSidebar();
-            }
+            if (!sidebar.classList.contains('-translate-x-full')) toggleSidebar();
         }
 
         function updateSidebarUI() {
-            // Reset semua tombol
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.classList.remove('bg-terminal-neon/10', 'text-terminal-neon', 'border-terminal-neon', 'neon-bg-glow');
                 btn.classList.add('text-terminal-neon/50', 'border-transparent');
             });
             
-            // Aktifkan tombol yang dipilih
             const activeBtn = document.getElementById(`nav-${currentApp}`);
             if (activeBtn) {
                 activeBtn.classList.remove('text-terminal-neon/50', 'border-transparent');
@@ -378,14 +354,8 @@
             const config = appsConfig[currentApp];
             const savedNotes = localStorage.getItem(config.storageKey);
             if (savedNotes) {
-                try {
-                    notes = JSON.parse(savedNotes);
-                } catch (e) {
-                    notes = [];
-                }
-            } else {
-                notes = [];
-            }
+                try { notes = JSON.parse(savedNotes); } catch (e) { notes = []; }
+            } else { notes = []; }
             renderNotes();
         }
 
@@ -395,23 +365,59 @@
             renderNotes();
         }
 
-        // --- HELPERS FORMATTING ---
+        // --- HELPERS ---
         function formatDateTime(timestamp) {
             const date = new Date(timestamp);
-            const options = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            const options = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' };
             return date.toLocaleDateString('id-ID', options).replace(/\./g, ':');
         }
 
         function escapeHTML(str) {
             if (!str) return '';
             return str.replace(/[&<>'"]/g, tag => ({
-                '&': '&amp;',
-                '<': '&lt;',
-                '>': '&gt;',
-                "'": '&#39;',
-                '"': '&quot;'
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
             }[tag] || tag));
         }
+
+        // Fungsi khusus menyisipkan checkbox ke text area (MEMO)
+        function insertCheckbox() {
+            const textarea = document.getElementById('note-content');
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const text = textarea.value;
+            const before = text.substring(0, start);
+            const after  = text.substring(end, text.length);
+            
+            const newline = (before.length === 0 || before.endsWith('\n')) ? '' : '\n';
+            textarea.value = before + newline + '- [ ] ' + after;
+            textarea.focus();
+            textarea.selectionStart = textarea.selectionEnd = start + newline.length + 6;
+        }
+
+        // Fitur interaktif centang checkbox langsung dari kartu (MEMO)
+        window.toggleTask = function(noteId, taskIndex, isCurrentlyChecked) {
+            const note = notes.find(n => n.id === noteId);
+            if (!note) return;
+
+            let currentIdx = 0;
+            const lines = note.content.split('\n');
+            
+            for (let i = 0; i < lines.length; i++) {
+                if (lines[i].trim().match(/^- \[[ xX]\]/)) {
+                    if (currentIdx === taskIndex) {
+                        if (isCurrentlyChecked) {
+                            lines[i] = lines[i].replace(/^- \[[xX]\]/i, '- [ ]');
+                        } else {
+                            lines[i] = lines[i].replace(/^- \[ \]/, '- [x]');
+                        }
+                        break;
+                    }
+                    currentIdx++;
+                }
+            }
+            note.content = lines.join('\n');
+            saveToLocal(); // Auto render
+        };
 
         // --- RENDER LOGIC UTAMA ---
         function renderNotes() {
@@ -419,9 +425,9 @@
             container.innerHTML = '';
 
             if (notes.length === 0) {
-                container.className = 'flex-1 p-4 md:p-6 overflow-y-auto hide-scrollbar pb-24 md:pb-10 flex flex-col items-center justify-center';
+                container.className = 'w-full h-full flex flex-col items-center justify-center pt-20';
                 container.innerHTML = `
-                    <div class="flex flex-col items-center justify-center h-full text-terminal-dim transition-colors duration-500">
+                    <div class="flex flex-col items-center justify-center text-terminal-dim transition-colors duration-500">
                         <i class="fa-solid fa-server text-5xl md:text-6xl mb-4 opacity-50 neon-text"></i>
                         <p class="font-bold text-[16px] md:text-[18px] text-terminal-neon/60 tracking-widest">[ DB_EMPTY ]</p>
                         <p class="text-[13px] md:text-[15px] mt-2 text-center px-4 font-mono text-terminal-text">No records found. Click [+] to initialize data.</p>
@@ -430,11 +436,13 @@
                 return;
             }
 
-            container.className = 'flex-1 p-4 md:p-6 overflow-y-auto hide-scrollbar pb-24 md:pb-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-5 items-start content-start';
+            // Menggunakan Columns (Masonry) untuk mencegah bentrok/overlap antar baris
+            container.className = 'columns-1 md:columns-2 xl:columns-3 gap-4 md:gap-5 w-full';
 
             notes.sort((a, b) => b.timestamp - a.timestamp).forEach(note => {
                 const card = document.createElement('div');
-                card.className = 'bg-terminal-card border border-terminal-dim overflow-hidden transition-colors duration-300 hover:border-terminal-neon rounded-none group';
+                // inline-block dan break-inside-avoid memastikan kartu tidak terpotong antar kolom
+                card.className = 'bg-terminal-card border border-terminal-dim overflow-hidden transition-colors duration-300 hover:border-terminal-neon rounded-none group break-inside-avoid mb-4 md:mb-5 inline-block w-full';
                 
                 let displayTitle = 'UNNAMED_RECORD';
                 if (note.title) {
@@ -443,6 +451,30 @@
                     const words = note.content.trim().split(/\s+/);
                     displayTitle = escapeHTML(words.slice(0, 2).join('_'));
                     if (words.length > 2) displayTitle += '...';
+                }
+
+                // Parser Konten (Khusus untuk Memo agar bisa parse To-Do)
+                let renderedContentHTML = '';
+                if (currentApp === 'memo') {
+                    const lines = note.content.split('\n');
+                    let taskIdx = 0;
+                    renderedContentHTML = lines.map(line => {
+                        if (line.trim().match(/^- \[[ xX]\]/)) {
+                            const isChecked = !!line.trim().match(/^- \[[xX]\]/i);
+                            const text = escapeHTML(line.replace(/^- \[[ xX]\]\s*/i, ''));
+                            const checkState = isChecked ? 'checked' : '';
+                            const textClass = isChecked ? 'opacity-50 line-through text-terminal-dim' : 'text-terminal-neon';
+                            return `
+                                <div class="flex items-start my-1.5 group/task" onclick="event.stopPropagation()">
+                                    <input type="checkbox" ${checkState} class="theme-checkbox mt-[4px] mr-3 cursor-pointer" onchange="toggleTask(${note.id}, ${taskIdx++}, ${isChecked})">
+                                    <span class="${textClass} transition-all leading-snug">${text || '&nbsp;'}</span>
+                                </div>`;
+                        } else {
+                            return `<div class="min-h-[1.5em] whitespace-pre-wrap">${escapeHTML(line)}</div>`;
+                        }
+                    }).join('');
+                } else {
+                    renderedContentHTML = `<div class="whitespace-pre-wrap">${escapeHTML(note.content)}</div>`;
                 }
 
                 card.innerHTML = `
@@ -475,12 +507,21 @@
                     <div class="accordion-content" id="content-${note.id}">
                         <div class="accordion-inner">
                             <div class="px-4 pt-2 pb-4 md:px-5 md:pt-3 md:pb-5 border-t border-terminal-dim border-dashed bg-[#050505]">
-                                <p class="text-[13px] md:text-[14px] text-terminal-text whitespace-pre-wrap break-words font-mono leading-relaxed">${escapeHTML(note.content)}</p>
+                                <div class="text-[13px] md:text-[14px] text-terminal-text break-words font-mono leading-relaxed">
+                                    ${renderedContentHTML}
+                                </div>
                             </div>
                         </div>
                     </div>
                 `;
                 container.appendChild(card);
+
+                // Kembalikan state akordion jika sebelumnya terbuka (agar saat dicentang tidak auto-tutup)
+                if (openAccordions.has(note.id)) {
+                    document.getElementById(`toolbar-${note.id}`).classList.add('open');
+                    document.getElementById(`content-${note.id}`).classList.add('open');
+                    document.getElementById(`icon-${note.id}`).classList.add('open');
+                }
             });
         }
 
@@ -490,18 +531,19 @@
             const content = document.getElementById(`content-${id}`);
             const icon = document.getElementById(`icon-${id}`);
             
-            toolbar.classList.toggle('open');
+            const isOpen = toolbar.classList.toggle('open');
             content.classList.toggle('open');
             icon.classList.toggle('open');
+
+            if (isOpen) openAccordions.add(id);
+            else openAccordions.delete(id);
         }
 
         function showToast(message) {
             const toast = document.getElementById('toast');
             toast.innerText = `[ OK ] ${message}`;
-            
             toast.classList.remove('-translate-y-10', 'opacity-0');
             toast.classList.add('translate-y-0', 'opacity-100');
-            
             setTimeout(() => {
                 toast.classList.add('-translate-y-10', 'opacity-0');
                 toast.classList.remove('translate-y-0', 'opacity-100');
@@ -511,26 +553,15 @@
         function copyNote(id) {
             const note = notes.find(n => n.id === id);
             if (!note) return;
-
             const textToCopy = note.title ? `${note.title}\n\n${note.content}` : note.content;
             
             const textArea = document.createElement("textarea");
             textArea.value = textToCopy;
-            textArea.style.position = "fixed";
-            textArea.style.top = "0";
-            textArea.style.left = "0";
+            textArea.style.position = "fixed"; document.body.appendChild(textArea);
+            textArea.focus(); textArea.select();
             
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            
-            try {
-                document.execCommand('copy');
-                showToast("DATA_COPIED_TO_CLIPBOARD");
-            } catch (err) {
-                showToast("COPY_FAILED");
-            }
-            
+            try { document.execCommand('copy'); showToast("DATA_COPIED_TO_CLIPBOARD"); } 
+            catch (err) { showToast("COPY_FAILED"); }
             document.body.removeChild(textArea);
         }
 
@@ -552,9 +583,7 @@
                     modalTitle.innerText = "EDIT_MODE";
                 }
             } else {
-                idInput.value = "";
-                titleInput.value = "";
-                contentInput.value = "";
+                idInput.value = ""; titleInput.value = ""; contentInput.value = "";
                 modalTitle.innerText = "NEW_ENTRY";
             }
 
@@ -563,22 +592,15 @@
                 overlay.classList.remove('opacity-0');
                 modal.classList.remove('translate-y-full');
             }, 10);
-            
-            setTimeout(() => {
-                contentInput.focus();
-            }, 300);
+            setTimeout(() => contentInput.focus(), 300);
         }
 
         function closeModal() {
             const overlay = document.getElementById('modal-overlay');
             const modal = document.getElementById('modal');
-
             overlay.classList.add('opacity-0');
             modal.classList.add('translate-y-full');
-            
-            setTimeout(() => {
-                overlay.classList.add('hidden');
-            }, 300);
+            setTimeout(() => overlay.classList.add('hidden'), 300);
         }
 
         function saveNote() {
@@ -586,30 +608,18 @@
             const title = document.getElementById('note-title').value.trim();
             const content = document.getElementById('note-content').value.trim();
 
-            if (!title && !content) {
-                showToast("EMPTY_INPUT_DENIED");
-                return;
-            }
+            if (!title && !content) return showToast("EMPTY_INPUT_DENIED");
 
             if (idInput) {
                 const index = notes.findIndex(n => n.id === parseInt(idInput));
                 if (index !== -1) {
-                    notes[index].title = title;
-                    notes[index].content = content;
-                    notes[index].timestamp = Date.now();
+                    notes[index].title = title; notes[index].content = content; notes[index].timestamp = Date.now();
                 }
                 showToast("RECORD_UPDATED");
             } else {
-                const newNote = {
-                    id: Date.now(),
-                    title: title,
-                    content: content,
-                    timestamp: Date.now()
-                };
-                notes.push(newNote);
+                notes.push({ id: Date.now(), title, content, timestamp: Date.now() });
                 showToast("RECORD_SAVED");
             }
-
             saveToLocal();
             closeModal();
         }
@@ -619,43 +629,28 @@
             noteToDelete = id;
             const overlay = document.getElementById('alert-overlay');
             const box = document.getElementById('alert-box');
-
             overlay.classList.remove('hidden');
             overlay.classList.add('flex');
-            setTimeout(() => {
-                overlay.classList.remove('opacity-0');
-                box.classList.remove('scale-95');
-            }, 10);
+            setTimeout(() => { overlay.classList.remove('opacity-0'); box.classList.remove('scale-95'); }, 10);
         }
 
         function closeDeleteAlert() {
             noteToDelete = null;
             const overlay = document.getElementById('alert-overlay');
             const box = document.getElementById('alert-box');
-
-            overlay.classList.add('opacity-0');
-            box.classList.add('scale-95');
-            
-            setTimeout(() => {
-                overlay.classList.add('hidden');
-                overlay.classList.remove('flex');
-            }, 300);
+            overlay.classList.add('opacity-0'); box.classList.add('scale-95');
+            setTimeout(() => { overlay.classList.add('hidden'); overlay.classList.remove('flex'); }, 300);
         }
 
         function confirmDelete() {
             if (noteToDelete) {
                 notes = notes.filter(n => n.id !== noteToDelete);
-                saveToLocal();
-                showToast("RECORD_DELETED");
-                closeDeleteAlert();
+                saveToLocal(); showToast("RECORD_DELETED"); closeDeleteAlert();
             }
         }
 
         // EKSEKUSI AWAL
-        window.onload = () => {
-            // Inisialisasi Aplikasi ke Copasional (Sidebar 1)
-            switchApp('copasional');
-        };
+        window.onload = () => switchApp('copasional');
     </script>
 </body>
 </html>
