@@ -19,24 +19,34 @@
     <style>
         /* Definisi Tema menggunakan RGB untuk mendukung Opacity di Tailwind */
         :root {
-            /* Default ke Cyan (Laporan Kinerja) */
-            --neon-color-rgb: 0, 255, 255;
-            --dim-color-rgb: 0, 77, 77;
+            /* Default ke Copasional */
+            --neon-color-rgb: 57, 255, 20;
+            --dim-color-rgb: 26, 74, 26;
+            --text-color-rgb: 170, 170, 170;
         }
 
-        .theme-orange {
-            --neon-color-rgb: 255, 140, 0; /* Oranye Neon */
-            --dim-color-rgb: 77, 42, 0;
-        }
-
-        .theme-cyan {
-            --neon-color-rgb: 0, 255, 255; /* Biru/Cyan Neon */
-            --dim-color-rgb: 0, 77, 77;
-        }
-
-        .theme-green {
+        .theme-copasional {
             --neon-color-rgb: 57, 255, 20; /* Hijau Neon */
             --dim-color-rgb: 26, 74, 26;
+            --text-color-rgb: 170, 170, 170; /* Abu-abu */
+        }
+
+        .theme-kinerja {
+            --neon-color-rgb: 0, 255, 255; /* Cyan Neon */
+            --dim-color-rgb: 0, 77, 77;
+            --text-color-rgb: 255, 255, 255; /* Putih */
+        }
+
+        .theme-error {
+            --neon-color-rgb: 255, 255, 0; /* Kuning Neon */
+            --dim-color-rgb: 77, 77, 0;
+            --text-color-rgb: 255, 255, 255; /* Putih */
+        }
+
+        .theme-myprompt {
+            --neon-color-rgb: 255, 140, 0; /* Oranye Neon */
+            --dim-color-rgb: 77, 42, 0;
+            --text-color-rgb: 0, 255, 255; /* Cyan */
         }
 
         body {
@@ -121,6 +131,7 @@
                             card: '#0a0a0a',
                             neon: 'rgb(var(--neon-color-rgb) / <alpha-value>)',
                             dim: 'rgb(var(--dim-color-rgb) / <alpha-value>)',
+                            text: 'rgb(var(--text-color-rgb) / <alpha-value>)',
                             red: '#ff003c'
                         }
                     },
@@ -133,59 +144,68 @@
     </script>
 </head>
 
-<body class="bg-terminal-bg flex min-h-screen font-sans transition-colors duration-500 selection:bg-terminal-neon selection:text-black theme-cyan overflow-hidden" id="app-body">
+<body class="bg-terminal-bg flex h-screen w-full font-sans transition-colors duration-500 selection:bg-terminal-neon selection:text-black theme-copasional overflow-hidden" id="app-body">
+
+    <!-- Overlay Backdrop untuk Sidebar -->
+    <div id="sidebar-backdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/70 z-30 hidden backdrop-blur-sm transition-opacity duration-300 opacity-0"></div>
 
     <!-- Sidebar Layout -->
-    <aside class="w-[70px] md:w-64 border-r border-terminal-dim flex flex-col transition-all duration-300 z-20 bg-terminal-bg flex-shrink-0">
+    <aside id="sidebar" class="fixed top-0 left-0 h-full w-[260px] border-r border-terminal-neon bg-terminal-bg/95 backdrop-blur-md flex flex-col transition-transform duration-300 z-40 -translate-x-full flex-shrink-0 shadow-[0_0_20px_rgba(var(--neon-color-rgb),0.2)]">
         <!-- Logo / Menu Header -->
-        <div class="p-4 border-b border-terminal-dim flex items-center justify-center md:justify-start h-[60px] md:h-[70px]">
-            <i class="fa-solid fa-terminal text-terminal-neon text-2xl md:mr-3 neon-text transition-colors duration-500"></i>
-            <span class="hidden md:inline font-bold text-[17px] text-terminal-neon neon-text tracking-widest transition-colors duration-500">SYS_MENU</span>
+        <div class="p-4 border-b border-terminal-dim flex items-center justify-between h-[60px] md:h-[70px]">
+            <div class="flex items-center cursor-pointer" onclick="toggleSidebar()">
+                <i class="fa-solid fa-terminal text-terminal-neon text-2xl mr-3 neon-text transition-colors duration-500"></i>
+                <span class="font-bold text-[17px] text-terminal-neon neon-text tracking-widest transition-colors duration-500">SYS_MENU</span>
+            </div>
+            <button onclick="toggleSidebar()" class="text-terminal-neon hover:text-white text-xl w-8 h-8 flex items-center justify-center">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
         </div>
         
         <!-- Navigasi Sidebar -->
-        <nav class="flex-1 flex flex-col pt-6 space-y-3 px-2">
+        <nav class="flex-1 flex flex-col pt-6 space-y-3 px-2 overflow-y-auto">
             
-            <button id="nav-copasional" onclick="switchApp('copasional')" class="nav-btn flex items-center py-3.5 px-3 md:px-4 rounded-none text-terminal-neon/50 hover:bg-terminal-neon/10 hover:text-terminal-neon transition-all border-l-[3px] border-transparent relative group">
+            <button id="nav-copasional" onclick="switchApp('copasional')" class="nav-btn flex items-center py-3.5 px-4 rounded-none text-terminal-neon/50 hover:bg-terminal-neon/10 hover:text-terminal-neon transition-all border-l-[3px] border-transparent relative">
                 <i class="fa-solid fa-clipboard text-xl w-6 text-center"></i>
-                <span class="hidden md:inline ml-3 font-bold tracking-wide text-[14px]">COPASIONAL</span>
-                <!-- Tooltip untuk Mobile -->
-                <div class="absolute left-16 bg-terminal-card border border-terminal-neon text-terminal-neon px-2 py-1 text-xs opacity-0 group-hover:opacity-100 md:hidden pointer-events-none transition-opacity whitespace-nowrap z-50">COPASIONAL</div>
+                <span class="ml-3 font-bold tracking-wide text-[14px]">COPASIONAL</span>
             </button>
 
-            <button id="nav-kinerja" onclick="switchApp('kinerja')" class="nav-btn flex items-center py-3.5 px-3 md:px-4 rounded-none text-terminal-neon/50 hover:bg-terminal-neon/10 hover:text-terminal-neon transition-all border-l-[3px] border-transparent relative group">
+            <button id="nav-kinerja" onclick="switchApp('kinerja')" class="nav-btn flex items-center py-3.5 px-4 rounded-none text-terminal-neon/50 hover:bg-terminal-neon/10 hover:text-terminal-neon transition-all border-l-[3px] border-transparent relative">
                 <i class="fa-solid fa-chart-line text-xl w-6 text-center"></i>
-                <span class="hidden md:inline ml-3 font-bold tracking-wide text-[14px]">KINERJA HARIAN</span>
-                <!-- Tooltip untuk Mobile -->
-                <div class="absolute left-16 bg-terminal-card border border-terminal-neon text-terminal-neon px-2 py-1 text-xs opacity-0 group-hover:opacity-100 md:hidden pointer-events-none transition-opacity whitespace-nowrap z-50">KINERJA HARIAN</div>
+                <span class="ml-3 font-bold tracking-wide text-[14px]">KINERJA HARIAN</span>
             </button>
 
-            <button id="nav-error" onclick="switchApp('error')" class="nav-btn flex items-center py-3.5 px-3 md:px-4 rounded-none text-terminal-neon/50 hover:bg-terminal-neon/10 hover:text-terminal-neon transition-all border-l-[3px] border-transparent relative group">
+            <button id="nav-error" onclick="switchApp('error')" class="nav-btn flex items-center py-3.5 px-4 rounded-none text-terminal-neon/50 hover:bg-terminal-neon/10 hover:text-terminal-neon transition-all border-l-[3px] border-transparent relative">
                 <i class="fa-solid fa-bug text-xl w-6 text-center"></i>
-                <span class="hidden md:inline ml-3 font-bold tracking-wide text-[14px]">ERROR BOOK</span>
-                <!-- Tooltip untuk Mobile -->
-                <div class="absolute left-16 bg-terminal-card border border-terminal-neon text-terminal-neon px-2 py-1 text-xs opacity-0 group-hover:opacity-100 md:hidden pointer-events-none transition-opacity whitespace-nowrap z-50">ERROR BOOK</div>
+                <span class="ml-3 font-bold tracking-wide text-[14px]">ERROR BOOK</span>
+            </button>
+
+            <button id="nav-myprompt" onclick="switchApp('myprompt')" class="nav-btn flex items-center py-3.5 px-4 rounded-none text-terminal-neon/50 hover:bg-terminal-neon/10 hover:text-terminal-neon transition-all border-l-[3px] border-transparent relative">
+                <i class="fa-solid fa-keyboard text-xl w-6 text-center"></i>
+                <span class="ml-3 font-bold tracking-wide text-[14px]">MY PROMPT</span>
             </button>
 
         </nav>
         
         <!-- Status Indikator Bawah -->
-        <div class="p-4 border-t border-terminal-dim flex items-center justify-center md:justify-start">
+        <div class="p-4 border-t border-terminal-dim flex items-center justify-start">
             <div class="w-3 h-3 rounded-full bg-terminal-neon animate-pulse mr-2 shadow-[0_0_8px_rgba(var(--neon-color-rgb),0.8)]"></div>
-            <span class="hidden md:inline text-[11px] text-terminal-neon/70 font-mono">SYSTEM_ONLINE</span>
+            <span class="text-[11px] text-terminal-neon/70 font-mono">SYSTEM_ONLINE</span>
         </div>
     </aside>
 
     <!-- Wrapper Utama Aplikasi -->
-    <div class="flex-1 bg-terminal-bg relative flex flex-col overflow-hidden min-w-0 transition-colors duration-500">
+    <div class="flex-1 bg-terminal-bg relative flex flex-col min-w-0 transition-colors duration-500 h-full">
         
         <!-- Header (Navbar Area Utama) -->
-        <header class="bg-terminal-bg sticky top-0 z-10 border-b border-terminal-neon px-4 h-[60px] md:h-[70px] flex items-center justify-between transition-colors duration-500 shadow-[0_4px_20px_-10px_rgba(var(--neon-color-rgb),0.3)]">
-            <div class="w-10"></div> <!-- Spacer -->
-            <h1 id="app-title" class="text-[13px] md:text-[18px] font-bold text-terminal-neon tracking-widest absolute left-1/2 transform -translate-x-1/2 w-max neon-text uppercase">
+        <header class="bg-terminal-bg shrink-0 z-10 border-b border-terminal-neon px-4 h-[60px] md:h-[70px] flex items-center justify-between transition-colors duration-500 shadow-[0_4px_20px_-10px_rgba(var(--neon-color-rgb),0.3)]">
+            <button onclick="toggleSidebar()" class="text-terminal-neon hover:text-white transition-colors w-10 h-10 flex items-center justify-start text-2xl z-20 neon-text cursor-pointer">
+                <i class="fa-solid fa-terminal"></i>
+            </button>
+            <h1 id="app-title" class="text-[14px] md:text-[18px] font-bold text-terminal-neon tracking-widest absolute left-1/2 transform -translate-x-1/2 w-max neon-text uppercase">
                 &gt; MENGINISIALISASI...<span class="blinking-cursor">_</span>
             </h1>
-            <button onclick="openModal()" class="bg-transparent border border-terminal-neon text-terminal-neon w-8 h-8 md:w-10 md:h-10 shadow-[0_0_5px_rgba(var(--neon-color-rgb),0.3)] flex items-center justify-center text-lg active:scale-95 transition-all hover:bg-terminal-neon hover:text-black z-20">
+            <button onclick="openModal()" class="bg-transparent border border-terminal-neon text-terminal-neon w-9 h-9 md:w-10 md:h-10 shadow-[0_0_5px_rgba(var(--neon-color-rgb),0.3)] flex items-center justify-center text-lg active:scale-95 transition-all hover:bg-terminal-neon hover:text-black z-20">
                 <i class="fa-solid fa-plus"></i>
             </button>
         </header>
@@ -205,10 +225,10 @@
         
         <div id="modal" class="fixed inset-x-0 bottom-0 z-40 bg-terminal-bg border-t-2 border-terminal-neon transform translate-y-full transition-transform duration-300 h-[85vh] flex flex-col w-full md:max-w-3xl lg:max-w-4xl mx-auto neon-border">
             <!-- Modal Header -->
-            <div class="bg-terminal-card flex justify-between items-center p-4 border-b border-terminal-neon">
+            <div class="bg-terminal-card flex justify-between items-center p-4 border-b border-terminal-neon shrink-0">
                 <button onclick="closeModal()" class="text-terminal-neon/70 text-[14px] md:text-[16px] hover:text-terminal-neon hover:underline transition-all font-mono">[ ESC ]</button>
                 <h2 class="font-bold text-[15px] md:text-[17px] text-terminal-neon tracking-wide neon-text" id="modal-title">NEW_ENTRY</h2>
-                <button onclick="saveNote()" class="text-black bg-terminal-neon px-3 py-1.5 font-bold text-[14px] md:text-[15px] hover:bg-white transition-colors flex items-center">
+                <button onclick="saveNote()" class="text-[#000000] px-4 py-2 font-bold text-[14px] md:text-[15px] hover:bg-white transition-all flex items-center shadow-[0_0_10px_rgba(var(--neon-color-rgb),0.6)]" style="background-color: rgb(var(--neon-color-rgb));">
                     SAVE <i class="fa-solid fa-play ml-2 text-xs"></i>
                 </button>
             </div>
@@ -225,7 +245,7 @@
                 <textarea 
                     id="note-content" 
                     placeholder="> Masukkan input data di sini..." 
-                    class="w-full flex-1 min-h-[200px] bg-terminal-card border border-terminal-dim p-3.5 md:p-4 text-[14px] md:text-[16px] focus:outline-none text-terminal-neon placeholder-terminal-dim resize-none leading-relaxed neon-border-focus transition-all rounded-none font-mono"
+                    class="w-full flex-1 min-h-[200px] bg-terminal-card border border-terminal-dim p-3.5 md:p-4 text-[14px] md:text-[16px] focus:outline-none text-terminal-text placeholder-terminal-dim resize-none leading-relaxed neon-border-focus transition-all rounded-none font-mono"
                 ></textarea>
             </div>
         </div>
@@ -253,7 +273,7 @@
             copasional: {
                 id: 'copasional',
                 title: "COPASIONAL",
-                themeClass: "theme-orange",
+                themeClass: "theme-copasional",
                 storageKey: "terminal_notes_copasional",
                 inputPlaceholder: "> Paste teks untuk disalin di sini...",
                 titlePlaceholder: "Judul_Copas..."
@@ -261,7 +281,7 @@
             kinerja: {
                 id: 'kinerja',
                 title: "LAPORAN_KINERJA_HARIAN",
-                themeClass: "theme-cyan",
+                themeClass: "theme-kinerja",
                 storageKey: "copasional_notes_html", // Mempertahankan key lama agar data sebelumnya tidak hilang
                 inputPlaceholder: "> Masukkan detail laporan kinerja harian di sini...",
                 titlePlaceholder: "Judul_Laporan..."
@@ -269,17 +289,43 @@
             error: {
                 id: 'error',
                 title: "ERROR_BOOK",
-                themeClass: "theme-green",
+                themeClass: "theme-error",
                 storageKey: "terminal_notes_error",
                 inputPlaceholder: "> Masukkan log error sistem di sini...",
                 titlePlaceholder: "Judul_Error..."
+            },
+            myprompt: {
+                id: 'myprompt',
+                title: "MY_PROMPT",
+                themeClass: "theme-myprompt",
+                storageKey: "terminal_notes_myprompt",
+                inputPlaceholder: "> Masukkan prompt atau instruksi AI di sini...",
+                titlePlaceholder: "Judul_Prompt..."
             }
         };
 
         // State Global
-        let currentApp = 'kinerja'; // Default aktif
+        let currentApp = 'copasional'; // Default aktif
         let notes = [];
         let noteToDelete = null;
+
+        // --- SISTEM SIDEBAR ---
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebar-backdrop');
+            
+            if (sidebar.classList.contains('-translate-x-full')) {
+                // Buka Sidebar
+                sidebar.classList.remove('-translate-x-full');
+                backdrop.classList.remove('hidden');
+                setTimeout(() => backdrop.classList.remove('opacity-0'), 10);
+            } else {
+                // Tutup Sidebar
+                sidebar.classList.add('-translate-x-full');
+                backdrop.classList.add('opacity-0');
+                setTimeout(() => backdrop.classList.add('hidden'), 300);
+            }
+        }
 
         // --- SISTEM INISIALISASI & TEMA ---
         function switchApp(appId) {
@@ -288,7 +334,7 @@
 
             // 1. Ubah Tema CSS (Warna)
             const body = document.getElementById('app-body');
-            body.classList.remove('theme-orange', 'theme-cyan', 'theme-green');
+            body.classList.remove('theme-copasional', 'theme-kinerja', 'theme-error', 'theme-myprompt');
             body.classList.add(config.themeClass);
 
             // 2. Ubah Judul Header dengan animasi kursor
@@ -304,6 +350,12 @@
 
             // 5. Muat Data sesuai App yang dipilih
             loadNotes();
+            
+            // 6. Tutup sidebar otomatis jika sedang terbuka
+            const sidebar = document.getElementById('sidebar');
+            if (!sidebar.classList.contains('-translate-x-full')) {
+                toggleSidebar();
+            }
         }
 
         function updateSidebarUI() {
@@ -372,7 +424,7 @@
                     <div class="flex flex-col items-center justify-center h-full text-terminal-dim transition-colors duration-500">
                         <i class="fa-solid fa-server text-5xl md:text-6xl mb-4 opacity-50 neon-text"></i>
                         <p class="font-bold text-[16px] md:text-[18px] text-terminal-neon/60 tracking-widest">[ DB_EMPTY ]</p>
-                        <p class="text-[13px] md:text-[15px] mt-2 text-center px-4 font-mono">No records found. Click [+] to initialize data.</p>
+                        <p class="text-[13px] md:text-[15px] mt-2 text-center px-4 font-mono text-terminal-text">No records found. Click [+] to initialize data.</p>
                     </div>
                 `;
                 return;
@@ -415,7 +467,7 @@
                     <div class="px-4 py-3.5 md:px-5 md:py-4 flex justify-between items-center cursor-pointer hover:bg-terminal-neon/10 transition-colors border-l-2 border-transparent group-hover:border-terminal-neon" onclick="toggleAccordion(${note.id})">
                         <div class="flex-1 pr-3 overflow-hidden">
                             <h3 class="font-bold text-[15px] md:text-[16px] text-terminal-neon truncate neon-text">${displayTitle}</h3>
-                            <p class="text-[11px] md:text-[12px] text-terminal-neon/60 mt-1 font-mono">SYS.TIME: ${formatDateTime(note.timestamp)}</p>
+                            <p class="text-[11px] md:text-[12px] text-terminal-text mt-1 font-mono">SYS.TIME: ${formatDateTime(note.timestamp)}</p>
                         </div>
                         <i class="fa-solid fa-chevron-down text-terminal-neon/60 text-sm chevron-icon" id="icon-${note.id}"></i>
                     </div>
@@ -423,7 +475,7 @@
                     <div class="accordion-content" id="content-${note.id}">
                         <div class="accordion-inner">
                             <div class="px-4 pt-2 pb-4 md:px-5 md:pt-3 md:pb-5 border-t border-terminal-dim border-dashed bg-[#050505]">
-                                <p class="text-[13px] md:text-[14px] text-terminal-neon/90 whitespace-pre-wrap break-words font-mono leading-relaxed">${escapeHTML(note.content)}</p>
+                                <p class="text-[13px] md:text-[14px] text-terminal-text whitespace-pre-wrap break-words font-mono leading-relaxed">${escapeHTML(note.content)}</p>
                             </div>
                         </div>
                     </div>
@@ -601,8 +653,8 @@
 
         // EKSEKUSI AWAL
         window.onload = () => {
-            // Inisialisasi Aplikasi ke Laporan Kinerja (Sidebar 2)
-            switchApp('kinerja');
+            // Inisialisasi Aplikasi ke Copasional (Sidebar 1)
+            switchApp('copasional');
         };
     </script>
 </body>
