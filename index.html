@@ -495,6 +495,9 @@
                                     <button onclick="copyNote(${note.id})" class="text-terminal-neon/80 text-[12px] md:text-[13px] flex items-center font-bold hover:text-white transition-colors">
                                         <i class="fa-regular fa-copy mr-1.5"></i> COPY
                                     </button>
+                                    <button onclick="downloadNote(${note.id})" class="text-terminal-neon/80 text-[12px] md:text-[13px] flex items-center font-bold hover:text-white transition-colors">
+                                        <i class="fa-solid fa-download mr-1.5"></i> DOWNLOAD
+                                    </button>
                                     ${visitButton}
                                 </div>
                                 <div class="flex space-x-4">
@@ -576,6 +579,36 @@
             try { document.execCommand('copy'); showToast("DATA_COPIED_TO_CLIPBOARD"); } 
             catch (err) { showToast("COPY_FAILED"); }
             document.body.removeChild(textArea);
+        }
+
+        function downloadNote(id) {
+            const note = notes.find(n => n.id === id);
+            if (!note) return;
+            
+            const textToDownload = note.title ? `${note.title}\n\n${note.content}` : note.content;
+            const blob = new Blob([textToDownload], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            
+            // Generate nama file otomatis dari judul atau ID jika tidak ada judul
+            let filename = 'terminal_note.txt';
+            if (note.title) {
+                filename = note.title.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '.txt';
+            } else {
+                filename = `note_${note.id}.txt`;
+            }
+            
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            
+            // Clean up
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showToast("FILE_DOWNLOADED");
         }
 
         function visitSite(id) {
