@@ -245,6 +245,19 @@
             </div>
         </div>
 
+        <!-- Modal Transfer / Pindah Jendela -->
+        <div id="transfer-overlay" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center opacity-0 transition-opacity duration-300">
+            <div id="transfer-box" class="bg-terminal-bg border border-terminal-neon w-[300px] md:w-[350px] text-center overflow-hidden transform scale-95 transition-transform duration-300 shadow-[0_0_20px_rgba(var(--neon-color-rgb),0.4)] rounded-none">
+                <div class="p-4 border-b border-terminal-neon/30 bg-terminal-card flex justify-between items-center">
+                    <h3 class="font-bold text-[14px] md:text-[15px] text-terminal-neon tracking-wider"><i class="fa-solid fa-right-left mr-2"></i>TRANSFER_DATA</h3>
+                    <button onclick="closeTransferModal()" class="text-terminal-neon/70 hover:text-terminal-neon transition-colors"><i class="fa-solid fa-xmark text-lg"></i></button>
+                </div>
+                <div id="transfer-options" class="flex flex-col p-1 max-h-[50vh] overflow-y-auto hide-scrollbar">
+                    <!-- Opsi Jendela Sidebar diinject via JS -->
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script>
@@ -286,6 +299,7 @@
         let currentApp = 'copasional';
         let notes = [];
         let noteToDelete = null;
+        let noteToTransfer = null;
         let openAccordions = new Set(); // Menyimpan state akordion yang terbuka
 
         // --- SISTEM SIDEBAR ---
@@ -490,17 +504,20 @@
                 card.innerHTML = `
                     <div class="accordion-toolbar" id="toolbar-${note.id}">
                         <div class="toolbar-inner">
-                            <div class="bg-black px-4 py-2 border-b border-terminal-dim flex justify-between items-center transition-colors">
-                                <div class="flex space-x-4">
+                            <div class="bg-black px-4 py-2 border-b border-terminal-dim flex justify-between items-center transition-colors overflow-x-auto hide-scrollbar">
+                                <div class="flex space-x-4 pr-4 min-w-max">
                                     <button onclick="copyNote(${note.id})" class="text-terminal-neon/80 text-[12px] md:text-[13px] flex items-center font-bold hover:text-white transition-colors">
                                         <i class="fa-regular fa-copy mr-1.5"></i> COPY
                                     </button>
                                     <button onclick="downloadNote(${note.id})" class="text-terminal-neon/80 text-[12px] md:text-[13px] flex items-center font-bold hover:text-white transition-colors">
-                                        <i class="fa-solid fa-download mr-1.5"></i> DOWNLOAD
+                                        <i class="fa-solid fa-download mr-1.5"></i> DOWN
+                                    </button>
+                                    <button onclick="openTransferModal(${note.id})" class="text-terminal-neon/80 text-[12px] md:text-[13px] flex items-center font-bold hover:text-white transition-colors">
+                                        <i class="fa-solid fa-right-left mr-1.5"></i> MOVE
                                     </button>
                                     ${visitButton}
                                 </div>
-                                <div class="flex space-x-4">
+                                <div class="flex space-x-4 min-w-max">
                                     <button onclick="openModal(${note.id})" class="text-terminal-neon/80 text-[12px] md:text-[13px] flex items-center font-bold hover:text-white transition-colors">
                                         <i class="fa-solid fa-pen-nib mr-1.5"></i> EDIT
                                     </button>
@@ -706,6 +723,65 @@
                 notes = notes.filter(n => n.id !== noteToDelete);
                 saveToLocal(); showToast("RECORD_DELETED"); closeDeleteAlert();
             }
+        }
+
+        // --- MANAJEMEN TRANSFER / PINDAH JENDELA ---
+        function openTransferModal(id) {
+            noteToTransfer = id;
+            const optionsContainer = document.getElementById('transfer-options');
+            optionsContainer.innerHTML = ''; 
+
+            // Melakukan looping ke semua 6 App dan hanya menampilkan yang bukan sedang aktif
+            Object.values(appsConfig).forEach(app => {
+                if (app.id !== currentApp) {
+                    const btn = document.createElement('button');
+                    btn.className = 'p-3.5 text-left border-b border-terminal-neon/10 hover:bg-terminal-neon/20 text-terminal-text hover:text-terminal-neon transition-colors font-mono text-[13px] md:text-[14px] flex items-center group';
+                    btn.innerHTML = `<i class="fa-solid fa-folder-tree mr-3 text-terminal-neon/50 group-hover:text-terminal-neon transition-colors"></i> MOVE TO [ ${app.title} ]`;
+                    btn.onclick = () => executeTransfer(app.id);
+                    optionsContainer.appendChild(btn);
+                }
+            });
+
+            const overlay = document.getElementById('transfer-overlay');
+            const box = document.getElementById('transfer-box');
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
+            setTimeout(() => { overlay.classList.remove('opacity-0'); box.classList.remove('scale-95'); }, 10);
+        }
+
+        function closeTransferModal() {
+            noteToTransfer = null;
+            const overlay = document.getElementById('transfer-overlay');
+            const box = document.getElementById('transfer-box');
+            overlay.classList.add('opacity-0'); box.classList.add('scale-95');
+            setTimeout(() => { overlay.classList.add('hidden'); overlay.classList.remove('flex'); }, 300);
+        }
+
+        function executeTransfer(targetAppId) {
+            if (!noteToTransfer) return;
+
+            const noteIndex = notes.findIndex(n => n.id === noteToTransfer);
+            if (noteIndex === -1) return;
+            const note = notes[noteIndex]; // Mengambil catatan yang akan dipindah
+
+            // 1. Ambil data catatan pada jendela tujuan dari penyimpanan lokal
+            const targetConfig = appsConfig[targetAppId];
+            let targetNotes = [];
+            const savedTargetNotes = localStorage.getItem(targetConfig.storageKey);
+            if (savedTargetNotes) {
+                try { targetNotes = JSON.parse(savedTargetNotes); } catch (e) { targetNotes = []; }
+            }
+
+            // 2. Tambahkan catatan ke jendela tujuan, lalu simpan
+            targetNotes.push(note);
+            localStorage.setItem(targetConfig.storageKey, JSON.stringify(targetNotes));
+
+            // 3. Hapus catatan dari jendela yang sedang aktif saat ini
+            notes.splice(noteIndex, 1);
+            saveToLocal(); // Otomatis refresh UI
+            
+            closeTransferModal();
+            showToast("DATA_TRANSFERRED");
         }
 
         // EKSEKUSI AWAL
