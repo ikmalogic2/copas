@@ -473,17 +473,30 @@
                             return `<div class="min-h-[1.5em] whitespace-pre-wrap">${escapeHTML(line)}</div>`;
                         }
                     }).join('');
+                } else if (currentApp === 'mylink') {
+                    const escapedContent = escapeHTML(note.content);
+                    const linkedContent = escapedContent.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" onclick="event.stopPropagation()" class="underline font-bold hover:text-white transition-colors" style="color: rgb(var(--neon-color-rgb));">$1</a>');
+                    renderedContentHTML = `<div class="whitespace-pre-wrap">${linkedContent}</div>`;
                 } else {
                     renderedContentHTML = `<div class="whitespace-pre-wrap">${escapeHTML(note.content)}</div>`;
                 }
+
+                const visitButton = currentApp === 'mylink' ? `
+                    <button onclick="visitSite(${note.id}); event.stopPropagation();" class="text-terminal-neon/80 text-[12px] md:text-[13px] flex items-center font-bold hover:text-white transition-colors">
+                        <i class="fa-solid fa-arrow-up-right-from-square mr-1.5"></i> VISIT
+                    </button>
+                ` : '';
 
                 card.innerHTML = `
                     <div class="accordion-toolbar" id="toolbar-${note.id}">
                         <div class="toolbar-inner">
                             <div class="bg-black px-4 py-2 border-b border-terminal-dim flex justify-between items-center transition-colors">
-                                <button onclick="copyNote(${note.id})" class="text-terminal-neon/80 text-[12px] md:text-[13px] flex items-center font-bold hover:text-white transition-colors">
-                                    <i class="fa-regular fa-copy mr-1.5"></i> COPY
-                                </button>
+                                <div class="flex space-x-4">
+                                    <button onclick="copyNote(${note.id})" class="text-terminal-neon/80 text-[12px] md:text-[13px] flex items-center font-bold hover:text-white transition-colors">
+                                        <i class="fa-regular fa-copy mr-1.5"></i> COPY
+                                    </button>
+                                    ${visitButton}
+                                </div>
                                 <div class="flex space-x-4">
                                     <button onclick="openModal(${note.id})" class="text-terminal-neon/80 text-[12px] md:text-[13px] flex items-center font-bold hover:text-white transition-colors">
                                         <i class="fa-solid fa-pen-nib mr-1.5"></i> EDIT
@@ -563,6 +576,19 @@
             try { document.execCommand('copy'); showToast("DATA_COPIED_TO_CLIPBOARD"); } 
             catch (err) { showToast("COPY_FAILED"); }
             document.body.removeChild(textArea);
+        }
+
+        function visitSite(id) {
+            const note = notes.find(n => n.id === id);
+            if (!note) return;
+            
+            const urlMatch = note.content.match(/(https?:\/\/[^\s]+)/);
+            if (urlMatch) {
+                window.open(urlMatch[0], '_blank');
+                showToast("OPENING_LINK");
+            } else {
+                showToast("NO_URL_FOUND");
+            }
         }
 
         // --- MANAJEMEN MODAL ---
