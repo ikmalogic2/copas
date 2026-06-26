@@ -541,6 +541,7 @@
                 }
             }
             note.content = lines.join('\n');
+            note.updatedAt = Date.now(); // Perbarui waktu edit saat menekan checkbox
             saveToLocal(); // Auto render
         };
 
@@ -578,6 +579,12 @@
                     const words = note.content.trim().split(/\s+/);
                     displayTitle = escapeHTML(words.slice(0, 2).join('_'));
                     if (words.length > 2) displayTitle += '...';
+                }
+
+                // Setup format waktu (waktu buat dan waktu edit)
+                let timeDisplay = `BUAT: ${formatDateTime(note.timestamp)}`;
+                if (note.updatedAt && note.updatedAt !== note.timestamp) {
+                    timeDisplay += ` | EDIT: ${formatDateTime(note.updatedAt)}`;
                 }
 
                 // Parser Konten (Khusus untuk Memo agar bisa parse To-Do)
@@ -646,7 +653,7 @@
                         <div class="flex-1 pr-4 overflow-hidden">
                             <h3 class="font-black text-[16px] md:text-[20px] text-black truncate uppercase tracking-tight">${displayTitle}</h3>
                             <div class="inline-block bg-black text-white px-2 py-0.5 mt-2">
-                                <p class="text-[10px] md:text-[11px] font-bold tracking-widest">${formatDateTime(note.timestamp)}</p>
+                                <p class="text-[10px] md:text-[11px] font-bold tracking-widest">${timeDisplay}</p>
                             </div>
                         </div>
                         <div class="w-8 h-8 border-2 border-black flex items-center justify-center bg-brutal-color shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-colors duration-500">
@@ -812,11 +819,13 @@
             if (idInput) {
                 const index = notes.findIndex(n => n.id === parseInt(idInput));
                 if (index !== -1) {
-                    notes[index].title = title; notes[index].content = content; notes[index].timestamp = Date.now();
+                    notes[index].title = title; 
+                    notes[index].content = content; 
+                    notes[index].updatedAt = Date.now(); // Hanya perbarui waktu edit
                 }
                 showToast("CATATAN DIPERBARUI");
             } else {
-                notes.push({ id: Date.now(), title, content, timestamp: Date.now() });
+                notes.push({ id: Date.now(), title, content, timestamp: Date.now(), updatedAt: Date.now() });
                 showToast("CATATAN SUDAH DISIMPAN");
             }
             saveToLocal();
