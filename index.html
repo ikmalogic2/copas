@@ -22,48 +22,54 @@
             /* Default: Copasional */
             --neon-color-rgb: 57, 255, 20;
             --dim-color-rgb: 26, 74, 26;
-            --text-color-rgb: 170, 170, 170;
+            --text-color-rgb: 255, 255, 255;
         }
 
         .theme-copasional {
             --neon-color-rgb: 57, 255, 20; /* Hijau Neon */
             --dim-color-rgb: 26, 74, 26;
-            --text-color-rgb: 170, 220, 170; 
+            --text-color-rgb: 255, 255, 255; 
         }
 
         .theme-kinerja {
             --neon-color-rgb: 0, 255, 255; /* Cyan Neon */
             --dim-color-rgb: 0, 77, 77;
-            --text-color-rgb: 200, 255, 255; 
+            --text-color-rgb: 255, 255, 255; 
         }
 
         .theme-error {
             --neon-color-rgb: 255, 50, 50; /* Merah Neon */
             --dim-color-rgb: 77, 0, 0;
-            --text-color-rgb: 255, 200, 200; 
+            --text-color-rgb: 255, 255, 255; 
         }
 
         .theme-myprompt {
             --neon-color-rgb: 255, 140, 0; /* Oranye Neon */
             --dim-color-rgb: 77, 42, 0;
-            --text-color-rgb: 255, 220, 180; 
+            --text-color-rgb: 255, 255, 255; 
+        }
+
+        .theme-myinstruction {
+            --neon-color-rgb: 0, 150, 255; /* Biru Neon */
+            --dim-color-rgb: 0, 40, 77;
+            --text-color-rgb: 255, 255, 255; 
         }
 
         .theme-mylink {
             --neon-color-rgb: 212, 0, 255; /* Magenta/Ungu Neon */
             --dim-color-rgb: 60, 0, 77;
-            --text-color-rgb: 240, 180, 255; 
+            --text-color-rgb: 255, 255, 255; 
         }
 
         .theme-memo {
             --neon-color-rgb: 255, 255, 0; /* Kuning Neon */
             --dim-color-rgb: 77, 77, 0;
-            --text-color-rgb: 255, 255, 180; 
+            --text-color-rgb: 255, 255, 255; 
         }
 
         body {
             background-color: #000000;
-            color: rgb(var(--neon-color-rgb));
+            color: #ffffff;
             font-family: 'Space Grotesk', monospace, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
@@ -134,11 +140,11 @@
     <div id="sidebar-backdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/70 z-30 hidden backdrop-blur-sm transition-opacity duration-300 opacity-0"></div>
 
     <!-- Sidebar Layout -->
-    <aside id="sidebar" class="fixed top-0 left-0 h-full w-[260px] border-r border-terminal-neon bg-terminal-bg/95 backdrop-blur-md flex flex-col transition-transform duration-300 z-40 -translate-x-full flex-shrink-0 shadow-[0_0_20px_rgba(var(--neon-color-rgb),0.2)]">
+    <aside id="sidebar" class="fixed top-0 right-0 h-full w-[260px] border-l border-terminal-neon bg-terminal-bg/95 backdrop-blur-md flex flex-col transition-transform duration-300 z-40 translate-x-full flex-shrink-0 shadow-[0_0_20px_rgba(var(--neon-color-rgb),0.2)]">
         <div class="p-4 border-b border-terminal-dim flex items-center justify-between h-[60px] md:h-[70px]">
             <div class="flex items-center cursor-pointer" onclick="toggleSidebar()">
-                <i class="fa-solid fa-terminal text-terminal-neon text-2xl mr-3 neon-text transition-colors duration-500"></i>
-                <span class="font-bold text-[17px] text-terminal-neon neon-text tracking-widest transition-colors duration-500">SYS_MENU</span>
+                <i class="fa-solid fa-terminal text-terminal-neon text-2xl mr-3 transition-colors duration-500"></i>
+                <span class="font-bold text-[17px] text-white tracking-widest transition-colors duration-500">SYS_MENU</span>
             </div>
             <button onclick="toggleSidebar()" class="text-terminal-neon hover:text-white text-xl w-8 h-8 flex items-center justify-center">
                 <i class="fa-solid fa-xmark"></i>
@@ -148,34 +154,37 @@
         <nav class="flex-1 flex flex-col pt-4 space-y-2 px-2 overflow-y-auto pb-4">
             <button id="nav-copasional" onclick="switchApp('copasional')" class="nav-btn flex items-center py-3.5 px-4 text-terminal-neon/50 hover:bg-terminal-neon/10 hover:text-terminal-neon transition-all border-l-[3px] border-transparent">
                 <i class="fa-solid fa-clipboard text-xl w-6 text-center"></i>
-                <span class="ml-3 font-bold tracking-wide text-[14px]">COPASIONAL</span>
+                <span class="ml-3 font-bold tracking-wide text-[14px] text-white">COPASIONAL</span>
             </button>
             <button id="nav-kinerja" onclick="switchApp('kinerja')" class="nav-btn flex items-center py-3.5 px-4 text-terminal-neon/50 hover:bg-terminal-neon/10 hover:text-terminal-neon transition-all border-l-[3px] border-transparent">
                 <i class="fa-solid fa-chart-line text-xl w-6 text-center"></i>
-                <span class="ml-3 font-bold tracking-wide text-[14px]">KINERJA HARIAN</span>
+                <span class="ml-3 font-bold tracking-wide text-[14px] text-white">KINERJA HARIAN</span>
             </button>
             <button id="nav-error" onclick="switchApp('error')" class="nav-btn flex items-center py-3.5 px-4 text-terminal-neon/50 hover:bg-terminal-neon/10 hover:text-terminal-neon transition-all border-l-[3px] border-transparent">
                 <i class="fa-solid fa-bug text-xl w-6 text-center"></i>
-                <span class="ml-3 font-bold tracking-wide text-[14px]">ERROR BOOK</span>
+                <span class="ml-3 font-bold tracking-wide text-[14px] text-white">ERROR BOOK</span>
             </button>
             <button id="nav-myprompt" onclick="switchApp('myprompt')" class="nav-btn flex items-center py-3.5 px-4 text-terminal-neon/50 hover:bg-terminal-neon/10 hover:text-terminal-neon transition-all border-l-[3px] border-transparent">
                 <i class="fa-solid fa-keyboard text-xl w-6 text-center"></i>
-                <span class="ml-3 font-bold tracking-wide text-[14px]">MY PROMPT</span>
+                <span class="ml-3 font-bold tracking-wide text-[14px] text-white">MY PROMPT</span>
             </button>
-            <!-- Menu Baru 5 & 6 -->
+            <button id="nav-myinstruction" onclick="switchApp('myinstruction')" class="nav-btn flex items-center py-3.5 px-4 text-terminal-neon/50 hover:bg-terminal-neon/10 hover:text-terminal-neon transition-all border-l-[3px] border-transparent">
+                <i class="fa-solid fa-code text-xl w-6 text-center"></i>
+                <span class="ml-3 font-bold tracking-wide text-[14px] text-white">MY INSTRUCTION</span>
+            </button>
             <button id="nav-mylink" onclick="switchApp('mylink')" class="nav-btn flex items-center py-3.5 px-4 text-terminal-neon/50 hover:bg-terminal-neon/10 hover:text-terminal-neon transition-all border-l-[3px] border-transparent">
                 <i class="fa-solid fa-link text-xl w-6 text-center"></i>
-                <span class="ml-3 font-bold tracking-wide text-[14px]">MY LINK</span>
+                <span class="ml-3 font-bold tracking-wide text-[14px] text-white">MY LINK</span>
             </button>
             <button id="nav-memo" onclick="switchApp('memo')" class="nav-btn flex items-center py-3.5 px-4 text-terminal-neon/50 hover:bg-terminal-neon/10 hover:text-terminal-neon transition-all border-l-[3px] border-transparent">
                 <i class="fa-solid fa-list-check text-xl w-6 text-center"></i>
-                <span class="ml-3 font-bold tracking-wide text-[14px]">MEMO TASKS</span>
+                <span class="ml-3 font-bold tracking-wide text-[14px] text-white">MEMO TASKS</span>
             </button>
         </nav>
         
         <div class="p-4 border-t border-terminal-dim flex items-center justify-start">
             <div class="w-3 h-3 rounded-full bg-terminal-neon animate-pulse mr-2 shadow-[0_0_8px_rgba(var(--neon-color-rgb),0.8)]"></div>
-            <span class="text-[11px] text-terminal-neon/70 font-mono">SYSTEM_ONLINE</span>
+            <span class="text-[11px] text-white font-mono">SYSTEM_ONLINE</span>
         </div>
     </aside>
 
@@ -183,19 +192,21 @@
     <div class="flex-1 bg-terminal-bg relative flex flex-col min-w-0 transition-colors duration-500 h-full">
         
         <header class="bg-terminal-bg shrink-0 z-10 border-b border-terminal-neon px-4 h-[60px] md:h-[70px] flex items-center justify-between transition-colors duration-500 shadow-[0_4px_20px_-10px_rgba(var(--neon-color-rgb),0.3)]">
-            <button onclick="toggleSidebar()" class="text-terminal-neon hover:text-white transition-colors w-10 h-10 flex items-center justify-start text-2xl z-20 neon-text cursor-pointer">
-                <i class="fa-solid fa-terminal"></i>
-            </button>
-            <h1 id="app-title" class="text-[14px] md:text-[18px] font-bold text-terminal-neon tracking-widest absolute left-1/2 transform -translate-x-1/2 w-max neon-text uppercase">
-                &gt; INITIALIZING...<span class="blinking-cursor">_</span>
-            </h1>
             <button onclick="openModal()" class="bg-transparent border border-terminal-neon text-terminal-neon w-9 h-9 md:w-10 md:h-10 shadow-[0_0_5px_rgba(var(--neon-color-rgb),0.3)] flex items-center justify-center text-lg active:scale-95 transition-all hover:bg-terminal-neon hover:text-black z-20">
                 <i class="fa-solid fa-plus"></i>
             </button>
+            <h1 id="app-title" class="text-[14px] md:text-[18px] font-bold text-white tracking-widest absolute left-1/2 transform -translate-x-1/2 w-max uppercase">
+                &gt; INITIALIZING...<span class="blinking-cursor">_</span>
+            </h1>
+            <button onclick="toggleSidebar()" class="text-terminal-neon hover:text-white transition-colors w-10 h-10 flex items-center justify-end text-2xl z-20 cursor-pointer">
+                <i class="fa-solid fa-terminal"></i>
+            </button>
         </header>
 
-        <div id="toast" class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-terminal-neon text-black px-5 py-2.5 rounded-none text-[14px] md:text-[15px] font-bold border-2 border-black z-50 transition-all duration-300 -translate-y-10 opacity-0 pointer-events-none shadow-[0_0_15px_rgba(var(--neon-color-rgb),0.8)]">
-            [ OK ] Pesan
+        <!-- Pop Up / Floating Notification -->
+        <div id="toast" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-terminal-bg/95 border-2 border-terminal-neon text-white px-8 py-6 rounded-none z-[70] transition-all duration-300 scale-75 opacity-0 pointer-events-none shadow-[0_0_40px_rgba(var(--neon-color-rgb),0.8)] flex flex-col items-center justify-center text-center backdrop-blur-md">
+            <i class="fa-solid fa-circle-check text-terminal-neon text-5xl mb-4 animate-bounce"></i>
+            <span id="toast-msg" class="font-bold text-[16px] md:text-[18px] tracking-widest uppercase">PESAN</span>
         </div>
 
         <!-- Area Utama (Daftar Catatan) - Menggunakan CSS Columns agar tidak overlap -->
@@ -210,13 +221,12 @@
         
         <div id="modal" class="fixed inset-x-0 bottom-0 z-40 bg-terminal-bg border-t-2 border-terminal-neon transform translate-y-full transition-transform duration-300 h-[85vh] flex flex-col w-full md:max-w-3xl lg:max-w-4xl mx-auto neon-border">
             <div class="bg-terminal-card flex justify-between items-center p-4 border-b border-terminal-neon shrink-0">
-                <button onclick="closeModal()" class="text-terminal-neon/70 text-[14px] md:text-[16px] hover:text-terminal-neon hover:underline transition-all font-mono">[ ESC ]</button>
+                <button onclick="closeModal()" class="text-white text-[14px] md:text-[16px] hover:underline transition-all font-mono">[ ESC ]</button>
                 <div class="flex items-center space-x-3">
-                    <!-- Tombol khusus untuk MEMO -->
-                    <button id="btn-insert-checkbox" onclick="insertCheckbox()" class="hidden border border-terminal-neon text-terminal-neon px-3 py-1 text-xs hover:bg-terminal-neon hover:text-black transition-colors font-mono font-bold">
+                    <button id="btn-insert-checkbox" onclick="insertCheckbox()" class="hidden border border-terminal-neon text-white px-3 py-1 text-xs hover:bg-terminal-neon hover:text-black transition-colors font-mono font-bold">
                         [+ Checkbox]
                     </button>
-                    <h2 class="font-bold text-[15px] md:text-[17px] text-terminal-neon tracking-wide neon-text" id="modal-title">NEW_ENTRY</h2>
+                    <h2 class="font-bold text-[15px] md:text-[17px] text-white tracking-wide" id="modal-title">NEW_ENTRY</h2>
                 </div>
                 <button onclick="saveNote()" class="text-[#000000] px-4 py-2 font-bold text-[14px] md:text-[15px] hover:bg-white transition-all flex items-center shadow-[0_0_10px_rgba(var(--neon-color-rgb),0.6)]" style="background-color: rgb(var(--neon-color-rgb));">
                     SAVE <i class="fa-solid fa-play ml-2 text-xs"></i>
@@ -225,8 +235,8 @@
             
             <div class="p-4 md:p-6 flex-1 flex flex-col overflow-y-auto hide-scrollbar">
                 <input type="hidden" id="note-id">
-                <input type="text" id="note-title" placeholder="Judul_File..." class="w-full bg-terminal-card border border-terminal-dim p-3.5 md:p-4 mb-4 text-[16px] md:text-[18px] font-medium focus:outline-none text-terminal-neon placeholder-terminal-dim neon-border-focus transition-all rounded-none">
-                <textarea id="note-content" placeholder="> Masukkan input data di sini..." class="w-full flex-1 min-h-[200px] bg-terminal-card border border-terminal-dim p-3.5 md:p-4 text-[14px] md:text-[16px] focus:outline-none text-terminal-text placeholder-terminal-dim resize-none leading-relaxed neon-border-focus transition-all rounded-none font-mono"></textarea>
+                <input type="text" id="note-title" placeholder="Judul_File..." class="w-full bg-terminal-card border border-terminal-dim p-3.5 md:p-4 mb-4 text-[16px] md:text-[18px] font-medium focus:outline-none text-white placeholder-terminal-dim neon-border-focus transition-all rounded-none">
+                <textarea id="note-content" placeholder="> Masukkan input data di sini..." class="w-full flex-1 min-h-[200px] bg-terminal-card border border-terminal-dim p-3.5 md:p-4 text-[14px] md:text-[16px] focus:outline-none text-white placeholder-terminal-dim resize-none leading-relaxed neon-border-focus transition-all rounded-none font-mono"></textarea>
             </div>
         </div>
 
@@ -235,11 +245,11 @@
             <div id="alert-box" class="bg-terminal-bg border border-terminal-red w-[280px] md:w-[320px] text-center overflow-hidden transform scale-95 transition-transform duration-300 shadow-[0_0_20px_rgba(255,50,50,0.4)] rounded-none">
                 <div class="p-5 md:p-6 border-b border-terminal-red/30">
                     <i class="fa-solid fa-triangle-exclamation text-terminal-red text-4xl mb-4 animate-pulse"></i>
-                    <h3 class="font-bold text-[16px] md:text-[18px] text-terminal-red tracking-wider">SYSTEM_WARNING</h3>
-                    <p class="text-[12px] md:text-[13px] text-terminal-red/70 mt-2 font-mono leading-relaxed">Data akan dihapus permanen. Eksekusi?</p>
+                    <h3 class="font-bold text-[16px] md:text-[18px] text-white tracking-wider">SYSTEM_WARNING</h3>
+                    <p class="text-[12px] md:text-[13px] text-white mt-2 font-mono leading-relaxed">Data akan dihapus permanen. Eksekusi?</p>
                 </div>
                 <div class="flex">
-                    <button onclick="closeDeleteAlert()" class="flex-1 p-3.5 md:p-4 text-terminal-neon/70 text-[14px] font-bold hover:bg-terminal-card transition-colors border-r border-terminal-red/30" style="color:rgb(var(--neon-color-rgb))">CANCEL</button>
+                    <button onclick="closeDeleteAlert()" class="flex-1 p-3.5 md:p-4 text-white text-[14px] font-bold hover:bg-terminal-card transition-colors border-r border-terminal-red/30">CANCEL</button>
                     <button onclick="confirmDelete()" id="btn-confirm-delete" class="flex-1 p-3.5 md:p-4 bg-terminal-red text-black font-bold text-[14px] hover:bg-red-500 transition-colors">EXECUTE</button>
                 </div>
             </div>
@@ -249,8 +259,8 @@
         <div id="transfer-overlay" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center opacity-0 transition-opacity duration-300">
             <div id="transfer-box" class="bg-terminal-bg border border-terminal-neon w-[300px] md:w-[350px] text-center overflow-hidden transform scale-95 transition-transform duration-300 shadow-[0_0_20px_rgba(var(--neon-color-rgb),0.4)] rounded-none">
                 <div class="p-4 border-b border-terminal-neon/30 bg-terminal-card flex justify-between items-center">
-                    <h3 class="font-bold text-[14px] md:text-[15px] text-terminal-neon tracking-wider"><i class="fa-solid fa-right-left mr-2"></i>TRANSFER_DATA</h3>
-                    <button onclick="closeTransferModal()" class="text-terminal-neon/70 hover:text-terminal-neon transition-colors"><i class="fa-solid fa-xmark text-lg"></i></button>
+                    <h3 class="font-bold text-[14px] md:text-[15px] text-white tracking-wider"><i class="fa-solid fa-right-left text-terminal-neon mr-2"></i>TRANSFER_DATA</h3>
+                    <button onclick="closeTransferModal()" class="text-white hover:text-terminal-neon transition-colors"><i class="fa-solid fa-xmark text-lg"></i></button>
                 </div>
                 <div id="transfer-options" class="flex flex-col p-1 max-h-[50vh] overflow-y-auto hide-scrollbar">
                     <!-- Opsi Jendela Sidebar diinject via JS -->
@@ -283,6 +293,11 @@
                 storageKey: "terminal_notes_myprompt",
                 inputPlaceholder: "> Masukkan prompt atau instruksi AI di sini...", titlePlaceholder: "Judul_Prompt..."
             },
+            myinstruction: {
+                id: 'myinstruction', title: "MY_INSTRUCTION", themeClass: "theme-myinstruction",
+                storageKey: "terminal_notes_myinstruction",
+                inputPlaceholder: "> Masukkan instruksi sistem atau panduan di sini...", titlePlaceholder: "Judul_Instruction..."
+            },
             mylink: { // APP BARU
                 id: 'mylink', title: "MY_LINK", themeClass: "theme-mylink",
                 storageKey: "terminal_notes_mylink",
@@ -307,12 +322,12 @@
             const sidebar = document.getElementById('sidebar');
             const backdrop = document.getElementById('sidebar-backdrop');
             
-            if (sidebar.classList.contains('-translate-x-full')) {
-                sidebar.classList.remove('-translate-x-full');
+            if (sidebar.classList.contains('translate-x-full')) {
+                sidebar.classList.remove('translate-x-full');
                 backdrop.classList.remove('hidden');
                 setTimeout(() => backdrop.classList.remove('opacity-0'), 10);
             } else {
-                sidebar.classList.add('-translate-x-full');
+                sidebar.classList.add('translate-x-full');
                 backdrop.classList.add('opacity-0');
                 setTimeout(() => backdrop.classList.add('hidden'), 300);
             }
@@ -347,7 +362,7 @@
             loadNotes();
             
             const sidebar = document.getElementById('sidebar');
-            if (!sidebar.classList.contains('-translate-x-full')) toggleSidebar();
+            if (!sidebar.classList.contains('translate-x-full')) toggleSidebar();
         }
 
         function updateSidebarUI() {
@@ -443,8 +458,8 @@
                 container.innerHTML = `
                     <div class="flex flex-col items-center justify-center text-terminal-dim transition-colors duration-500">
                         <i class="fa-solid fa-server text-5xl md:text-6xl mb-4 opacity-50 neon-text"></i>
-                        <p class="font-bold text-[16px] md:text-[18px] text-terminal-neon/60 tracking-widest">[ DB_EMPTY ]</p>
-                        <p class="text-[13px] md:text-[15px] mt-2 text-center px-4 font-mono text-terminal-text">No records found. Click [+] to initialize data.</p>
+                        <p class="font-bold text-[16px] md:text-[18px] text-white tracking-widest">[ DB_EMPTY ]</p>
+                        <p class="text-[13px] md:text-[15px] mt-2 text-center px-4 font-mono text-white">No records found. Click [+] to initialize data.</p>
                     </div>
                 `;
                 return;
@@ -477,27 +492,27 @@
                             const isChecked = !!line.trim().match(/^- \[[xX]\]/i);
                             const text = escapeHTML(line.replace(/^- \[[ xX]\]\s*/i, ''));
                             const checkState = isChecked ? 'checked' : '';
-                            const textClass = isChecked ? 'opacity-50 line-through text-terminal-dim' : 'text-terminal-neon';
+                            const textClass = isChecked ? 'opacity-50 line-through text-white/50' : 'text-white';
                             return `
                                 <div class="flex items-start my-1.5 group/task" onclick="event.stopPropagation()">
                                     <input type="checkbox" ${checkState} class="theme-checkbox mt-[4px] mr-3 cursor-pointer" onchange="toggleTask(${note.id}, ${taskIdx++}, ${isChecked})">
                                     <span class="${textClass} transition-all leading-snug">${text || '&nbsp;'}</span>
                                 </div>`;
                         } else {
-                            return `<div class="min-h-[1.5em] whitespace-pre-wrap">${escapeHTML(line)}</div>`;
+                            return `<div class="min-h-[1.5em] text-white whitespace-pre-wrap">${escapeHTML(line)}</div>`;
                         }
                     }).join('');
                 } else if (currentApp === 'mylink') {
                     const escapedContent = escapeHTML(note.content);
-                    const linkedContent = escapedContent.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" onclick="event.stopPropagation()" class="underline font-bold hover:text-white transition-colors" style="color: rgb(var(--neon-color-rgb));">$1</a>');
-                    renderedContentHTML = `<div class="whitespace-pre-wrap">${linkedContent}</div>`;
+                    const linkedContent = escapedContent.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" onclick="event.stopPropagation()" class="underline font-bold hover:text-white transition-colors" style="color: #ffffff;">$1</a>');
+                    renderedContentHTML = `<div class="whitespace-pre-wrap text-white">${linkedContent}</div>`;
                 } else {
-                    renderedContentHTML = `<div class="whitespace-pre-wrap">${escapeHTML(note.content)}</div>`;
+                    renderedContentHTML = `<div class="whitespace-pre-wrap text-white">${escapeHTML(note.content)}</div>`;
                 }
 
                 const visitButton = currentApp === 'mylink' ? `
-                    <button onclick="visitSite(${note.id}); event.stopPropagation();" class="text-terminal-neon/80 text-[12px] md:text-[13px] flex items-center font-bold hover:text-white transition-colors">
-                        <i class="fa-solid fa-arrow-up-right-from-square mr-1.5"></i> VISIT
+                    <button onclick="visitSite(${note.id}); event.stopPropagation();" class="text-white text-[12px] md:text-[13px] flex items-center font-bold hover:text-terminal-neon transition-colors">
+                        <i class="fa-solid fa-arrow-up-right-from-square mr-1.5 text-terminal-neon"></i> VISIT
                     </button>
                 ` : '';
 
@@ -506,23 +521,23 @@
                         <div class="toolbar-inner">
                             <div class="bg-black px-4 py-2 border-b border-terminal-dim flex justify-between items-center transition-colors overflow-x-auto hide-scrollbar">
                                 <div class="flex space-x-4 pr-4 min-w-max">
-                                    <button onclick="copyNote(${note.id})" class="text-terminal-neon/80 text-[12px] md:text-[13px] flex items-center font-bold hover:text-white transition-colors">
-                                        <i class="fa-regular fa-copy mr-1.5"></i> COPY
+                                    <button onclick="copyNote(${note.id})" class="text-white text-[12px] md:text-[13px] flex items-center font-bold hover:text-terminal-neon transition-colors">
+                                        <i class="fa-regular fa-copy mr-1.5 text-terminal-neon"></i> COPY
                                     </button>
-                                    <button onclick="downloadNote(${note.id})" class="text-terminal-neon/80 text-[12px] md:text-[13px] flex items-center font-bold hover:text-white transition-colors">
-                                        <i class="fa-solid fa-download mr-1.5"></i> DOWN
+                                    <button onclick="downloadNote(${note.id})" class="text-white text-[12px] md:text-[13px] flex items-center font-bold hover:text-terminal-neon transition-colors">
+                                        <i class="fa-solid fa-download mr-1.5 text-terminal-neon"></i> DOWN
                                     </button>
-                                    <button onclick="openTransferModal(${note.id})" class="text-terminal-neon/80 text-[12px] md:text-[13px] flex items-center font-bold hover:text-white transition-colors">
-                                        <i class="fa-solid fa-right-left mr-1.5"></i> MOVE
+                                    <button onclick="openTransferModal(${note.id})" class="text-white text-[12px] md:text-[13px] flex items-center font-bold hover:text-terminal-neon transition-colors">
+                                        <i class="fa-solid fa-right-left mr-1.5 text-terminal-neon"></i> MOVE
                                     </button>
                                     ${visitButton}
                                 </div>
                                 <div class="flex space-x-4 min-w-max">
-                                    <button onclick="openModal(${note.id})" class="text-terminal-neon/80 text-[12px] md:text-[13px] flex items-center font-bold hover:text-white transition-colors">
-                                        <i class="fa-solid fa-pen-nib mr-1.5"></i> EDIT
+                                    <button onclick="openModal(${note.id})" class="text-white text-[12px] md:text-[13px] flex items-center font-bold hover:text-terminal-neon transition-colors">
+                                        <i class="fa-solid fa-pen-nib mr-1.5 text-terminal-neon"></i> EDIT
                                     </button>
-                                    <button onclick="openDeleteAlert(${note.id})" class="text-terminal-red/80 text-[12px] md:text-[13px] flex items-center font-bold hover:text-terminal-red transition-colors">
-                                        <i class="fa-solid fa-xmark mr-1.5"></i> DEL
+                                    <button onclick="openDeleteAlert(${note.id})" class="text-white text-[12px] md:text-[13px] flex items-center font-bold hover:text-terminal-red transition-colors">
+                                        <i class="fa-solid fa-xmark mr-1.5 text-terminal-red"></i> DEL
                                     </button>
                                 </div>
                             </div>
@@ -531,8 +546,8 @@
 
                     <div class="px-4 py-3.5 md:px-5 md:py-4 flex justify-between items-center cursor-pointer hover:bg-terminal-neon/10 transition-colors border-l-2 border-transparent group-hover:border-terminal-neon" onclick="toggleAccordion(${note.id})">
                         <div class="flex-1 pr-3 overflow-hidden">
-                            <h3 class="font-bold text-[15px] md:text-[16px] text-terminal-neon truncate neon-text">${displayTitle}</h3>
-                            <p class="text-[11px] md:text-[12px] text-terminal-text mt-1 font-mono">SYS.TIME: ${formatDateTime(note.timestamp)}</p>
+                            <h3 class="font-bold text-[15px] md:text-[16px] text-white truncate">${displayTitle}</h3>
+                            <p class="text-[11px] md:text-[12px] text-white mt-1 font-mono">SYS.TIME: ${formatDateTime(note.timestamp)}</p>
                         </div>
                         <i class="fa-solid fa-chevron-down text-terminal-neon/60 text-sm chevron-icon" id="icon-${note.id}"></i>
                     </div>
@@ -540,7 +555,7 @@
                     <div class="accordion-content" id="content-${note.id}">
                         <div class="accordion-inner">
                             <div class="px-4 pt-2 pb-4 md:px-5 md:pt-3 md:pb-5 border-t border-terminal-dim border-dashed bg-[#050505]">
-                                <div class="text-[13px] md:text-[14px] text-terminal-text break-words font-mono leading-relaxed">
+                                <div class="text-[13px] md:text-[14px] text-white break-words font-mono leading-relaxed">
                                     ${renderedContentHTML}
                                 </div>
                             </div>
@@ -572,15 +587,19 @@
             else openAccordions.delete(id);
         }
 
+        let toastTimeout;
         function showToast(message) {
             const toast = document.getElementById('toast');
-            toast.innerText = `[ OK ] ${message}`;
-            toast.classList.remove('-translate-y-10', 'opacity-0');
-            toast.classList.add('translate-y-0', 'opacity-100');
-            setTimeout(() => {
-                toast.classList.add('-translate-y-10', 'opacity-0');
-                toast.classList.remove('translate-y-0', 'opacity-100');
-            }, 2500);
+            document.getElementById('toast-msg').innerText = message;
+            
+            toast.classList.remove('scale-75', 'opacity-0');
+            toast.classList.add('scale-100', 'opacity-100');
+            
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.add('scale-75', 'opacity-0');
+                toast.classList.remove('scale-100', 'opacity-100');
+            }, 2000);
         }
 
         function copyNote(id) {
@@ -593,8 +612,8 @@
             textArea.style.position = "fixed"; document.body.appendChild(textArea);
             textArea.focus(); textArea.select();
             
-            try { document.execCommand('copy'); showToast("DATA_COPIED_TO_CLIPBOARD"); } 
-            catch (err) { showToast("COPY_FAILED"); }
+            try { document.execCommand('copy'); showToast("TEKS SUDAH DISALIN"); } 
+            catch (err) { showToast("GAGAL MENYALIN"); }
             document.body.removeChild(textArea);
         }
 
@@ -625,7 +644,7 @@
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
             
-            showToast("FILE_DOWNLOADED");
+            showToast("FILE BERHASIL DIUNDUH");
         }
 
         function visitSite(id) {
@@ -635,9 +654,9 @@
             const urlMatch = note.content.match(/(https?:\/\/[^\s]+)/);
             if (urlMatch) {
                 window.open(urlMatch[0], '_blank');
-                showToast("OPENING_LINK");
+                showToast("MEMBUKA TAUTAN...");
             } else {
-                showToast("NO_URL_FOUND");
+                showToast("TIDAK ADA TAUTAN");
             }
         }
 
@@ -684,17 +703,17 @@
             const title = document.getElementById('note-title').value.trim();
             const content = document.getElementById('note-content').value.trim();
 
-            if (!title && !content) return showToast("EMPTY_INPUT_DENIED");
+            if (!title && !content) return showToast("DATA KOSONG DITOLAK");
 
             if (idInput) {
                 const index = notes.findIndex(n => n.id === parseInt(idInput));
                 if (index !== -1) {
                     notes[index].title = title; notes[index].content = content; notes[index].timestamp = Date.now();
                 }
-                showToast("RECORD_UPDATED");
+                showToast("CATATAN DIPERBARUI");
             } else {
                 notes.push({ id: Date.now(), title, content, timestamp: Date.now() });
-                showToast("RECORD_SAVED");
+                showToast("CATATAN SUDAH DISIMPAN");
             }
             saveToLocal();
             closeModal();
@@ -721,7 +740,7 @@
         function confirmDelete() {
             if (noteToDelete) {
                 notes = notes.filter(n => n.id !== noteToDelete);
-                saveToLocal(); showToast("RECORD_DELETED"); closeDeleteAlert();
+                saveToLocal(); showToast("CATATAN DIHAPUS"); closeDeleteAlert();
             }
         }
 
@@ -735,8 +754,8 @@
             Object.values(appsConfig).forEach(app => {
                 if (app.id !== currentApp) {
                     const btn = document.createElement('button');
-                    btn.className = 'p-3.5 text-left border-b border-terminal-neon/10 hover:bg-terminal-neon/20 text-terminal-text hover:text-terminal-neon transition-colors font-mono text-[13px] md:text-[14px] flex items-center group';
-                    btn.innerHTML = `<i class="fa-solid fa-folder-tree mr-3 text-terminal-neon/50 group-hover:text-terminal-neon transition-colors"></i> MOVE TO [ ${app.title} ]`;
+                    btn.className = 'p-3.5 text-left border-b border-terminal-neon/10 hover:bg-terminal-neon/20 transition-colors font-mono text-[13px] md:text-[14px] flex items-center group';
+                    btn.innerHTML = `<i class="fa-solid fa-folder-tree mr-3 text-terminal-neon/50 group-hover:text-terminal-neon transition-colors"></i> <span class="text-white">MOVE TO [ ${app.title} ]</span>`;
                     btn.onclick = () => executeTransfer(app.id);
                     optionsContainer.appendChild(btn);
                 }
@@ -781,7 +800,7 @@
             saveToLocal(); // Otomatis refresh UI
             
             closeTransferModal();
-            showToast("DATA_TRANSFERRED");
+            showToast("CATATAN DIPINDAH");
         }
 
         // EKSEKUSI AWAL
