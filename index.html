@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>MULTI TERMINAL APP</title>
     
     <!-- Tailwind CSS -->
@@ -11,429 +11,326 @@
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Google Fonts: Space Grotesk -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
-
     <style>
-        /* Definisi 6 Tema Warna Dinamis - Neo Brutalism Edition */
         :root {
-            /* Default: Copasional - Hijau Cerah */
-            --brutal-color: #39ff14;
-            --brutal-border: #000000;
-            --brutal-bg: #ffffff;
-            --brutal-shadow: 6px 6px 0px 0px rgba(0,0,0,1);
-            --brutal-shadow-hover: 2px 2px 0px 0px rgba(0,0,0,1);
-        }
-
-        .theme-copasional {
-            --brutal-color: #ccff00; /* Kuning-Hijau Cerah */
-            --brutal-bg: #f4f4f0;
-        }
-
-        .theme-kinerja {
-            --brutal-color: #00ffff; /* Cyan Cerah */
-            --brutal-bg: #f4f4f0;
-        }
-
-        .theme-error {
-            --brutal-color: #ff3366; /* Merah Muda Terang */
-            --brutal-bg: #f4f4f0;
-        }
-
-        .theme-myprompt {
-            --brutal-color: #ff9900; /* Oranye Terang */
-            --brutal-bg: #f4f4f0;
-        }
-
-        .theme-myinstruction {
-            --brutal-color: #0066ff; /* Biru Terang */
-            --brutal-bg: #f4f4f0;
-        }
-
-        .theme-mylink {
-            --brutal-color: #cc66ff; /* Ungu Terang */
-            --brutal-bg: #f4f4f0;
-        }
-
-        .theme-memo {
-            --brutal-color: #ffff00; /* Kuning Terang */
-            --brutal-bg: #f4f4f0;
+            /* iOS Colors */
+            --ios-bg: #F2F2F7;
+            --ios-card: #FFFFFF;
+            --ios-text-main: #000000;
+            --ios-text-secondary: #8E8E93;
+            --ios-divider: #C6C6C8;
+            
+            /* Dynamic App Tint (Default Blue) */
+            --app-tint: #007AFF;
+            --app-tint-bg: rgba(0, 122, 255, 0.1);
         }
 
         body {
-            background-color: var(--brutal-bg);
-            color: #000000;
-            font-family: 'Space Grotesk', monospace, sans-serif;
+            background-color: var(--ios-bg);
+            color: var(--ios-text-main);
+            /* Font sistem iOS */
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             -webkit-tap-highlight-color: transparent;
-            /* Latar belakang kotak-kotak ala desain grid */
-            background-image: linear-gradient(var(--brutal-border) 1px, transparent 1px),
-                              linear-gradient(90deg, var(--brutal-border) 1px, transparent 1px);
-            background-size: 40px 40px;
-            background-color: #e5e5f7;
-            opacity: 0.9;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Elemen Neo Brutalism */
-        .brutal-box {
-            background-color: #ffffff;
-            border: 3px solid var(--brutal-border);
-            box-shadow: var(--brutal-shadow);
-            border-radius: 0;
-            transition: all 0.15s ease-out;
-        }
+        /* Styling Scrollbar Transparan */
+        ::-webkit-scrollbar { width: 0px; height: 0px; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        .brutal-btn {
-            background-color: #ffffff;
-            border: 3px solid var(--brutal-border);
-            box-shadow: var(--brutal-shadow);
-            border-radius: 0;
-            font-weight: 700;
-            text-transform: uppercase;
-            transition: all 0.15s ease-out;
-            cursor: pointer;
-        }
-
-        .brutal-btn:hover {
-            background-color: var(--brutal-color);
-            transform: translate(-2px, -2px);
-            box-shadow: 8px 8px 0px 0px rgba(0,0,0,1);
-        }
-
-        .brutal-btn:active {
-            transform: translate(6px, 6px);
-            box-shadow: none;
-        }
+        /* Animasi Transisi Halus iOS */
+        .ios-transition { transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
         
-        .brutal-btn-icon {
-            background-color: #ffffff;
-            border: 3px solid var(--brutal-border);
-            box-shadow: 4px 4px 0px 0px rgba(0,0,0,1);
-            transition: all 0.15s ease-out;
-        }
-
-        .brutal-btn-icon:hover {
-            background-color: var(--brutal-color);
-            transform: translate(-2px, -2px);
-            box-shadow: 6px 6px 0px 0px rgba(0,0,0,1);
-        }
-
-        .brutal-btn-icon:active {
-            transform: translate(4px, 4px);
-            box-shadow: none;
-        }
-
-        .brutal-input {
-            border: 3px solid var(--brutal-border);
-            border-radius: 0;
-            box-shadow: inset 4px 4px 0px 0px rgba(0,0,0,0.05);
-            background-color: #fdfdfd;
-        }
-        
-        .brutal-input:focus {
-            background-color: #ffffff;
-            box-shadow: inset 4px 4px 0px 0px rgba(0,0,0,0.1), 0 0 0 4px var(--brutal-color);
-            outline: none;
-        }
-
-        /* Animasi Cursor Berkedip */
-        .blinking-cursor { animation: blink 1s step-end infinite; }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-
-        /* Animasi Akordion */
-        .accordion-content, .accordion-toolbar {
+        /* Akordion */
+        .accordion-content {
             display: grid;
             grid-template-rows: 0fr;
             transition: grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .accordion-content.open, .accordion-toolbar.open { grid-template-rows: 1fr; }
-        .accordion-inner, .toolbar-inner { overflow: hidden; }
+        .accordion-content.open { grid-template-rows: 1fr; }
+        .accordion-inner { overflow: hidden; }
 
         .chevron-icon { transition: transform 0.3s ease; }
         .chevron-icon.open { transform: rotate(180deg); }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 12px; }
-        ::-webkit-scrollbar-track { background: #ffffff; border-left: 3px solid #000; }
-        ::-webkit-scrollbar-thumb { background: var(--brutal-color); border-left: 3px solid #000; border-bottom: 3px solid #000; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: thin; }
-        
-        /* Checkbox Khusus Tema */
+        /* Custom Checkbox (Lingkaran ala iOS) */
         input[type="checkbox"].theme-checkbox {
             appearance: none;
-            background-color: #fff;
+            background-color: transparent;
             margin: 0;
-            font: inherit;
-            color: currentColor;
-            width: 1.15em;
-            height: 1.15em;
-            border: 2px solid black;
-            border-radius: 0;
+            width: 22px;
+            height: 22px;
+            border: 1.5px solid var(--ios-text-secondary);
+            border-radius: 50%;
             display: grid;
             place-content: center;
             cursor: pointer;
-            box-shadow: 2px 2px 0px 0px rgba(0,0,0,1);
-            transition: all 0.1s;
-        }
-        
-        input[type="checkbox"].theme-checkbox::before {
-            content: "";
-            width: 0.65em;
-            height: 0.65em;
-            transform: scale(0);
-            transition: 120ms transform ease-in-out;
-            box-shadow: inset 1em 1em var(--brutal-border);
-            background-color: transform;
-            transform-origin: center;
-            clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+            transition: all 0.2s;
+            position: relative;
         }
 
         input[type="checkbox"].theme-checkbox:checked {
-            background-color: var(--brutal-color);
-            box-shadow: 0px 0px 0px 0px rgba(0,0,0,1);
-            transform: translate(2px, 2px);
+            background-color: var(--app-tint);
+            border-color: var(--app-tint);
         }
 
         input[type="checkbox"].theme-checkbox:checked::before {
-            transform: scale(1);
+            content: "";
+            width: 6px;
+            height: 11px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg) translate(-1px, -1px);
         }
-    </style>
 
-    <script>
-        // Konfigurasi Tailwind 
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brutal: {
-                            color: 'var(--brutal-color)',
-                            border: 'var(--brutal-border)',
-                            bg: 'var(--brutal-bg)',
-                        }
-                    },
-                    fontFamily: { sans: ['"Space Grotesk"', 'monospace', 'sans-serif'] }
-                }
-            }
+        /* Komponen iOS */
+        .ios-btn-text {
+            color: var(--app-tint);
+            font-weight: 500;
         }
-    </script>
+        .ios-btn-text:active { opacity: 0.5; }
+        
+        .ios-btn-icon:active { opacity: 0.5; }
+
+        /* Glassmorphism Header */
+        .ios-header {
+            background-color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 0.5px solid rgba(0,0,0,0.15);
+        }
+        
+        /* Alert Dialog Styling */
+        .ios-alert-border-b { border-bottom: 0.5px solid rgba(60,60,67,0.29); }
+        .ios-alert-border-r { border-right: 0.5px solid rgba(60,60,67,0.29); }
+    </style>
 </head>
 
-<body class="flex h-screen w-full font-sans transition-colors duration-500 selection:bg-brutal-color selection:text-black theme-copasional overflow-hidden" id="app-body">
+<body class="flex flex-col h-screen w-full overflow-hidden" id="app-body">
+
+    <!-- Header Navigation Bar -->
+    <header class="ios-header fixed top-0 w-full z-20 h-12 pt-safe flex items-center justify-between px-4">
+        <button onclick="toggleSidebar()" class="w-10 h-10 flex items-center justify-start ios-btn-text text-[24px]">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+        
+        <h1 id="app-title" class="text-[17px] font-semibold tracking-tight absolute left-1/2 transform -translate-x-1/2 pointer-events-none">
+            App Title
+        </h1>
+
+        <button onclick="openModal()" class="w-10 h-10 flex items-center justify-end ios-btn-text text-[24px]">
+            <i class="fa-solid fa-plus"></i>
+        </button>
+    </header>
 
     <!-- Overlay Sidebar -->
-    <div id="sidebar-backdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-30 hidden backdrop-blur-sm transition-opacity duration-300 opacity-0"></div>
+    <div id="sidebar-backdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/40 z-30 hidden transition-opacity duration-300 opacity-0"></div>
 
-    <!-- Sidebar Layout -->
-    <aside id="sidebar" class="fixed top-0 right-0 h-full w-[280px] border-l-4 border-black bg-white flex flex-col transition-transform duration-300 z-40 translate-x-full flex-shrink-0 shadow-[-10px_0px_0px_0px_rgba(0,0,0,1)]">
-        <div class="p-5 border-b-4 border-black flex items-center justify-between bg-brutal-color transition-colors duration-500">
-            <div class="flex items-center cursor-pointer" onclick="toggleSidebar()">
-                <i class="fa-solid fa-layer-group text-black text-2xl mr-3"></i>
-                <span class="font-black text-[18px] text-black tracking-widest uppercase">Modules</span>
+    <!-- Sidebar Layout (Slide dari kiri) -->
+    <aside id="sidebar" class="fixed top-0 left-0 h-full w-[280px] bg-[#F2F2F7] transition-transform duration-300 z-40 -translate-x-full shadow-2xl flex flex-col">
+        <div class="h-12 ios-header flex items-center px-4 pt-safe shrink-0">
+            <h2 class="font-semibold text-[17px]">Modules</h2>
+        </div>
+        
+        <nav class="flex-1 overflow-y-auto hide-scrollbar p-4 space-y-6">
+            <!-- App Navigation Group -->
+            <div>
+                <div class="bg-white rounded-xl overflow-hidden shadow-sm">
+                    <button id="nav-copasional" onclick="switchApp('copasional')" class="nav-btn w-full flex items-center p-3 border-b-[0.5px] border-gray-200 active:bg-gray-100">
+                        <div class="w-7 h-7 rounded-md bg-[#34C759] text-white flex items-center justify-center mr-3"><i class="fa-solid fa-clipboard text-sm"></i></div>
+                        <span class="flex-1 text-left text-[16px]">Copasional</span>
+                    </button>
+                    <button id="nav-kinerja" onclick="switchApp('kinerja')" class="nav-btn w-full flex items-center p-3 border-b-[0.5px] border-gray-200 active:bg-gray-100">
+                        <div class="w-7 h-7 rounded-md bg-[#007AFF] text-white flex items-center justify-center mr-3"><i class="fa-solid fa-chart-line text-sm"></i></div>
+                        <span class="flex-1 text-left text-[16px]">Kinerja Harian</span>
+                    </button>
+                    <button id="nav-error" onclick="switchApp('error')" class="nav-btn w-full flex items-center p-3 border-b-[0.5px] border-gray-200 active:bg-gray-100">
+                        <div class="w-7 h-7 rounded-md bg-[#FF3B30] text-white flex items-center justify-center mr-3"><i class="fa-solid fa-bug text-sm"></i></div>
+                        <span class="flex-1 text-left text-[16px]">Error Book</span>
+                    </button>
+                    <button id="nav-myprompt" onclick="switchApp('myprompt')" class="nav-btn w-full flex items-center p-3 border-b-[0.5px] border-gray-200 active:bg-gray-100">
+                        <div class="w-7 h-7 rounded-md bg-[#FF9500] text-white flex items-center justify-center mr-3"><i class="fa-solid fa-keyboard text-sm"></i></div>
+                        <span class="flex-1 text-left text-[16px]">My Prompt</span>
+                    </button>
+                    <button id="nav-myinstruction" onclick="switchApp('myinstruction')" class="nav-btn w-full flex items-center p-3 border-b-[0.5px] border-gray-200 active:bg-gray-100">
+                        <div class="w-7 h-7 rounded-md bg-[#5856D6] text-white flex items-center justify-center mr-3"><i class="fa-solid fa-code text-sm"></i></div>
+                        <span class="flex-1 text-left text-[16px]">Instruction</span>
+                    </button>
+                    <button id="nav-mylink" onclick="switchApp('mylink')" class="nav-btn w-full flex items-center p-3 border-b-[0.5px] border-gray-200 active:bg-gray-100">
+                        <div class="w-7 h-7 rounded-md bg-[#AF52DE] text-white flex items-center justify-center mr-3"><i class="fa-solid fa-link text-sm"></i></div>
+                        <span class="flex-1 text-left text-[16px]">My Link</span>
+                    </button>
+                    <button id="nav-memo" onclick="switchApp('memo')" class="nav-btn w-full flex items-center p-3 active:bg-gray-100">
+                        <div class="w-7 h-7 rounded-md bg-[#FFCC00] text-white flex items-center justify-center mr-3"><i class="fa-solid fa-list-check text-sm"></i></div>
+                        <span class="flex-1 text-left text-[16px]">Memo Tasks</span>
+                    </button>
+                </div>
             </div>
-            <button onclick="toggleSidebar()" class="brutal-btn-icon text-black w-8 h-8 flex items-center justify-center">
-                <i class="fa-solid fa-xmark font-bold"></i>
-            </button>
-        </div>
-        
-        <nav class="flex-1 flex flex-col pt-4 space-y-3 px-4 overflow-y-auto pb-4 bg-white">
-            <button id="nav-copasional" onclick="switchApp('copasional')" class="nav-btn brutal-btn flex items-center py-3 px-4 text-black w-full text-left">
-                <i class="fa-solid fa-clipboard text-xl w-6 text-center"></i>
-                <span class="ml-3 font-bold tracking-wide text-[14px]">COPASIONAL</span>
-            </button>
-            <button id="nav-kinerja" onclick="switchApp('kinerja')" class="nav-btn brutal-btn flex items-center py-3 px-4 text-black w-full text-left">
-                <i class="fa-solid fa-chart-line text-xl w-6 text-center"></i>
-                <span class="ml-3 font-bold tracking-wide text-[14px]">KINERJA HARIAN</span>
-            </button>
-            <button id="nav-error" onclick="switchApp('error')" class="nav-btn brutal-btn flex items-center py-3 px-4 text-black w-full text-left">
-                <i class="fa-solid fa-bug text-xl w-6 text-center"></i>
-                <span class="ml-3 font-bold tracking-wide text-[14px]">ERROR BOOK</span>
-            </button>
-            <button id="nav-myprompt" onclick="switchApp('myprompt')" class="nav-btn brutal-btn flex items-center py-3 px-4 text-black w-full text-left">
-                <i class="fa-solid fa-keyboard text-xl w-6 text-center"></i>
-                <span class="ml-3 font-bold tracking-wide text-[14px]">MY PROMPT</span>
-            </button>
-            <button id="nav-myinstruction" onclick="switchApp('myinstruction')" class="nav-btn brutal-btn flex items-center py-3 px-4 text-black w-full text-left">
-                <i class="fa-solid fa-code text-xl w-6 text-center"></i>
-                <span class="ml-3 font-bold tracking-wide text-[14px]">INSTRUCTION</span>
-            </button>
-            <button id="nav-mylink" onclick="switchApp('mylink')" class="nav-btn brutal-btn flex items-center py-3 px-4 text-black w-full text-left">
-                <i class="fa-solid fa-link text-xl w-6 text-center"></i>
-                <span class="ml-3 font-bold tracking-wide text-[14px]">MY LINK</span>
-            </button>
-            <button id="nav-memo" onclick="switchApp('memo')" class="nav-btn brutal-btn flex items-center py-3 px-4 text-black w-full text-left">
-                <i class="fa-solid fa-list-check text-xl w-6 text-center"></i>
-                <span class="ml-3 font-bold tracking-wide text-[14px]">MEMO TASKS</span>
-            </button>
-        </nav>
 
-        <div class="p-4 border-t-4 border-black bg-gray-100 flex flex-col gap-3">
-            <button onclick="exportData()" class="brutal-btn w-full py-2.5 text-[12px] md:text-[13px] flex items-center justify-center bg-white hover:bg-[#39ff14]">
-                <i class="fa-solid fa-file-export mr-2"></i> EXPORT BACKUP
-            </button>
-            <button onclick="document.getElementById('import-file').click()" class="brutal-btn w-full py-2.5 text-[12px] md:text-[13px] flex items-center justify-center bg-white hover:bg-[#39ff14]">
-                <i class="fa-solid fa-file-import mr-2"></i> IMPORT BACKUP
-            </button>
-            <input type="file" id="import-file" accept=".json" class="hidden" onchange="importData(event)">
-        </div>
-        
-        <div class="p-4 border-t-4 border-black flex items-center justify-start bg-white">
-            <div class="w-4 h-4 rounded-none bg-brutal-color border-2 border-black animate-pulse mr-3 transition-colors duration-500"></div>
-            <span class="text-[13px] text-black font-bold uppercase tracking-widest">SYSTEM_ONLINE</span>
-        </div>
+            <!-- Settings Group -->
+            <div>
+                <h3 class="text-[13px] uppercase text-gray-500 font-medium ml-4 mb-1">Backup & Restore</h3>
+                <div class="bg-white rounded-xl overflow-hidden shadow-sm">
+                    <button onclick="exportData()" class="w-full flex items-center p-3 border-b-[0.5px] border-gray-200 active:bg-gray-100">
+                        <i class="fa-solid fa-cloud-arrow-down text-[20px] text-[#007AFF] w-7 text-center mr-2"></i>
+                        <span class="text-left text-[16px] text-[#007AFF]">Export Data</span>
+                    </button>
+                    <button onclick="document.getElementById('import-file').click()" class="w-full flex items-center p-3 active:bg-gray-100">
+                        <i class="fa-solid fa-cloud-arrow-up text-[20px] text-[#007AFF] w-7 text-center mr-2"></i>
+                        <span class="text-left text-[16px] text-[#007AFF]">Import Data</span>
+                    </button>
+                    <input type="file" id="import-file" accept=".json" class="hidden" onchange="importData(event)">
+                </div>
+            </div>
+        </nav>
     </aside>
 
-    <!-- Wrapper Utama -->
-    <div class="flex-1 relative flex flex-col min-w-0 h-full">
+    <!-- Area Utama / List Konten -->
+    <main class="flex-1 overflow-y-auto hide-scrollbar pt-[60px] pb-10 px-4" id="main-scroll-area">
+        <div id="notes-container" class="w-full max-w-5xl mx-auto space-y-4">
+            <!-- Kartu catatan via JS -->
+        </div>
+    </main>
+
+    <!-- Modal Form (Bottom Sheet ala iOS) -->
+    <div id="modal-overlay" class="fixed inset-0 bg-black/40 z-30 hidden opacity-0 transition-opacity duration-300" onclick="closeModal()"></div>
+    
+    <div id="modal" class="fixed inset-x-0 bottom-0 z-40 bg-white rounded-t-2xl transform translate-y-full transition-transform duration-300 h-[85vh] md:h-[70vh] flex flex-col w-full md:max-w-2xl md:mx-auto shadow-2xl">
         
-        <header class="bg-white shrink-0 z-10 border-b-4 border-black px-4 h-[70px] md:h-[80px] flex items-center justify-between shadow-[0_8px_0px_0px_rgba(0,0,0,1)] relative">
-            <button onclick="openModal()" class="brutal-btn-icon text-black w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-xl z-20">
-                <i class="fa-solid fa-plus"></i>
+        <!-- Handle & Header Modal -->
+        <div class="flex flex-col items-center justify-center pt-2 pb-2 ios-alert-border-b bg-gray-50 rounded-t-2xl shrink-0">
+            <div class="w-10 h-1.5 bg-gray-300 rounded-full mb-2 mt-1"></div>
+            <div class="flex justify-between items-center w-full px-4">
+                <button onclick="closeModal()" class="ios-btn-text text-[16px]">Cancel</button>
+                <h2 class="font-semibold text-[17px]" id="modal-title">New Note</h2>
+                <button onclick="saveNote()" class="ios-btn-text text-[16px] font-semibold">Save</button>
+            </div>
+        </div>
+        
+        <!-- Area Input -->
+        <div class="p-4 flex-1 flex flex-col overflow-y-auto hide-scrollbar bg-white relative">
+            <button id="btn-insert-checkbox" onclick="insertCheckbox()" class="hidden absolute right-4 top-4 bg-gray-100 text-gray-700 px-3 py-1.5 rounded-full text-[13px] font-medium active:bg-gray-200">
+                <i class="fa-solid fa-check-square mr-1"></i> Add Task
             </button>
             
-            <!-- Judul Aplikasi Brutal -->
-            <div class="absolute left-1/2 transform -translate-x-1/2 bg-brutal-color border-4 border-black px-4 py-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-colors duration-500 transform -rotate-1 hover:rotate-1">
-                <h1 id="app-title" class="text-[15px] md:text-[20px] font-black text-black tracking-widest uppercase m-0">
-                    INITIALIZING...<span class="blinking-cursor">_</span>
-                </h1>
-            </div>
-
-            <button onclick="toggleSidebar()" class="brutal-btn-icon text-black w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-xl z-20">
-                <i class="fa-solid fa-bars"></i>
-            </button>
-        </header>
-
-        <!-- Pop Up / Floating Notification -->
-        <div id="toast" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white border-4 border-black text-black px-8 py-6 rounded-none z-[70] transition-all duration-300 scale-75 opacity-0 pointer-events-none shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] flex flex-col items-center justify-center text-center">
-            <div class="bg-brutal-color w-16 h-16 border-4 border-black flex items-center justify-center mb-4 transform rotate-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                <i class="fa-solid fa-check text-black text-3xl"></i>
-            </div>
-            <span id="toast-msg" class="font-black text-[18px] md:text-[22px] tracking-widest uppercase">PESAN</span>
+            <input type="hidden" id="note-id">
+            <input type="text" id="note-title" placeholder="Title" class="w-full text-[22px] font-semibold focus:outline-none text-black placeholder-gray-400 py-2 border-b-[0.5px] border-gray-200 mb-2">
+            <textarea id="note-content" placeholder="Content..." class="w-full flex-1 text-[16px] focus:outline-none text-black placeholder-gray-400 resize-none leading-relaxed mt-2 font-normal"></textarea>
         </div>
+    </div>
 
-        <!-- Area Utama -->
-        <main class="flex-1 p-4 md:p-8 overflow-y-auto hide-scrollbar pb-24 md:pb-10" id="main-scroll-area">
-            <div id="notes-container" class="w-full">
-                <!-- Kartu catatan via JS -->
+    <!-- Alert Konfirmasi Hapus (iOS Style) -->
+    <div id="alert-overlay" class="fixed inset-0 bg-black/40 z-50 hidden items-center justify-center opacity-0 transition-opacity duration-300 backdrop-blur-[2px]">
+        <div id="alert-box" class="bg-white/90 backdrop-blur-xl w-[270px] rounded-2xl overflow-hidden transform scale-100 transition-transform duration-300 text-center">
+            <div class="pt-5 pb-4 px-4 ios-alert-border-b">
+                <h3 class="font-semibold text-[17px] text-black">Delete Note?</h3>
+                <p class="text-[13px] text-black mt-1">This action cannot be undone.</p>
             </div>
-        </main>
-
-        <!-- Modal Tambah/Edit -->
-        <div id="modal-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 hidden opacity-0 transition-opacity duration-300" onclick="closeModal()"></div>
-        
-        <div id="modal" class="fixed inset-x-4 md:inset-x-auto md:left-1/2 md:-translate-x-1/2 bottom-4 md:bottom-10 z-40 bg-white border-4 border-black transform translate-y-[150%] transition-transform duration-300 h-[80vh] md:h-[75vh] flex flex-col w-auto md:w-full md:max-w-4xl mx-auto brutal-box">
-            <div class="bg-brutal-color flex justify-between items-center p-4 border-b-4 border-black shrink-0 transition-colors duration-500">
-                <button onclick="closeModal()" class="brutal-btn-icon w-8 h-8 flex items-center justify-center">
-                    <i class="fa-solid fa-arrow-down"></i>
-                </button>
-                <div class="flex items-center space-x-3">
-                    <button id="btn-insert-checkbox" onclick="insertCheckbox()" class="hidden brutal-btn px-3 py-1 text-xs">
-                        + CHECKBOX
-                    </button>
-                    <h2 class="font-black text-[18px] md:text-[20px] text-black tracking-wider uppercase bg-white border-2 border-black px-2 py-1 transform -rotate-1" id="modal-title">NEW ENTRY</h2>
-                </div>
-                <button onclick="saveNote()" class="brutal-btn px-4 py-2 font-black text-[14px] md:text-[16px] flex items-center bg-white hover:bg-black hover:text-white">
-                    SAVE <i class="fa-solid fa-bolt ml-2"></i>
-                </button>
-            </div>
-            
-            <div class="p-4 md:p-6 flex-1 flex flex-col overflow-y-auto hide-scrollbar bg-[#fdfdfd]">
-                <input type="hidden" id="note-id">
-                <input type="text" id="note-title" placeholder="JUDUL FILE..." class="w-full brutal-input p-4 mb-5 text-[18px] md:text-[22px] font-black focus:outline-none text-black placeholder-gray-500 transition-all uppercase">
-                <textarea id="note-content" placeholder="> Ketik data di sini..." class="w-full flex-1 min-h-[200px] brutal-input p-4 text-[15px] md:text-[17px] focus:outline-none text-black placeholder-gray-500 resize-none leading-relaxed transition-all font-mono"></textarea>
+            <div class="flex h-11">
+                <button onclick="closeDeleteAlert()" class="flex-1 text-[#007AFF] text-[17px] ios-alert-border-r active:bg-gray-200/50">Cancel</button>
+                <button onclick="confirmDelete()" class="flex-1 text-[#FF3B30] font-semibold text-[17px] active:bg-gray-200/50">Delete</button>
             </div>
         </div>
+    </div>
 
-        <!-- Alert Konfirmasi Hapus -->
-        <div id="alert-overlay" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center opacity-0 transition-opacity duration-300 backdrop-blur-sm">
-            <div id="alert-box" class="bg-white border-4 border-black w-[300px] md:w-[350px] text-center overflow-hidden transform scale-95 transition-transform duration-300 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] rounded-none">
-                <div class="p-6 md:p-8 border-b-4 border-black bg-[#ff3366]">
-                    <div class="w-16 h-16 bg-white border-4 border-black mx-auto flex items-center justify-center mb-4 transform rotate-12 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                        <i class="fa-solid fa-triangle-exclamation text-black text-3xl"></i>
-                    </div>
-                    <h3 class="font-black text-[20px] md:text-[22px] text-white tracking-wider uppercase" style="text-shadow: 2px 2px 0 #000;">WARNING!</h3>
-                    <p class="text-[14px] text-white mt-2 font-bold bg-black inline-block px-2 py-1">DATA AKAN DIHAPUS PERMANEN</p>
+    <!-- Modal Transfer (iOS Action Sheet) -->
+    <div id="transfer-overlay" class="fixed inset-0 bg-black/40 z-50 hidden flex-col justify-end p-2 opacity-0 transition-opacity duration-300 backdrop-blur-[2px]">
+        <div id="transfer-box" class="w-full max-w-sm mx-auto transform translate-y-full transition-transform duration-300 mb-safe">
+            <div class="bg-white/90 backdrop-blur-xl rounded-xl overflow-hidden mb-2">
+                <div class="py-3 px-4 text-center ios-alert-border-b">
+                    <span class="text-[13px] text-gray-500 font-semibold">Move Note To...</span>
                 </div>
-                <div class="flex p-4 gap-4 bg-gray-100">
-                    <button onclick="closeDeleteAlert()" class="flex-1 brutal-btn p-3 text-black text-[14px]">BATAL</button>
-                    <button onclick="confirmDelete()" id="btn-confirm-delete" class="flex-1 brutal-btn p-3 bg-[#ff3366] text-white hover:bg-black hover:text-white">HAPUS</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modal Transfer / Pindah Jendela -->
-        <div id="transfer-overlay" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center opacity-0 transition-opacity duration-300 backdrop-blur-sm">
-            <div id="transfer-box" class="bg-white border-4 border-black w-[300px] md:w-[380px] overflow-hidden transform scale-95 transition-transform duration-300 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] rounded-none">
-                <div class="p-5 border-b-4 border-black bg-brutal-color flex justify-between items-center transition-colors duration-500">
-                    <h3 class="font-black text-[16px] md:text-[18px] text-black tracking-wider uppercase"><i class="fa-solid fa-arrow-right-arrow-left mr-2"></i> TRANSFER DATA</h3>
-                    <button onclick="closeTransferModal()" class="brutal-btn-icon w-8 h-8 flex items-center justify-center bg-white text-black"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-                <div id="transfer-options" class="flex flex-col p-4 gap-3 max-h-[50vh] overflow-y-auto hide-scrollbar bg-gray-50">
+                <div id="transfer-options" class="flex flex-col max-h-[50vh] overflow-y-auto hide-scrollbar">
                     <!-- Opsi Jendela Sidebar diinject via JS -->
                 </div>
             </div>
+            <button onclick="closeTransferModal()" class="w-full bg-white rounded-xl py-3.5 text-[#007AFF] font-semibold text-[20px] active:bg-gray-100">
+                Cancel
+            </button>
         </div>
+    </div>
 
+    <!-- Modal Note Actions (iOS Action Sheet) -->
+    <div id="actions-overlay" class="fixed inset-0 bg-black/40 z-50 hidden flex-col justify-end p-2 opacity-0 transition-opacity duration-300 backdrop-blur-[2px]">
+        <div id="actions-box" class="w-full max-w-sm mx-auto transform translate-y-full transition-transform duration-300 mb-safe">
+            <div class="bg-white/90 backdrop-blur-xl rounded-xl overflow-hidden mb-2">
+                <div class="py-3 px-4 text-center ios-alert-border-b">
+                    <span class="text-[13px] text-gray-500 font-semibold" id="actions-title">Note Actions</span>
+                </div>
+                <div id="actions-options" class="flex flex-col">
+                    <!-- Opsi tombol fungsi diinject via JS -->
+                </div>
+            </div>
+            <button onclick="closeActionsModal()" class="w-full bg-white rounded-xl py-3.5 text-[#007AFF] font-semibold text-[20px] active:bg-gray-100">
+                Cancel
+            </button>
+        </div>
+    </div>
+
+    <!-- Custom Notification/HUD -->
+    <div id="toast" class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-gray-800/90 backdrop-blur-md text-white px-5 py-2.5 rounded-full z-[70] transition-all duration-300 -translate-y-4 opacity-0 pointer-events-none shadow-lg flex items-center shadow-[0_4px_12px_rgba(0,0,0,0.15)]">
+        <i class="fa-solid fa-check-circle mr-2 text-[18px]"></i>
+        <span id="toast-msg" class="font-medium text-[15px]">Message</span>
     </div>
 
     <script>
-        // --- KONFIGURASI MULTI-APP ---
+        // --- KONFIGURASI MULTI-APP DENGAN TEMA iOS ---
         const appsConfig = {
             copasional: {
-                id: 'copasional', title: "COPASIONAL", themeClass: "theme-copasional",
+                id: 'copasional', title: "Copasional", tintColor: "#34C759", // Green
                 storageKey: "terminal_notes_copasional",
-                inputPlaceholder: "> Paste teks untuk disalin di sini...", titlePlaceholder: "Judul_Copas..."
+                inputPlaceholder: "Paste text to copy...", titlePlaceholder: "Title"
             },
             kinerja: {
-                id: 'kinerja', title: "LAPORAN_KINERJA_HARIAN", themeClass: "theme-kinerja",
+                id: 'kinerja', title: "Kinerja Harian", tintColor: "#007AFF", // Blue
                 storageKey: "copasional_notes_html", 
-                inputPlaceholder: "> Masukkan detail laporan kinerja harian di sini...", titlePlaceholder: "Judul_Laporan..."
+                inputPlaceholder: "Daily performance details...", titlePlaceholder: "Report Title"
             },
             error: {
-                id: 'error', title: "ERROR_BOOK", themeClass: "theme-error",
+                id: 'error', title: "Error Book", tintColor: "#FF3B30", // Red
                 storageKey: "terminal_notes_error",
-                inputPlaceholder: "> Masukkan log error sistem di sini...", titlePlaceholder: "Judul_Error..."
+                inputPlaceholder: "System error logs...", titlePlaceholder: "Error Title"
             },
             myprompt: {
-                id: 'myprompt', title: "MY_PROMPT", themeClass: "theme-myprompt",
+                id: 'myprompt', title: "My Prompt", tintColor: "#FF9500", // Orange
                 storageKey: "terminal_notes_myprompt",
-                inputPlaceholder: "> Masukkan prompt atau instruksi AI di sini...", titlePlaceholder: "Judul_Prompt..."
+                inputPlaceholder: "AI instructions or prompts...", titlePlaceholder: "Prompt Title"
             },
             myinstruction: {
-                id: 'myinstruction', title: "MY_INSTRUCTION", themeClass: "theme-myinstruction",
+                id: 'myinstruction', title: "Instruction", tintColor: "#5856D6", // Indigo
                 storageKey: "terminal_notes_myinstruction",
-                inputPlaceholder: "> Masukkan instruksi sistem atau panduan di sini...", titlePlaceholder: "Judul_Instruction..."
+                inputPlaceholder: "System instructions...", titlePlaceholder: "Instruction Title"
             },
-            mylink: { // APP BARU
-                id: 'mylink', title: "MY_LINK", themeClass: "theme-mylink",
+            mylink: {
+                id: 'mylink', title: "My Link", tintColor: "#AF52DE", // Purple
                 storageKey: "terminal_notes_mylink",
-                inputPlaceholder: "> Masukkan tautan URL dan deskripsinya di sini...", titlePlaceholder: "Judul_Link..."
+                inputPlaceholder: "URL links...", titlePlaceholder: "Link Title"
             },
-            memo: { // APP BARU
-                id: 'memo', title: "MEMO_TASKS", themeClass: "theme-memo",
+            memo: {
+                id: 'memo', title: "Memo Tasks", tintColor: "#FFCC00", // Yellow
                 storageKey: "terminal_notes_memo",
-                inputPlaceholder: "> Ketik catatan atau tekan tombol [+ Checkbox] untuk To-Do...", titlePlaceholder: "Judul_Memo_Task..."
+                inputPlaceholder: "Notes or tasks...", titlePlaceholder: "Memo Title"
             }
         };
 
-        // State Global
         let currentApp = 'copasional';
         let notes = [];
         let noteToDelete = null;
         let noteToTransfer = null;
-        let openAccordions = new Set(); // Menyimpan state akordion yang terbuka
+        let activeNoteId = null; // Menyimpan ID note yang sedang dibuka aksinya
+        let openAccordions = new Set();
 
         // --- SISTEM SIDEBAR ---
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const backdrop = document.getElementById('sidebar-backdrop');
             
-            if (sidebar.classList.contains('translate-x-full')) {
-                sidebar.classList.remove('translate-x-full');
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
                 backdrop.classList.remove('hidden');
                 setTimeout(() => backdrop.classList.remove('opacity-0'), 10);
             } else {
-                sidebar.classList.add('translate-x-full');
+                sidebar.classList.add('-translate-x-full');
                 backdrop.classList.add('opacity-0');
                 setTimeout(() => backdrop.classList.add('hidden'), 300);
             }
@@ -444,16 +341,15 @@
             currentApp = appId;
             const config = appsConfig[appId];
 
-            const body = document.getElementById('app-body');
-            body.className = `bg-terminal-bg flex h-screen w-full font-sans transition-colors duration-500 selection:bg-terminal-neon selection:text-black overflow-hidden ${config.themeClass}`;
-
-            document.getElementById('app-title').innerHTML = `&gt; ${config.title}<span class="blinking-cursor">_</span>`;
+            // Set iOS Dynamic Tint Color
+            document.documentElement.style.setProperty('--app-tint', config.tintColor);
+            
+            document.getElementById('app-title').innerText = config.title;
             document.title = config.title;
 
             document.getElementById('note-title').placeholder = config.titlePlaceholder;
             document.getElementById('note-content').placeholder = config.inputPlaceholder;
 
-            // Tampilkan tombol checkbox khusus di Memo
             const btnInsert = document.getElementById('btn-insert-checkbox');
             if (currentApp === 'memo') {
                 btnInsert.classList.remove('hidden');
@@ -464,23 +360,20 @@
             }
 
             updateSidebarUI();
-            openAccordions.clear(); // Reset state terbuka
+            openAccordions.clear();
             loadNotes();
             
             const sidebar = document.getElementById('sidebar');
-            if (!sidebar.classList.contains('translate-x-full')) toggleSidebar();
+            if (!sidebar.classList.contains('-translate-x-full')) toggleSidebar();
         }
 
         function updateSidebarUI() {
             document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('bg-brutal-color', 'shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]', 'translate-x-[-2px]', 'translate-y-[-2px]');
-                btn.style.backgroundColor = '#ffffff';
+                btn.classList.remove('bg-gray-100');
             });
-            
             const activeBtn = document.getElementById(`nav-${currentApp}`);
             if (activeBtn) {
-                activeBtn.classList.add('shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]', 'translate-x-[-2px]', 'translate-y-[-2px]');
-                activeBtn.style.backgroundColor = 'var(--brutal-color)';
+                activeBtn.classList.add('bg-gray-100');
             }
         }
 
@@ -503,8 +396,7 @@
         // --- HELPERS ---
         function formatDateTime(timestamp) {
             const date = new Date(timestamp);
-            const options = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' };
-            return date.toLocaleDateString('id-ID', options).replace(/\./g, ':');
+            return date.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
         }
 
         function escapeHTML(str) {
@@ -514,7 +406,6 @@
             }[tag] || tag));
         }
 
-        // Fungsi khusus menyisipkan checkbox ke text area (MEMO)
         function insertCheckbox() {
             const textarea = document.getElementById('note-content');
             const start = textarea.selectionStart;
@@ -529,7 +420,6 @@
             textarea.selectionStart = textarea.selectionEnd = start + newline.length + 6;
         }
 
-        // Fitur interaktif centang checkbox langsung dari kartu (MEMO)
         window.toggleTask = function(noteId, taskIndex, isCurrentlyChecked) {
             const note = notes.find(n => n.id === noteId);
             if (!note) return;
@@ -551,53 +441,48 @@
                 }
             }
             note.content = lines.join('\n');
-            note.updatedAt = Date.now(); // Perbarui waktu edit saat menekan checkbox
-            saveToLocal(); // Auto render
+            note.updatedAt = Date.now();
+            saveToLocal();
         };
 
-        // --- RENDER LOGIC UTAMA ---
+        // --- RENDER LOGIC ---
         function renderNotes() {
             const container = document.getElementById('notes-container');
             container.innerHTML = '';
 
             if (notes.length === 0) {
-                container.className = 'w-full h-full flex flex-col items-center justify-center pt-20';
+                container.className = 'w-full h-full flex flex-col items-center justify-center pt-32 pb-10';
                 container.innerHTML = `
-                    <div class="flex flex-col items-center justify-center text-black">
-                        <div class="w-24 h-24 bg-white border-4 border-black flex items-center justify-center transform -rotate-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mb-6">
-                            <i class="fa-solid fa-database text-5xl text-black"></i>
-                        </div>
-                        <p class="font-black text-[20px] md:text-[24px] text-black tracking-widest bg-brutal-color px-4 py-1 border-2 border-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">[ KOSONG ]</p>
-                        <p class="text-[14px] md:text-[16px] mt-4 font-bold text-black bg-white px-3 py-1 border-2 border-black">Klik tombol [+] untuk menambah data.</p>
+                    <div class="flex flex-col items-center justify-center text-gray-400">
+                        <i class="fa-regular fa-folder-open text-6xl mb-4 text-gray-300"></i>
+                        <p class="text-[17px] font-medium text-gray-500">No Notes</p>
+                        <p class="text-[14px] mt-1">Tap the + button to add one.</p>
                     </div>
                 `;
                 return;
             }
 
-            // Menggunakan Columns (Masonry) untuk mencegah bentrok/overlap antar baris
-            container.className = 'columns-1 md:columns-2 xl:columns-3 gap-6 md:gap-8 w-full';
+            container.className = 'columns-1 md:columns-2 xl:columns-3 gap-4 w-full max-w-7xl mx-auto';
 
             notes.sort((a, b) => b.timestamp - a.timestamp).forEach(note => {
                 const card = document.createElement('div');
-                // Neo Brutalism styling untuk kartu
-                card.className = 'brutal-box overflow-hidden mb-6 md:mb-8 inline-block w-full';
+                // Kartu ala iOS Inset Grouped
+                card.className = 'bg-white rounded-xl shadow-sm overflow-hidden mb-4 inline-block w-full border border-gray-100';
                 
-                let displayTitle = 'UNNAMED_RECORD';
+                let displayTitle = 'New Note';
                 if (note.title) {
                     displayTitle = escapeHTML(note.title);
                 } else if (note.content) {
                     const words = note.content.trim().split(/\s+/);
-                    displayTitle = escapeHTML(words.slice(0, 2).join('_'));
-                    if (words.length > 2) displayTitle += '...';
+                    displayTitle = escapeHTML(words.slice(0, 3).join(' '));
+                    if (words.length > 3) displayTitle += '...';
                 }
 
-                // Setup format waktu (waktu buat dan waktu edit)
-                let timeDisplay = `BUAT: ${formatDateTime(note.timestamp)}`;
+                let timeDisplay = formatDateTime(note.timestamp);
                 if (note.updatedAt && note.updatedAt !== note.timestamp) {
-                    timeDisplay += ` | EDIT: ${formatDateTime(note.updatedAt)}`;
+                    timeDisplay = `Edited ${formatDateTime(note.updatedAt)}`;
                 }
 
-                // Parser Konten (Khusus untuk Memo agar bisa parse To-Do)
                 let renderedContentHTML = '';
                 if (currentApp === 'memo') {
                     const lines = note.content.split('\n');
@@ -607,87 +492,51 @@
                             const isChecked = !!line.trim().match(/^- \[[xX]\]/i);
                             const text = escapeHTML(line.replace(/^- \[[ xX]\]\s*/i, ''));
                             const checkState = isChecked ? 'checked' : '';
-                            const textClass = isChecked ? 'line-through text-gray-500' : 'text-black font-medium';
+                            const textClass = isChecked ? 'line-through text-gray-400' : 'text-black';
                             return `
-                                <div class="flex items-start my-2 group/task" onclick="event.stopPropagation()">
-                                    <input type="checkbox" ${checkState} class="theme-checkbox mt-[2px] mr-3 cursor-pointer" onchange="toggleTask(${note.id}, ${taskIdx++}, ${isChecked})">
-                                    <span class="${textClass} transition-all leading-snug">${text || '&nbsp;'}</span>
+                                <div class="flex items-start my-2.5" onclick="event.stopPropagation()">
+                                    <input type="checkbox" ${checkState} class="theme-checkbox mt-[2px] mr-3 shrink-0" onchange="toggleTask(${note.id}, ${taskIdx++}, ${isChecked})">
+                                    <span class="${textClass} text-[15px] transition-colors leading-snug">${text || '&nbsp;'}</span>
                                 </div>`;
                         } else {
-                            return `<div class="min-h-[1.5em] text-black whitespace-pre-wrap font-bold">${escapeHTML(line)}</div>`;
+                            return `<div class="min-h-[1.5em] text-[15px] text-gray-800 whitespace-pre-wrap leading-relaxed">${escapeHTML(line)}</div>`;
                         }
                     }).join('');
                 } else if (currentApp === 'mylink') {
                     const escapedContent = escapeHTML(note.content);
-                    const linkedContent = escapedContent.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" onclick="event.stopPropagation()" class="underline font-black bg-brutal-color px-1 border-b-2 border-black hover:bg-black hover:text-white transition-colors text-black">$1</a>');
-                    renderedContentHTML = `<div class="whitespace-pre-wrap text-black font-medium">${linkedContent}</div>`;
+                    const linkedContent = escapedContent.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" onclick="event.stopPropagation()" class="text-[#007AFF] underline underline-offset-2">$1</a>');
+                    renderedContentHTML = `<div class="whitespace-pre-wrap text-[15px] text-gray-800 leading-relaxed">${linkedContent}</div>`;
                 } else {
-                    renderedContentHTML = `<div class="whitespace-pre-wrap text-black font-medium">${escapeHTML(note.content)}</div>`;
+                    renderedContentHTML = `<div class="whitespace-pre-wrap text-[15px] text-gray-800 leading-relaxed">${escapeHTML(note.content)}</div>`;
                 }
 
-                const visitButton = currentApp === 'mylink' ? `
-                    <button onclick="visitSite(${note.id}); event.stopPropagation();" class="brutal-btn-icon w-8 h-8 flex items-center justify-center text-black bg-white hover:bg-brutal-color" title="Visit">
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                    </button>
-                ` : '';
-
                 card.innerHTML = `
-                    <div class="accordion-toolbar border-b-4 border-black" id="toolbar-${note.id}">
-                        <div class="toolbar-inner">
-                            <div class="bg-gray-100 px-4 py-3 flex justify-between items-center transition-colors overflow-x-auto hide-scrollbar">
-                                <div class="flex space-x-3 pr-4 min-w-max">
-                                    <button onclick="copyNote(${note.id})" class="brutal-btn px-3 py-1 text-[12px] flex items-center bg-white hover:bg-brutal-color">
-                                        <i class="fa-regular fa-copy mr-2"></i> COPY
-                                    </button>
-                                    <button onclick="downloadNote(${note.id})" class="brutal-btn px-3 py-1 text-[12px] flex items-center bg-white hover:bg-brutal-color">
-                                        <i class="fa-solid fa-download mr-2"></i> DOWN
-                                    </button>
-                                    <button onclick="openTransferModal(${note.id})" class="brutal-btn px-3 py-1 text-[12px] flex items-center bg-white hover:bg-brutal-color">
-                                        <i class="fa-solid fa-right-left mr-2"></i> MOVE
-                                    </button>
-                                    ${visitButton}
-                                </div>
-                                <div class="flex space-x-3 min-w-max">
-                                    <button onclick="openModal(${note.id})" class="brutal-btn-icon w-8 h-8 flex items-center justify-center bg-white text-black hover:bg-brutal-color" title="Edit">
-                                        <i class="fa-solid fa-pen"></i>
-                                    </button>
-                                    <button onclick="openDeleteAlert(${note.id})" class="brutal-btn-icon w-8 h-8 flex items-center justify-center bg-white text-black hover:bg-[#ff3366]" title="Delete">
-                                        <i class="fa-solid fa-trash"></i>
-                                    </button>
-                                </div>
-                            </div>
+                    <!-- Judul, Tombol Aksi, dan Waktu -->
+                    <div class="px-4 py-3.5 flex justify-between items-center cursor-pointer active:bg-gray-50 transition-colors" onclick="toggleAccordion(${note.id})">
+                        <div class="flex-1 pr-3 overflow-hidden">
+                            <h3 class="font-semibold text-[17px] text-black truncate">${displayTitle}</h3>
+                            <p class="text-[13px] text-gray-500 mt-0.5">${timeDisplay}</p>
                         </div>
-                    </div>
-
-                    <div class="px-4 py-4 md:px-5 md:py-5 flex justify-between items-center cursor-pointer bg-white hover:bg-gray-50 transition-colors" onclick="toggleAccordion(${note.id})">
-                        <div class="flex-1 pr-4 overflow-hidden">
-                            <h3 class="font-black text-[16px] md:text-[20px] text-black truncate uppercase tracking-tight">${displayTitle}</h3>
-                            <div class="inline-block bg-black text-white px-2 py-0.5 mt-2">
-                                <p class="text-[10px] md:text-[11px] font-bold tracking-widest">${timeDisplay}</p>
-                            </div>
-                        </div>
-                        <div class="w-8 h-8 border-2 border-black flex items-center justify-center bg-brutal-color shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-colors duration-500">
-                            <i class="fa-solid fa-chevron-down text-black text-sm chevron-icon font-black" id="icon-${note.id}"></i>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="openActionsModal(${note.id}); event.stopPropagation();" class="w-8 h-8 flex items-center justify-center text-gray-400 active:text-[var(--app-tint)] transition-colors">
+                                <i class="fa-solid fa-ellipsis-vertical text-xl"></i>
+                            </button>
+                            <i class="fa-solid fa-chevron-down text-gray-400 text-sm chevron-icon ml-1" id="icon-${note.id}"></i>
                         </div>
                     </div>
                     
-                    <div class="accordion-content border-t-4 border-black" id="content-${note.id}">
-                        <div class="accordion-inner">
-                            <div class="p-4 md:p-6 bg-[#fdfdfd] relative">
-                                <!-- Efek tape/selotip ala brutalism -->
-                                <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 w-16 h-6 bg-yellow-200 opacity-70 rotate-2 mix-blend-multiply border border-yellow-300"></div>
-                                <div class="text-[14px] md:text-[16px] text-black break-words font-mono leading-relaxed">
-                                    ${renderedContentHTML}
-                                </div>
+                    <!-- Isi / Konten yang diekspansi -->
+                    <div class="accordion-content border-t-[0.5px] border-gray-100" id="content-${note.id}">
+                        <div class="accordion-inner bg-white">
+                            <div class="p-4">
+                                ${renderedContentHTML}
                             </div>
                         </div>
                     </div>
                 `;
                 container.appendChild(card);
 
-                // Kembalikan state akordion jika sebelumnya terbuka (agar saat dicentang tidak auto-tutup)
                 if (openAccordions.has(note.id)) {
-                    document.getElementById(`toolbar-${note.id}`).classList.add('open');
                     document.getElementById(`content-${note.id}`).classList.add('open');
                     document.getElementById(`icon-${note.id}`).classList.add('open');
                 }
@@ -696,12 +545,10 @@
 
         // --- INTERAKSI UI ---
         function toggleAccordion(id) {
-            const toolbar = document.getElementById(`toolbar-${id}`);
             const content = document.getElementById(`content-${id}`);
             const icon = document.getElementById(`icon-${id}`);
             
-            const isOpen = toolbar.classList.toggle('open');
-            content.classList.toggle('open');
+            const isOpen = content.classList.toggle('open');
             icon.classList.toggle('open');
 
             if (isOpen) openAccordions.add(id);
@@ -713,13 +560,13 @@
             const toast = document.getElementById('toast');
             document.getElementById('toast-msg').innerText = message;
             
-            toast.classList.remove('scale-75', 'opacity-0');
-            toast.classList.add('scale-100', 'opacity-100');
+            toast.classList.remove('-translate-y-4', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
             
             clearTimeout(toastTimeout);
             toastTimeout = setTimeout(() => {
-                toast.classList.add('scale-75', 'opacity-0');
-                toast.classList.remove('scale-100', 'opacity-100');
+                toast.classList.add('-translate-y-4', 'opacity-0');
+                toast.classList.remove('translate-y-0', 'opacity-100');
             }, 2000);
         }
 
@@ -733,8 +580,8 @@
             textArea.style.position = "fixed"; document.body.appendChild(textArea);
             textArea.focus(); textArea.select();
             
-            try { document.execCommand('copy'); showToast("TEKS SUDAH DISALIN"); } 
-            catch (err) { showToast("GAGAL MENYALIN"); }
+            try { document.execCommand('copy'); showToast("Copied to clipboard"); } 
+            catch (err) { showToast("Failed to copy"); }
             document.body.removeChild(textArea);
         }
 
@@ -748,36 +595,23 @@
             
             const a = document.createElement('a');
             a.href = url;
-            
-            // Generate nama file otomatis dari judul atau ID jika tidak ada judul
-            let filename = 'terminal_note.txt';
-            if (note.title) {
-                filename = note.title.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '.txt';
-            } else {
-                filename = `note_${note.id}.txt`;
-            }
-            
+            let filename = note.title ? note.title.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '.txt' : `note_${note.id}.txt`;
             a.download = filename;
             document.body.appendChild(a);
             a.click();
-            
-            // Clean up
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-            
-            showToast("FILE BERHASIL DIUNDUH");
+            showToast("Saved to device");
         }
 
         function visitSite(id) {
             const note = notes.find(n => n.id === id);
             if (!note) return;
-            
             const urlMatch = note.content.match(/(https?:\/\/[^\s]+)/);
             if (urlMatch) {
                 window.open(urlMatch[0], '_blank');
-                showToast("MEMBUKA TAUTAN...");
             } else {
-                showToast("TIDAK ADA TAUTAN");
+                showToast("No valid URL found");
             }
         }
 
@@ -796,18 +630,20 @@
                     idInput.value = note.id;
                     titleInput.value = note.title;
                     contentInput.value = note.content;
-                    modalTitle.innerText = "EDIT_MODE";
+                    modalTitle.innerText = "Edit Note";
                 }
             } else {
                 idInput.value = ""; titleInput.value = ""; contentInput.value = "";
-                modalTitle.innerText = "NEW_ENTRY";
+                modalTitle.innerText = "New Note";
             }
 
             overlay.classList.remove('hidden');
             setTimeout(() => {
                 overlay.classList.remove('opacity-0');
-                modal.classList.remove('translate-y-[150%]');
+                modal.classList.remove('translate-y-full');
             }, 10);
+            
+            // Auto focus pada input content
             setTimeout(() => contentInput.focus(), 300);
         }
 
@@ -815,7 +651,7 @@
             const overlay = document.getElementById('modal-overlay');
             const modal = document.getElementById('modal');
             overlay.classList.add('opacity-0');
-            modal.classList.add('translate-y-[150%]');
+            modal.classList.add('translate-y-full');
             setTimeout(() => overlay.classList.add('hidden'), 300);
         }
 
@@ -824,19 +660,17 @@
             const title = document.getElementById('note-title').value.trim();
             const content = document.getElementById('note-content').value.trim();
 
-            if (!title && !content) return showToast("DATA KOSONG DITOLAK");
+            if (!title && !content) return; // Silent return for empty saves like iOS
 
             if (idInput) {
                 const index = notes.findIndex(n => n.id === parseInt(idInput));
                 if (index !== -1) {
                     notes[index].title = title; 
                     notes[index].content = content; 
-                    notes[index].updatedAt = Date.now(); // Hanya perbarui waktu edit
+                    notes[index].updatedAt = Date.now();
                 }
-                showToast("CATATAN DIPERBARUI");
             } else {
                 notes.push({ id: Date.now(), title, content, timestamp: Date.now(), updatedAt: Date.now() });
-                showToast("CATATAN SUDAH DISIMPAN");
             }
             saveToLocal();
             closeModal();
@@ -846,24 +680,23 @@
         function openDeleteAlert(id) {
             noteToDelete = id;
             const overlay = document.getElementById('alert-overlay');
-            const box = document.getElementById('alert-box');
             overlay.classList.remove('hidden');
             overlay.classList.add('flex');
-            setTimeout(() => { overlay.classList.remove('opacity-0'); box.classList.remove('scale-95'); }, 10);
+            setTimeout(() => overlay.classList.remove('opacity-0'), 10);
         }
 
         function closeDeleteAlert() {
             noteToDelete = null;
             const overlay = document.getElementById('alert-overlay');
-            const box = document.getElementById('alert-box');
-            overlay.classList.add('opacity-0'); box.classList.add('scale-95');
+            overlay.classList.add('opacity-0');
             setTimeout(() => { overlay.classList.add('hidden'); overlay.classList.remove('flex'); }, 300);
         }
 
         function confirmDelete() {
             if (noteToDelete) {
                 notes = notes.filter(n => n.id !== noteToDelete);
-                saveToLocal(); showToast("CATATAN DIHAPUS"); closeDeleteAlert();
+                saveToLocal(); 
+                closeDeleteAlert();
             }
         }
 
@@ -873,12 +706,11 @@
             const optionsContainer = document.getElementById('transfer-options');
             optionsContainer.innerHTML = ''; 
 
-            // Melakukan looping ke semua 6 App dan hanya menampilkan yang bukan sedang aktif
             Object.values(appsConfig).forEach(app => {
                 if (app.id !== currentApp) {
                     const btn = document.createElement('button');
-                    btn.className = 'brutal-btn p-3 w-full text-left font-bold text-[14px] flex items-center bg-white hover:bg-black hover:text-white transition-colors';
-                    btn.innerHTML = `<i class="fa-solid fa-folder-open mr-3"></i> <span>MOVE TO ${app.title}</span>`;
+                    btn.className = 'w-full text-center py-4 text-[17px] text-[#007AFF] ios-alert-border-b active:bg-gray-100 bg-white last:border-b-0';
+                    btn.innerText = `Move to ${app.title}`;
                     btn.onclick = () => executeTransfer(app.id);
                     optionsContainer.appendChild(btn);
                 }
@@ -888,14 +720,18 @@
             const box = document.getElementById('transfer-box');
             overlay.classList.remove('hidden');
             overlay.classList.add('flex');
-            setTimeout(() => { overlay.classList.remove('opacity-0'); box.classList.remove('scale-95'); }, 10);
+            setTimeout(() => { 
+                overlay.classList.remove('opacity-0'); 
+                box.classList.remove('translate-y-full'); 
+            }, 10);
         }
 
         function closeTransferModal() {
             noteToTransfer = null;
             const overlay = document.getElementById('transfer-overlay');
             const box = document.getElementById('transfer-box');
-            overlay.classList.add('opacity-0'); box.classList.add('scale-95');
+            box.classList.add('translate-y-full');
+            overlay.classList.add('opacity-0');
             setTimeout(() => { overlay.classList.add('hidden'); overlay.classList.remove('flex'); }, 300);
         }
 
@@ -904,9 +740,8 @@
 
             const noteIndex = notes.findIndex(n => n.id === noteToTransfer);
             if (noteIndex === -1) return;
-            const note = notes[noteIndex]; // Mengambil catatan yang akan dipindah
+            const note = notes[noteIndex]; 
 
-            // 1. Ambil data catatan pada jendela tujuan dari penyimpanan lokal
             const targetConfig = appsConfig[targetAppId];
             let targetNotes = [];
             const savedTargetNotes = localStorage.getItem(targetConfig.storageKey);
@@ -914,22 +749,77 @@
                 try { targetNotes = JSON.parse(savedTargetNotes); } catch (e) { targetNotes = []; }
             }
 
-            // 2. Tambahkan catatan ke jendela tujuan, lalu simpan
             targetNotes.push(note);
             localStorage.setItem(targetConfig.storageKey, JSON.stringify(targetNotes));
 
-            // 3. Hapus catatan dari jendela yang sedang aktif saat ini
             notes.splice(noteIndex, 1);
-            saveToLocal(); // Otomatis refresh UI
+            saveToLocal(); 
             
             closeTransferModal();
-            showToast("CATATAN DIPINDAH");
+            showToast("Note moved successfully");
+        }
+
+        // --- MANAJEMEN ACTIONS MODAL (TITIK TIGA) ---
+        function openActionsModal(id) {
+            activeNoteId = id;
+            const note = notes.find(n => n.id === id);
+            if(!note) return;
+
+            const optionsContainer = document.getElementById('actions-options');
+            optionsContainer.innerHTML = '';
+
+            const createBtn = (icon, text, onClickFn, isDestructive = false) => {
+                const btn = document.createElement('button');
+                btn.className = `w-full flex items-center py-3.5 px-5 text-[17px] active:bg-gray-100 bg-white ios-alert-border-b last:border-b-0 ${isDestructive ? 'text-[#FF3B30]' : 'text-[#007AFF]'}`;
+                btn.innerHTML = `<i class="${icon} w-6 text-center mr-3 text-[18px]"></i> <span class="font-medium">${text}</span>`;
+                btn.onclick = () => {
+                    closeActionsModal();
+                    setTimeout(() => onClickFn(id), 300); // Tunggu sampai animasi action sheet selesai turun
+                };
+                return btn;
+            };
+
+            // Inject tombol ke Action Sheet secara dinamis
+            optionsContainer.appendChild(createBtn('fa-regular fa-copy', 'Copy Text', copyNote));
+            optionsContainer.appendChild(createBtn('fa-solid fa-download', 'Download File', downloadNote));
+            
+            if (currentApp === 'mylink') {
+                optionsContainer.appendChild(createBtn('fa-solid fa-arrow-up-right-from-square', 'Visit Link', visitSite));
+            }
+
+            optionsContainer.appendChild(createBtn('fa-regular fa-pen-to-square', 'Edit Note', openModal));
+            optionsContainer.appendChild(createBtn('fa-regular fa-folder-open', 'Move to...', openTransferModal));
+            optionsContainer.appendChild(createBtn('fa-regular fa-trash-can', 'Delete', openDeleteAlert, true));
+
+            // Set judul Action Sheet sesuai catatan
+            let displayTitle = note.title;
+            if (!displayTitle && note.content) {
+                const words = note.content.trim().split(/\s+/);
+                displayTitle = words.slice(0, 3).join(' ') + (words.length > 3 ? '...' : '');
+            }
+            document.getElementById('actions-title').innerText = displayTitle || 'Note Actions';
+
+            const overlay = document.getElementById('actions-overlay');
+            const box = document.getElementById('actions-box');
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
+            setTimeout(() => { 
+                overlay.classList.remove('opacity-0'); 
+                box.classList.remove('translate-y-full'); 
+            }, 10);
+        }
+
+        function closeActionsModal() {
+            const overlay = document.getElementById('actions-overlay');
+            const box = document.getElementById('actions-box');
+            box.classList.add('translate-y-full');
+            overlay.classList.add('opacity-0');
+            setTimeout(() => { overlay.classList.add('hidden'); overlay.classList.remove('flex'); }, 300);
         }
 
         // --- MANAJEMEN EXPORT & IMPORT DATA (BACKUP) ---
         function exportData() {
             const backupData = {};
-            // Mengumpulkan data dari semua modul yang terdaftar
             for (const key in appsConfig) {
                 const storageKey = appsConfig[key].storageKey;
                 const data = localStorage.getItem(storageKey);
@@ -941,20 +831,18 @@
                 }
             }
             
-            // Konversi ke format JSON string dan unduh
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData));
             const downloadAnchorNode = document.createElement('a');
             downloadAnchorNode.setAttribute("href", dataStr);
             
-            // Nama file dinamis dengan timestamp
             const dateStr = new Date().toISOString().slice(0,10).replace(/-/g, "");
-            downloadAnchorNode.setAttribute("download", `terminal_backup_${dateStr}.json`);
+            downloadAnchorNode.setAttribute("download", `Backup_${dateStr}.json`);
             
             document.body.appendChild(downloadAnchorNode); 
             downloadAnchorNode.click();
             downloadAnchorNode.remove();
             
-            showToast("FILE BACKUP DIUNDUH");
+            showToast("Backup exported");
         }
 
         function importData(event) {
@@ -967,7 +855,6 @@
                     const backupData = JSON.parse(e.target.result);
                     let importedCount = 0;
                     
-                    // Memasukkan data ke masing-masing storage key yang ada
                     for (const key in appsConfig) {
                         const storageKey = appsConfig[key].storageKey;
                         if (backupData[storageKey]) {
@@ -977,23 +864,20 @@
                     }
                     
                     if (importedCount > 0) {
-                        loadNotes(); // Muat ulang catatan di layar
-                        showToast("BACKUP BERHASIL DI-IMPORT");
+                        loadNotes(); 
+                        showToast("Data restored");
                     } else {
-                        showToast("FILE TIDAK DIKENALI");
+                        showToast("Invalid file");
                     }
                 } catch (err) {
-                    showToast("GAGAL MEMBACA FILE");
-                    console.error(err);
+                    showToast("Failed to read file");
                 }
-                // Reset file input agar bisa pilih file yang sama berulang jika perlu
                 event.target.value = '';
             };
             reader.readAsText(file);
             
-            // Tutup sidebar otomatis agar pengguna langsung melihat hasil import
             const sidebar = document.getElementById('sidebar');
-            if (!sidebar.classList.contains('translate-x-full')) toggleSidebar();
+            if (!sidebar.classList.contains('-translate-x-full')) toggleSidebar();
         }
 
         // EKSEKUSI AWAL
