@@ -789,7 +789,7 @@
             overlay.classList.remove('hidden');
             setTimeout(() => {
                 overlay.classList.remove('opacity-0');
-                modal.classList.remove('translate-y-full');
+                modal.classList.remove('translate-y-[150%]');
             }, 10);
             setTimeout(() => contentInput.focus(), 300);
         }
@@ -798,7 +798,7 @@
             const overlay = document.getElementById('modal-overlay');
             const modal = document.getElementById('modal');
             overlay.classList.add('opacity-0');
-            modal.classList.add('translate-y-full');
+            modal.classList.add('translate-y-[150%]');
             setTimeout(() => overlay.classList.add('hidden'), 300);
         }
 
