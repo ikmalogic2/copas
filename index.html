@@ -14,74 +14,128 @@
     <!-- Google Fonts: Space Grotesk -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
 
     <style>
-        /* Definisi 6 Tema Warna Dinamis */
+        /* Definisi 6 Tema Warna Dinamis - Neo Brutalism Edition */
         :root {
-            /* Default: Copasional */
-            --neon-color-rgb: 57, 255, 20;
-            --dim-color-rgb: 26, 74, 26;
-            --text-color-rgb: 255, 255, 255;
+            /* Default: Copasional - Hijau Cerah */
+            --brutal-color: #39ff14;
+            --brutal-border: #000000;
+            --brutal-bg: #ffffff;
+            --brutal-shadow: 6px 6px 0px 0px rgba(0,0,0,1);
+            --brutal-shadow-hover: 2px 2px 0px 0px rgba(0,0,0,1);
         }
 
         .theme-copasional {
-            --neon-color-rgb: 57, 255, 20; /* Hijau Neon */
-            --dim-color-rgb: 26, 74, 26;
-            --text-color-rgb: 255, 255, 255; 
+            --brutal-color: #ccff00; /* Kuning-Hijau Cerah */
+            --brutal-bg: #f4f4f0;
         }
 
         .theme-kinerja {
-            --neon-color-rgb: 0, 255, 255; /* Cyan Neon */
-            --dim-color-rgb: 0, 77, 77;
-            --text-color-rgb: 255, 255, 255; 
+            --brutal-color: #00ffff; /* Cyan Cerah */
+            --brutal-bg: #f4f4f0;
         }
 
         .theme-error {
-            --neon-color-rgb: 255, 50, 50; /* Merah Neon */
-            --dim-color-rgb: 77, 0, 0;
-            --text-color-rgb: 255, 255, 255; 
+            --brutal-color: #ff3366; /* Merah Muda Terang */
+            --brutal-bg: #f4f4f0;
         }
 
         .theme-myprompt {
-            --neon-color-rgb: 255, 140, 0; /* Oranye Neon */
-            --dim-color-rgb: 77, 42, 0;
-            --text-color-rgb: 255, 255, 255; 
+            --brutal-color: #ff9900; /* Oranye Terang */
+            --brutal-bg: #f4f4f0;
         }
 
         .theme-myinstruction {
-            --neon-color-rgb: 0, 150, 255; /* Biru Neon */
-            --dim-color-rgb: 0, 40, 77;
-            --text-color-rgb: 255, 255, 255; 
+            --brutal-color: #0066ff; /* Biru Terang */
+            --brutal-bg: #f4f4f0;
         }
 
         .theme-mylink {
-            --neon-color-rgb: 212, 0, 255; /* Magenta/Ungu Neon */
-            --dim-color-rgb: 60, 0, 77;
-            --text-color-rgb: 255, 255, 255; 
+            --brutal-color: #cc66ff; /* Ungu Terang */
+            --brutal-bg: #f4f4f0;
         }
 
         .theme-memo {
-            --neon-color-rgb: 255, 255, 0; /* Kuning Neon */
-            --dim-color-rgb: 77, 77, 0;
-            --text-color-rgb: 255, 255, 255; 
+            --brutal-color: #ffff00; /* Kuning Terang */
+            --brutal-bg: #f4f4f0;
         }
 
         body {
-            background-color: #000000;
-            color: #ffffff;
+            background-color: var(--brutal-bg);
+            color: #000000;
             font-family: 'Space Grotesk', monospace, sans-serif;
             -webkit-tap-highlight-color: transparent;
+            /* Latar belakang kotak-kotak ala desain grid */
+            background-image: linear-gradient(var(--brutal-border) 1px, transparent 1px),
+                              linear-gradient(90deg, var(--brutal-border) 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-color: #e5e5f7;
+            opacity: 0.9;
         }
 
-        /* Efek Glow Terminal */
-        .neon-text { text-shadow: 0 0 5px rgba(var(--neon-color-rgb), 0.5); }
-        .neon-border { box-shadow: 0 0 8px rgba(var(--neon-color-rgb), 0.2); }
-        .neon-border-focus:focus {
-            box-shadow: 0 0 12px rgba(var(--neon-color-rgb), 0.6);
-            border-color: rgb(var(--neon-color-rgb));
+        /* Elemen Neo Brutalism */
+        .brutal-box {
+            background-color: #ffffff;
+            border: 3px solid var(--brutal-border);
+            box-shadow: var(--brutal-shadow);
+            border-radius: 0;
+            transition: all 0.15s ease-out;
         }
-        .neon-bg-glow { box-shadow: inset 5px 0px 15px -5px rgba(var(--neon-color-rgb), 0.4); }
+
+        .brutal-btn {
+            background-color: #ffffff;
+            border: 3px solid var(--brutal-border);
+            box-shadow: var(--brutal-shadow);
+            border-radius: 0;
+            font-weight: 700;
+            text-transform: uppercase;
+            transition: all 0.15s ease-out;
+            cursor: pointer;
+        }
+
+        .brutal-btn:hover {
+            background-color: var(--brutal-color);
+            transform: translate(-2px, -2px);
+            box-shadow: 8px 8px 0px 0px rgba(0,0,0,1);
+        }
+
+        .brutal-btn:active {
+            transform: translate(6px, 6px);
+            box-shadow: none;
+        }
+        
+        .brutal-btn-icon {
+            background-color: #ffffff;
+            border: 3px solid var(--brutal-border);
+            box-shadow: 4px 4px 0px 0px rgba(0,0,0,1);
+            transition: all 0.15s ease-out;
+        }
+
+        .brutal-btn-icon:hover {
+            background-color: var(--brutal-color);
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px 0px rgba(0,0,0,1);
+        }
+
+        .brutal-btn-icon:active {
+            transform: translate(4px, 4px);
+            box-shadow: none;
+        }
+
+        .brutal-input {
+            border: 3px solid var(--brutal-border);
+            border-radius: 0;
+            box-shadow: inset 4px 4px 0px 0px rgba(0,0,0,0.05);
+            background-color: #fdfdfd;
+        }
+        
+        .brutal-input:focus {
+            background-color: #ffffff;
+            box-shadow: inset 4px 4px 0px 0px rgba(0,0,0,0.1), 0 0 0 4px var(--brutal-color);
+            outline: none;
+        }
 
         /* Animasi Cursor Berkedip */
         .blinking-cursor { animation: blink 1s step-end infinite; }
@@ -99,32 +153,63 @@
         .chevron-icon { transition: transform 0.3s ease; }
         .chevron-icon.open { transform: rotate(180deg); }
 
-        /* Custom Scrollbar & Masonry Helpers */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #000; border-left: 1px solid rgb(var(--dim-color-rgb)); }
-        ::-webkit-scrollbar-thumb { background: rgb(var(--neon-color-rgb)); }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 12px; }
+        ::-webkit-scrollbar-track { background: #ffffff; border-left: 3px solid #000; }
+        ::-webkit-scrollbar-thumb { background: var(--brutal-color); border-left: 3px solid #000; border-bottom: 3px solid #000; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: thin; }
         
         /* Checkbox Khusus Tema */
         input[type="checkbox"].theme-checkbox {
-            accent-color: rgb(var(--neon-color-rgb));
-            transform: scale(1.1);
+            appearance: none;
+            background-color: #fff;
+            margin: 0;
+            font: inherit;
+            color: currentColor;
+            width: 1.15em;
+            height: 1.15em;
+            border: 2px solid black;
+            border-radius: 0;
+            display: grid;
+            place-content: center;
+            cursor: pointer;
+            box-shadow: 2px 2px 0px 0px rgba(0,0,0,1);
+            transition: all 0.1s;
+        }
+        
+        input[type="checkbox"].theme-checkbox::before {
+            content: "";
+            width: 0.65em;
+            height: 0.65em;
+            transform: scale(0);
+            transition: 120ms transform ease-in-out;
+            box-shadow: inset 1em 1em var(--brutal-border);
+            background-color: transform;
+            transform-origin: center;
+            clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+        }
+
+        input[type="checkbox"].theme-checkbox:checked {
+            background-color: var(--brutal-color);
+            box-shadow: 0px 0px 0px 0px rgba(0,0,0,1);
+            transform: translate(2px, 2px);
+        }
+
+        input[type="checkbox"].theme-checkbox:checked::before {
+            transform: scale(1);
         }
     </style>
 
     <script>
-        // Konfigurasi Tailwind untuk membaca CSS Variables
+        // Konfigurasi Tailwind 
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        terminal: {
-                            bg: '#000000',
-                            card: '#0a0a0a',
-                            neon: 'rgb(var(--neon-color-rgb) / <alpha-value>)',
-                            dim: 'rgb(var(--dim-color-rgb) / <alpha-value>)',
-                            text: 'rgb(var(--text-color-rgb) / <alpha-value>)',
-                            red: '#ff003c'
+                        brutal: {
+                            color: 'var(--brutal-color)',
+                            border: 'var(--brutal-border)',
+                            bg: 'var(--brutal-bg)',
                         }
                     },
                     fontFamily: { sans: ['"Space Grotesk"', 'monospace', 'sans-serif'] }
@@ -134,135 +219,146 @@
     </script>
 </head>
 
-<body class="bg-terminal-bg flex h-screen w-full font-sans transition-colors duration-500 selection:bg-terminal-neon selection:text-black theme-copasional overflow-hidden" id="app-body">
+<body class="flex h-screen w-full font-sans transition-colors duration-500 selection:bg-brutal-color selection:text-black theme-copasional overflow-hidden" id="app-body">
 
     <!-- Overlay Sidebar -->
-    <div id="sidebar-backdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/70 z-30 hidden backdrop-blur-sm transition-opacity duration-300 opacity-0"></div>
+    <div id="sidebar-backdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-30 hidden backdrop-blur-sm transition-opacity duration-300 opacity-0"></div>
 
     <!-- Sidebar Layout -->
-    <aside id="sidebar" class="fixed top-0 right-0 h-full w-[260px] border-l border-terminal-neon bg-terminal-bg/95 backdrop-blur-md flex flex-col transition-transform duration-300 z-40 translate-x-full flex-shrink-0 shadow-[0_0_20px_rgba(var(--neon-color-rgb),0.2)]">
-        <div class="p-4 border-b border-terminal-dim flex items-center justify-between h-[60px] md:h-[70px]">
+    <aside id="sidebar" class="fixed top-0 right-0 h-full w-[280px] border-l-4 border-black bg-white flex flex-col transition-transform duration-300 z-40 translate-x-full flex-shrink-0 shadow-[-10px_0px_0px_0px_rgba(0,0,0,1)]">
+        <div class="p-5 border-b-4 border-black flex items-center justify-between bg-brutal-color transition-colors duration-500">
             <div class="flex items-center cursor-pointer" onclick="toggleSidebar()">
-                <i class="fa-solid fa-terminal text-terminal-neon text-2xl mr-3 transition-colors duration-500"></i>
-                <span class="font-bold text-[17px] text-white tracking-widest transition-colors duration-500">SYS_MENU</span>
+                <i class="fa-solid fa-layer-group text-black text-2xl mr-3"></i>
+                <span class="font-black text-[18px] text-black tracking-widest uppercase">Modules</span>
             </div>
-            <button onclick="toggleSidebar()" class="text-terminal-neon hover:text-white text-xl w-8 h-8 flex items-center justify-center">
-                <i class="fa-solid fa-xmark"></i>
+            <button onclick="toggleSidebar()" class="brutal-btn-icon text-black w-8 h-8 flex items-center justify-center">
+                <i class="fa-solid fa-xmark font-bold"></i>
             </button>
         </div>
         
-        <nav class="flex-1 flex flex-col pt-4 space-y-2 px-2 overflow-y-auto pb-4">
-            <button id="nav-copasional" onclick="switchApp('copasional')" class="nav-btn flex items-center py-3.5 px-4 text-terminal-neon/50 hover:bg-terminal-neon/10 hover:text-terminal-neon transition-all border-l-[3px] border-transparent">
+        <nav class="flex-1 flex flex-col pt-4 space-y-3 px-4 overflow-y-auto pb-4 bg-white">
+            <button id="nav-copasional" onclick="switchApp('copasional')" class="nav-btn brutal-btn flex items-center py-3 px-4 text-black w-full text-left">
                 <i class="fa-solid fa-clipboard text-xl w-6 text-center"></i>
-                <span class="ml-3 font-bold tracking-wide text-[14px] text-white">COPASIONAL</span>
+                <span class="ml-3 font-bold tracking-wide text-[14px]">COPASIONAL</span>
             </button>
-            <button id="nav-kinerja" onclick="switchApp('kinerja')" class="nav-btn flex items-center py-3.5 px-4 text-terminal-neon/50 hover:bg-terminal-neon/10 hover:text-terminal-neon transition-all border-l-[3px] border-transparent">
+            <button id="nav-kinerja" onclick="switchApp('kinerja')" class="nav-btn brutal-btn flex items-center py-3 px-4 text-black w-full text-left">
                 <i class="fa-solid fa-chart-line text-xl w-6 text-center"></i>
-                <span class="ml-3 font-bold tracking-wide text-[14px] text-white">KINERJA HARIAN</span>
+                <span class="ml-3 font-bold tracking-wide text-[14px]">KINERJA HARIAN</span>
             </button>
-            <button id="nav-error" onclick="switchApp('error')" class="nav-btn flex items-center py-3.5 px-4 text-terminal-neon/50 hover:bg-terminal-neon/10 hover:text-terminal-neon transition-all border-l-[3px] border-transparent">
+            <button id="nav-error" onclick="switchApp('error')" class="nav-btn brutal-btn flex items-center py-3 px-4 text-black w-full text-left">
                 <i class="fa-solid fa-bug text-xl w-6 text-center"></i>
-                <span class="ml-3 font-bold tracking-wide text-[14px] text-white">ERROR BOOK</span>
+                <span class="ml-3 font-bold tracking-wide text-[14px]">ERROR BOOK</span>
             </button>
-            <button id="nav-myprompt" onclick="switchApp('myprompt')" class="nav-btn flex items-center py-3.5 px-4 text-terminal-neon/50 hover:bg-terminal-neon/10 hover:text-terminal-neon transition-all border-l-[3px] border-transparent">
+            <button id="nav-myprompt" onclick="switchApp('myprompt')" class="nav-btn brutal-btn flex items-center py-3 px-4 text-black w-full text-left">
                 <i class="fa-solid fa-keyboard text-xl w-6 text-center"></i>
-                <span class="ml-3 font-bold tracking-wide text-[14px] text-white">MY PROMPT</span>
+                <span class="ml-3 font-bold tracking-wide text-[14px]">MY PROMPT</span>
             </button>
-            <button id="nav-myinstruction" onclick="switchApp('myinstruction')" class="nav-btn flex items-center py-3.5 px-4 text-terminal-neon/50 hover:bg-terminal-neon/10 hover:text-terminal-neon transition-all border-l-[3px] border-transparent">
+            <button id="nav-myinstruction" onclick="switchApp('myinstruction')" class="nav-btn brutal-btn flex items-center py-3 px-4 text-black w-full text-left">
                 <i class="fa-solid fa-code text-xl w-6 text-center"></i>
-                <span class="ml-3 font-bold tracking-wide text-[14px] text-white">MY INSTRUCTION</span>
+                <span class="ml-3 font-bold tracking-wide text-[14px]">INSTRUCTION</span>
             </button>
-            <button id="nav-mylink" onclick="switchApp('mylink')" class="nav-btn flex items-center py-3.5 px-4 text-terminal-neon/50 hover:bg-terminal-neon/10 hover:text-terminal-neon transition-all border-l-[3px] border-transparent">
+            <button id="nav-mylink" onclick="switchApp('mylink')" class="nav-btn brutal-btn flex items-center py-3 px-4 text-black w-full text-left">
                 <i class="fa-solid fa-link text-xl w-6 text-center"></i>
-                <span class="ml-3 font-bold tracking-wide text-[14px] text-white">MY LINK</span>
+                <span class="ml-3 font-bold tracking-wide text-[14px]">MY LINK</span>
             </button>
-            <button id="nav-memo" onclick="switchApp('memo')" class="nav-btn flex items-center py-3.5 px-4 text-terminal-neon/50 hover:bg-terminal-neon/10 hover:text-terminal-neon transition-all border-l-[3px] border-transparent">
+            <button id="nav-memo" onclick="switchApp('memo')" class="nav-btn brutal-btn flex items-center py-3 px-4 text-black w-full text-left">
                 <i class="fa-solid fa-list-check text-xl w-6 text-center"></i>
-                <span class="ml-3 font-bold tracking-wide text-[14px] text-white">MEMO TASKS</span>
+                <span class="ml-3 font-bold tracking-wide text-[14px]">MEMO TASKS</span>
             </button>
         </nav>
         
-        <div class="p-4 border-t border-terminal-dim flex items-center justify-start">
-            <div class="w-3 h-3 rounded-full bg-terminal-neon animate-pulse mr-2 shadow-[0_0_8px_rgba(var(--neon-color-rgb),0.8)]"></div>
-            <span class="text-[11px] text-white font-mono">SYSTEM_ONLINE</span>
+        <div class="p-4 border-t-4 border-black flex items-center justify-start bg-white">
+            <div class="w-4 h-4 rounded-none bg-brutal-color border-2 border-black animate-pulse mr-3 transition-colors duration-500"></div>
+            <span class="text-[13px] text-black font-bold uppercase tracking-widest">SYSTEM_ONLINE</span>
         </div>
     </aside>
 
     <!-- Wrapper Utama -->
-    <div class="flex-1 bg-terminal-bg relative flex flex-col min-w-0 transition-colors duration-500 h-full">
+    <div class="flex-1 relative flex flex-col min-w-0 h-full">
         
-        <header class="bg-terminal-bg shrink-0 z-10 border-b border-terminal-neon px-4 h-[60px] md:h-[70px] flex items-center justify-between transition-colors duration-500 shadow-[0_4px_20px_-10px_rgba(var(--neon-color-rgb),0.3)]">
-            <button onclick="openModal()" class="bg-transparent border border-terminal-neon text-terminal-neon w-9 h-9 md:w-10 md:h-10 shadow-[0_0_5px_rgba(var(--neon-color-rgb),0.3)] flex items-center justify-center text-lg active:scale-95 transition-all hover:bg-terminal-neon hover:text-black z-20">
+        <header class="bg-white shrink-0 z-10 border-b-4 border-black px-4 h-[70px] md:h-[80px] flex items-center justify-between shadow-[0_8px_0px_0px_rgba(0,0,0,1)] relative">
+            <button onclick="openModal()" class="brutal-btn-icon text-black w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-xl z-20">
                 <i class="fa-solid fa-plus"></i>
             </button>
-            <h1 id="app-title" class="text-[14px] md:text-[18px] font-bold text-white tracking-widest absolute left-1/2 transform -translate-x-1/2 w-max uppercase">
-                &gt; INITIALIZING...<span class="blinking-cursor">_</span>
-            </h1>
-            <button onclick="toggleSidebar()" class="text-terminal-neon hover:text-white transition-colors w-10 h-10 flex items-center justify-end text-2xl z-20 cursor-pointer">
-                <i class="fa-solid fa-terminal"></i>
+            
+            <!-- Judul Aplikasi Brutal -->
+            <div class="absolute left-1/2 transform -translate-x-1/2 bg-brutal-color border-4 border-black px-4 py-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-colors duration-500 transform -rotate-1 hover:rotate-1">
+                <h1 id="app-title" class="text-[15px] md:text-[20px] font-black text-black tracking-widest uppercase m-0">
+                    INITIALIZING...<span class="blinking-cursor">_</span>
+                </h1>
+            </div>
+
+            <button onclick="toggleSidebar()" class="brutal-btn-icon text-black w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-xl z-20">
+                <i class="fa-solid fa-bars"></i>
             </button>
         </header>
 
         <!-- Pop Up / Floating Notification -->
-        <div id="toast" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-terminal-bg/95 border-2 border-terminal-neon text-white px-8 py-6 rounded-none z-[70] transition-all duration-300 scale-75 opacity-0 pointer-events-none shadow-[0_0_40px_rgba(var(--neon-color-rgb),0.8)] flex flex-col items-center justify-center text-center backdrop-blur-md">
-            <i class="fa-solid fa-circle-check text-terminal-neon text-5xl mb-4 animate-bounce"></i>
-            <span id="toast-msg" class="font-bold text-[16px] md:text-[18px] tracking-widest uppercase">PESAN</span>
+        <div id="toast" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white border-4 border-black text-black px-8 py-6 rounded-none z-[70] transition-all duration-300 scale-75 opacity-0 pointer-events-none shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] flex flex-col items-center justify-center text-center">
+            <div class="bg-brutal-color w-16 h-16 border-4 border-black flex items-center justify-center mb-4 transform rotate-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                <i class="fa-solid fa-check text-black text-3xl"></i>
+            </div>
+            <span id="toast-msg" class="font-black text-[18px] md:text-[22px] tracking-widest uppercase">PESAN</span>
         </div>
 
-        <!-- Area Utama (Daftar Catatan) - Menggunakan CSS Columns agar tidak overlap -->
-        <main class="flex-1 p-4 md:p-6 overflow-y-auto hide-scrollbar pb-24 md:pb-10" id="main-scroll-area">
+        <!-- Area Utama -->
+        <main class="flex-1 p-4 md:p-8 overflow-y-auto hide-scrollbar pb-24 md:pb-10" id="main-scroll-area">
             <div id="notes-container" class="w-full">
                 <!-- Kartu catatan via JS -->
             </div>
         </main>
 
         <!-- Modal Tambah/Edit -->
-        <div id="modal-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-30 hidden opacity-0 transition-opacity duration-300" onclick="closeModal()"></div>
+        <div id="modal-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 hidden opacity-0 transition-opacity duration-300" onclick="closeModal()"></div>
         
-        <div id="modal" class="fixed inset-x-0 bottom-0 z-40 bg-terminal-bg border-t-2 border-terminal-neon transform translate-y-full transition-transform duration-300 h-[85vh] flex flex-col w-full md:max-w-3xl lg:max-w-4xl mx-auto neon-border">
-            <div class="bg-terminal-card flex justify-between items-center p-4 border-b border-terminal-neon shrink-0">
-                <button onclick="closeModal()" class="text-white text-[14px] md:text-[16px] hover:underline transition-all font-mono">[ ESC ]</button>
+        <div id="modal" class="fixed inset-x-4 md:inset-x-auto md:left-1/2 md:-translate-x-1/2 bottom-4 md:bottom-10 z-40 bg-white border-4 border-black transform translate-y-[150%] transition-transform duration-300 h-[80vh] md:h-[75vh] flex flex-col w-auto md:w-full md:max-w-4xl mx-auto brutal-box">
+            <div class="bg-brutal-color flex justify-between items-center p-4 border-b-4 border-black shrink-0 transition-colors duration-500">
+                <button onclick="closeModal()" class="brutal-btn-icon w-8 h-8 flex items-center justify-center">
+                    <i class="fa-solid fa-arrow-down"></i>
+                </button>
                 <div class="flex items-center space-x-3">
-                    <button id="btn-insert-checkbox" onclick="insertCheckbox()" class="hidden border border-terminal-neon text-white px-3 py-1 text-xs hover:bg-terminal-neon hover:text-black transition-colors font-mono font-bold">
-                        [+ Checkbox]
+                    <button id="btn-insert-checkbox" onclick="insertCheckbox()" class="hidden brutal-btn px-3 py-1 text-xs">
+                        + CHECKBOX
                     </button>
-                    <h2 class="font-bold text-[15px] md:text-[17px] text-white tracking-wide" id="modal-title">NEW_ENTRY</h2>
+                    <h2 class="font-black text-[18px] md:text-[20px] text-black tracking-wider uppercase bg-white border-2 border-black px-2 py-1 transform -rotate-1" id="modal-title">NEW ENTRY</h2>
                 </div>
-                <button onclick="saveNote()" class="text-[#000000] px-4 py-2 font-bold text-[14px] md:text-[15px] hover:bg-white transition-all flex items-center shadow-[0_0_10px_rgba(var(--neon-color-rgb),0.6)]" style="background-color: rgb(var(--neon-color-rgb));">
-                    SAVE <i class="fa-solid fa-play ml-2 text-xs"></i>
+                <button onclick="saveNote()" class="brutal-btn px-4 py-2 font-black text-[14px] md:text-[16px] flex items-center bg-white hover:bg-black hover:text-white">
+                    SAVE <i class="fa-solid fa-bolt ml-2"></i>
                 </button>
             </div>
             
-            <div class="p-4 md:p-6 flex-1 flex flex-col overflow-y-auto hide-scrollbar">
+            <div class="p-4 md:p-6 flex-1 flex flex-col overflow-y-auto hide-scrollbar bg-[#fdfdfd]">
                 <input type="hidden" id="note-id">
-                <input type="text" id="note-title" placeholder="Judul_File..." class="w-full bg-terminal-card border border-terminal-dim p-3.5 md:p-4 mb-4 text-[16px] md:text-[18px] font-medium focus:outline-none text-white placeholder-terminal-dim neon-border-focus transition-all rounded-none">
-                <textarea id="note-content" placeholder="> Masukkan input data di sini..." class="w-full flex-1 min-h-[200px] bg-terminal-card border border-terminal-dim p-3.5 md:p-4 text-[14px] md:text-[16px] focus:outline-none text-white placeholder-terminal-dim resize-none leading-relaxed neon-border-focus transition-all rounded-none font-mono"></textarea>
+                <input type="text" id="note-title" placeholder="JUDUL FILE..." class="w-full brutal-input p-4 mb-5 text-[18px] md:text-[22px] font-black focus:outline-none text-black placeholder-gray-500 transition-all uppercase">
+                <textarea id="note-content" placeholder="> Ketik data di sini..." class="w-full flex-1 min-h-[200px] brutal-input p-4 text-[15px] md:text-[17px] focus:outline-none text-black placeholder-gray-500 resize-none leading-relaxed transition-all font-mono"></textarea>
             </div>
         </div>
 
         <!-- Alert Konfirmasi Hapus -->
-        <div id="alert-overlay" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center opacity-0 transition-opacity duration-300">
-            <div id="alert-box" class="bg-terminal-bg border border-terminal-red w-[280px] md:w-[320px] text-center overflow-hidden transform scale-95 transition-transform duration-300 shadow-[0_0_20px_rgba(255,50,50,0.4)] rounded-none">
-                <div class="p-5 md:p-6 border-b border-terminal-red/30">
-                    <i class="fa-solid fa-triangle-exclamation text-terminal-red text-4xl mb-4 animate-pulse"></i>
-                    <h3 class="font-bold text-[16px] md:text-[18px] text-white tracking-wider">SYSTEM_WARNING</h3>
-                    <p class="text-[12px] md:text-[13px] text-white mt-2 font-mono leading-relaxed">Data akan dihapus permanen. Eksekusi?</p>
+        <div id="alert-overlay" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center opacity-0 transition-opacity duration-300 backdrop-blur-sm">
+            <div id="alert-box" class="bg-white border-4 border-black w-[300px] md:w-[350px] text-center overflow-hidden transform scale-95 transition-transform duration-300 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] rounded-none">
+                <div class="p-6 md:p-8 border-b-4 border-black bg-[#ff3366]">
+                    <div class="w-16 h-16 bg-white border-4 border-black mx-auto flex items-center justify-center mb-4 transform rotate-12 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                        <i class="fa-solid fa-triangle-exclamation text-black text-3xl"></i>
+                    </div>
+                    <h3 class="font-black text-[20px] md:text-[22px] text-white tracking-wider uppercase" style="text-shadow: 2px 2px 0 #000;">WARNING!</h3>
+                    <p class="text-[14px] text-white mt-2 font-bold bg-black inline-block px-2 py-1">DATA AKAN DIHAPUS PERMANEN</p>
                 </div>
-                <div class="flex">
-                    <button onclick="closeDeleteAlert()" class="flex-1 p-3.5 md:p-4 text-white text-[14px] font-bold hover:bg-terminal-card transition-colors border-r border-terminal-red/30">CANCEL</button>
-                    <button onclick="confirmDelete()" id="btn-confirm-delete" class="flex-1 p-3.5 md:p-4 bg-terminal-red text-black font-bold text-[14px] hover:bg-red-500 transition-colors">EXECUTE</button>
+                <div class="flex p-4 gap-4 bg-gray-100">
+                    <button onclick="closeDeleteAlert()" class="flex-1 brutal-btn p-3 text-black text-[14px]">BATAL</button>
+                    <button onclick="confirmDelete()" id="btn-confirm-delete" class="flex-1 brutal-btn p-3 bg-[#ff3366] text-white hover:bg-black hover:text-white">HAPUS</button>
                 </div>
             </div>
         </div>
 
         <!-- Modal Transfer / Pindah Jendela -->
-        <div id="transfer-overlay" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center opacity-0 transition-opacity duration-300">
-            <div id="transfer-box" class="bg-terminal-bg border border-terminal-neon w-[300px] md:w-[350px] text-center overflow-hidden transform scale-95 transition-transform duration-300 shadow-[0_0_20px_rgba(var(--neon-color-rgb),0.4)] rounded-none">
-                <div class="p-4 border-b border-terminal-neon/30 bg-terminal-card flex justify-between items-center">
-                    <h3 class="font-bold text-[14px] md:text-[15px] text-white tracking-wider"><i class="fa-solid fa-right-left text-terminal-neon mr-2"></i>TRANSFER_DATA</h3>
-                    <button onclick="closeTransferModal()" class="text-white hover:text-terminal-neon transition-colors"><i class="fa-solid fa-xmark text-lg"></i></button>
+        <div id="transfer-overlay" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center opacity-0 transition-opacity duration-300 backdrop-blur-sm">
+            <div id="transfer-box" class="bg-white border-4 border-black w-[300px] md:w-[380px] overflow-hidden transform scale-95 transition-transform duration-300 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] rounded-none">
+                <div class="p-5 border-b-4 border-black bg-brutal-color flex justify-between items-center transition-colors duration-500">
+                    <h3 class="font-black text-[16px] md:text-[18px] text-black tracking-wider uppercase"><i class="fa-solid fa-arrow-right-arrow-left mr-2"></i> TRANSFER DATA</h3>
+                    <button onclick="closeTransferModal()" class="brutal-btn-icon w-8 h-8 flex items-center justify-center bg-white text-black"><i class="fa-solid fa-xmark"></i></button>
                 </div>
-                <div id="transfer-options" class="flex flex-col p-1 max-h-[50vh] overflow-y-auto hide-scrollbar">
+                <div id="transfer-options" class="flex flex-col p-4 gap-3 max-h-[50vh] overflow-y-auto hide-scrollbar bg-gray-50">
                     <!-- Opsi Jendela Sidebar diinject via JS -->
                 </div>
             </div>
@@ -367,14 +463,14 @@
 
         function updateSidebarUI() {
             document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('bg-terminal-neon/10', 'text-terminal-neon', 'border-terminal-neon', 'neon-bg-glow');
-                btn.classList.add('text-terminal-neon/50', 'border-transparent');
+                btn.classList.remove('bg-brutal-color', 'shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]', 'translate-x-[-2px]', 'translate-y-[-2px]');
+                btn.style.backgroundColor = '#ffffff';
             });
             
             const activeBtn = document.getElementById(`nav-${currentApp}`);
             if (activeBtn) {
-                activeBtn.classList.remove('text-terminal-neon/50', 'border-transparent');
-                activeBtn.classList.add('bg-terminal-neon/10', 'text-terminal-neon', 'border-terminal-neon', 'neon-bg-glow');
+                activeBtn.classList.add('shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]', 'translate-x-[-2px]', 'translate-y-[-2px]');
+                activeBtn.style.backgroundColor = 'var(--brutal-color)';
             }
         }
 
@@ -456,22 +552,24 @@
             if (notes.length === 0) {
                 container.className = 'w-full h-full flex flex-col items-center justify-center pt-20';
                 container.innerHTML = `
-                    <div class="flex flex-col items-center justify-center text-terminal-dim transition-colors duration-500">
-                        <i class="fa-solid fa-server text-5xl md:text-6xl mb-4 opacity-50 neon-text"></i>
-                        <p class="font-bold text-[16px] md:text-[18px] text-white tracking-widest">[ DB_EMPTY ]</p>
-                        <p class="text-[13px] md:text-[15px] mt-2 text-center px-4 font-mono text-white">No records found. Click [+] to initialize data.</p>
+                    <div class="flex flex-col items-center justify-center text-black">
+                        <div class="w-24 h-24 bg-white border-4 border-black flex items-center justify-center transform -rotate-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mb-6">
+                            <i class="fa-solid fa-database text-5xl text-black"></i>
+                        </div>
+                        <p class="font-black text-[20px] md:text-[24px] text-black tracking-widest bg-brutal-color px-4 py-1 border-2 border-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">[ KOSONG ]</p>
+                        <p class="text-[14px] md:text-[16px] mt-4 font-bold text-black bg-white px-3 py-1 border-2 border-black">Klik tombol [+] untuk menambah data.</p>
                     </div>
                 `;
                 return;
             }
 
             // Menggunakan Columns (Masonry) untuk mencegah bentrok/overlap antar baris
-            container.className = 'columns-1 md:columns-2 xl:columns-3 gap-4 md:gap-5 w-full';
+            container.className = 'columns-1 md:columns-2 xl:columns-3 gap-6 md:gap-8 w-full';
 
             notes.sort((a, b) => b.timestamp - a.timestamp).forEach(note => {
                 const card = document.createElement('div');
-                // inline-block dan break-inside-avoid memastikan kartu tidak terpotong antar kolom
-                card.className = 'bg-terminal-card border border-terminal-dim overflow-hidden transition-colors duration-300 hover:border-terminal-neon rounded-none group break-inside-avoid mb-4 md:mb-5 inline-block w-full';
+                // Neo Brutalism styling untuk kartu
+                card.className = 'brutal-box overflow-hidden mb-6 md:mb-8 inline-block w-full';
                 
                 let displayTitle = 'UNNAMED_RECORD';
                 if (note.title) {
@@ -492,70 +590,76 @@
                             const isChecked = !!line.trim().match(/^- \[[xX]\]/i);
                             const text = escapeHTML(line.replace(/^- \[[ xX]\]\s*/i, ''));
                             const checkState = isChecked ? 'checked' : '';
-                            const textClass = isChecked ? 'opacity-50 line-through text-white/50' : 'text-white';
+                            const textClass = isChecked ? 'line-through text-gray-500' : 'text-black font-medium';
                             return `
-                                <div class="flex items-start my-1.5 group/task" onclick="event.stopPropagation()">
-                                    <input type="checkbox" ${checkState} class="theme-checkbox mt-[4px] mr-3 cursor-pointer" onchange="toggleTask(${note.id}, ${taskIdx++}, ${isChecked})">
+                                <div class="flex items-start my-2 group/task" onclick="event.stopPropagation()">
+                                    <input type="checkbox" ${checkState} class="theme-checkbox mt-[2px] mr-3 cursor-pointer" onchange="toggleTask(${note.id}, ${taskIdx++}, ${isChecked})">
                                     <span class="${textClass} transition-all leading-snug">${text || '&nbsp;'}</span>
                                 </div>`;
                         } else {
-                            return `<div class="min-h-[1.5em] text-white whitespace-pre-wrap">${escapeHTML(line)}</div>`;
+                            return `<div class="min-h-[1.5em] text-black whitespace-pre-wrap font-bold">${escapeHTML(line)}</div>`;
                         }
                     }).join('');
                 } else if (currentApp === 'mylink') {
                     const escapedContent = escapeHTML(note.content);
-                    const linkedContent = escapedContent.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" onclick="event.stopPropagation()" class="underline font-bold hover:text-white transition-colors" style="color: #ffffff;">$1</a>');
-                    renderedContentHTML = `<div class="whitespace-pre-wrap text-white">${linkedContent}</div>`;
+                    const linkedContent = escapedContent.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" onclick="event.stopPropagation()" class="underline font-black bg-brutal-color px-1 border-b-2 border-black hover:bg-black hover:text-white transition-colors text-black">$1</a>');
+                    renderedContentHTML = `<div class="whitespace-pre-wrap text-black font-medium">${linkedContent}</div>`;
                 } else {
-                    renderedContentHTML = `<div class="whitespace-pre-wrap text-white">${escapeHTML(note.content)}</div>`;
+                    renderedContentHTML = `<div class="whitespace-pre-wrap text-black font-medium">${escapeHTML(note.content)}</div>`;
                 }
 
                 const visitButton = currentApp === 'mylink' ? `
-                    <button onclick="visitSite(${note.id}); event.stopPropagation();" class="text-white text-[12px] md:text-[13px] flex items-center font-bold hover:text-terminal-neon transition-colors">
-                        <i class="fa-solid fa-arrow-up-right-from-square mr-1.5 text-terminal-neon"></i> VISIT
+                    <button onclick="visitSite(${note.id}); event.stopPropagation();" class="brutal-btn-icon w-8 h-8 flex items-center justify-center text-black bg-white hover:bg-brutal-color" title="Visit">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
                     </button>
                 ` : '';
 
                 card.innerHTML = `
-                    <div class="accordion-toolbar" id="toolbar-${note.id}">
+                    <div class="accordion-toolbar border-b-4 border-black" id="toolbar-${note.id}">
                         <div class="toolbar-inner">
-                            <div class="bg-black px-4 py-2 border-b border-terminal-dim flex justify-between items-center transition-colors overflow-x-auto hide-scrollbar">
-                                <div class="flex space-x-4 pr-4 min-w-max">
-                                    <button onclick="copyNote(${note.id})" class="text-white text-[12px] md:text-[13px] flex items-center font-bold hover:text-terminal-neon transition-colors">
-                                        <i class="fa-regular fa-copy mr-1.5 text-terminal-neon"></i> COPY
+                            <div class="bg-gray-100 px-4 py-3 flex justify-between items-center transition-colors overflow-x-auto hide-scrollbar">
+                                <div class="flex space-x-3 pr-4 min-w-max">
+                                    <button onclick="copyNote(${note.id})" class="brutal-btn px-3 py-1 text-[12px] flex items-center bg-white hover:bg-brutal-color">
+                                        <i class="fa-regular fa-copy mr-2"></i> COPY
                                     </button>
-                                    <button onclick="downloadNote(${note.id})" class="text-white text-[12px] md:text-[13px] flex items-center font-bold hover:text-terminal-neon transition-colors">
-                                        <i class="fa-solid fa-download mr-1.5 text-terminal-neon"></i> DOWN
+                                    <button onclick="downloadNote(${note.id})" class="brutal-btn px-3 py-1 text-[12px] flex items-center bg-white hover:bg-brutal-color">
+                                        <i class="fa-solid fa-download mr-2"></i> DOWN
                                     </button>
-                                    <button onclick="openTransferModal(${note.id})" class="text-white text-[12px] md:text-[13px] flex items-center font-bold hover:text-terminal-neon transition-colors">
-                                        <i class="fa-solid fa-right-left mr-1.5 text-terminal-neon"></i> MOVE
+                                    <button onclick="openTransferModal(${note.id})" class="brutal-btn px-3 py-1 text-[12px] flex items-center bg-white hover:bg-brutal-color">
+                                        <i class="fa-solid fa-right-left mr-2"></i> MOVE
                                     </button>
                                     ${visitButton}
                                 </div>
-                                <div class="flex space-x-4 min-w-max">
-                                    <button onclick="openModal(${note.id})" class="text-white text-[12px] md:text-[13px] flex items-center font-bold hover:text-terminal-neon transition-colors">
-                                        <i class="fa-solid fa-pen-nib mr-1.5 text-terminal-neon"></i> EDIT
+                                <div class="flex space-x-3 min-w-max">
+                                    <button onclick="openModal(${note.id})" class="brutal-btn-icon w-8 h-8 flex items-center justify-center bg-white text-black hover:bg-brutal-color" title="Edit">
+                                        <i class="fa-solid fa-pen"></i>
                                     </button>
-                                    <button onclick="openDeleteAlert(${note.id})" class="text-white text-[12px] md:text-[13px] flex items-center font-bold hover:text-terminal-red transition-colors">
-                                        <i class="fa-solid fa-xmark mr-1.5 text-terminal-red"></i> DEL
+                                    <button onclick="openDeleteAlert(${note.id})" class="brutal-btn-icon w-8 h-8 flex items-center justify-center bg-white text-black hover:bg-[#ff3366]" title="Delete">
+                                        <i class="fa-solid fa-trash"></i>
                                     </button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="px-4 py-3.5 md:px-5 md:py-4 flex justify-between items-center cursor-pointer hover:bg-terminal-neon/10 transition-colors border-l-2 border-transparent group-hover:border-terminal-neon" onclick="toggleAccordion(${note.id})">
-                        <div class="flex-1 pr-3 overflow-hidden">
-                            <h3 class="font-bold text-[15px] md:text-[16px] text-white truncate">${displayTitle}</h3>
-                            <p class="text-[11px] md:text-[12px] text-white mt-1 font-mono">SYS.TIME: ${formatDateTime(note.timestamp)}</p>
+                    <div class="px-4 py-4 md:px-5 md:py-5 flex justify-between items-center cursor-pointer bg-white hover:bg-gray-50 transition-colors" onclick="toggleAccordion(${note.id})">
+                        <div class="flex-1 pr-4 overflow-hidden">
+                            <h3 class="font-black text-[16px] md:text-[20px] text-black truncate uppercase tracking-tight">${displayTitle}</h3>
+                            <div class="inline-block bg-black text-white px-2 py-0.5 mt-2">
+                                <p class="text-[10px] md:text-[11px] font-bold tracking-widest">${formatDateTime(note.timestamp)}</p>
+                            </div>
                         </div>
-                        <i class="fa-solid fa-chevron-down text-terminal-neon/60 text-sm chevron-icon" id="icon-${note.id}"></i>
+                        <div class="w-8 h-8 border-2 border-black flex items-center justify-center bg-brutal-color shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-colors duration-500">
+                            <i class="fa-solid fa-chevron-down text-black text-sm chevron-icon font-black" id="icon-${note.id}"></i>
+                        </div>
                     </div>
                     
-                    <div class="accordion-content" id="content-${note.id}">
+                    <div class="accordion-content border-t-4 border-black" id="content-${note.id}">
                         <div class="accordion-inner">
-                            <div class="px-4 pt-2 pb-4 md:px-5 md:pt-3 md:pb-5 border-t border-terminal-dim border-dashed bg-[#050505]">
-                                <div class="text-[13px] md:text-[14px] text-white break-words font-mono leading-relaxed">
+                            <div class="p-4 md:p-6 bg-[#fdfdfd] relative">
+                                <!-- Efek tape/selotip ala brutalism -->
+                                <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 w-16 h-6 bg-yellow-200 opacity-70 rotate-2 mix-blend-multiply border border-yellow-300"></div>
+                                <div class="text-[14px] md:text-[16px] text-black break-words font-mono leading-relaxed">
                                     ${renderedContentHTML}
                                 </div>
                             </div>
@@ -754,8 +858,8 @@
             Object.values(appsConfig).forEach(app => {
                 if (app.id !== currentApp) {
                     const btn = document.createElement('button');
-                    btn.className = 'p-3.5 text-left border-b border-terminal-neon/10 hover:bg-terminal-neon/20 transition-colors font-mono text-[13px] md:text-[14px] flex items-center group';
-                    btn.innerHTML = `<i class="fa-solid fa-folder-tree mr-3 text-terminal-neon/50 group-hover:text-terminal-neon transition-colors"></i> <span class="text-white">MOVE TO [ ${app.title} ]</span>`;
+                    btn.className = 'brutal-btn p-3 w-full text-left font-bold text-[14px] flex items-center bg-white hover:bg-black hover:text-white transition-colors';
+                    btn.innerHTML = `<i class="fa-solid fa-folder-open mr-3"></i> <span>MOVE TO ${app.title}</span>`;
                     btn.onclick = () => executeTransfer(app.id);
                     optionsContainer.appendChild(btn);
                 }
