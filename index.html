@@ -177,7 +177,7 @@
                     </button>
                     <button onclick="document.getElementById('import-file').click()" class="w-full flex items-center p-3 active:bg-gray-100">
                         <i class="fa-solid fa-cloud-arrow-up text-[20px] text-[#007AFF] w-7 text-center mr-2"></i>
-                        <span class="text-left text-[16px] text-[#007AFF]">Import Data</span>
+                        <span class="text-left text-[16px] text-[#007AFF]">Import & Sync Data</span>
                     </button>
                     <input type="file" id="import-file" accept=".json" class="hidden" onchange="importData(event)">
                 </div>
@@ -450,7 +450,10 @@
             const container = document.getElementById('notes-container');
             container.innerHTML = '';
 
-            if (notes.length === 0) {
+            // HANYA MENGAMBIL DATA YANG TIDAK DIHAPUS (deleted: false / undefined)
+            const activeNotes = notes.filter(n => !n.deleted);
+
+            if (activeNotes.length === 0) {
                 container.className = 'w-full h-full flex flex-col items-center justify-center pt-32 pb-10';
                 container.innerHTML = `
                     <div class="flex flex-col items-center justify-center text-gray-400">
@@ -464,9 +467,8 @@
 
             container.className = 'columns-1 md:columns-2 xl:columns-3 gap-4 w-full max-w-7xl mx-auto';
 
-            notes.sort((a, b) => b.timestamp - a.timestamp).forEach(note => {
+            activeNotes.sort((a, b) => b.timestamp - a.timestamp).forEach(note => {
                 const card = document.createElement('div');
-                // Kartu ala iOS Inset Grouped
                 card.className = 'bg-white rounded-xl shadow-sm overflow-hidden mb-4 inline-block w-full border border-gray-100';
                 
                 let displayTitle = 'New Note';
@@ -511,7 +513,6 @@
                 }
 
                 card.innerHTML = `
-                    <!-- Judul, Tombol Aksi, dan Waktu -->
                     <div class="px-4 py-3.5 flex justify-between items-center cursor-pointer active:bg-gray-50 transition-colors" onclick="toggleAccordion(${note.id})">
                         <div class="flex-1 pr-3 overflow-hidden">
                             <h3 class="font-semibold text-[17px] text-black truncate">${displayTitle}</h3>
@@ -525,7 +526,6 @@
                         </div>
                     </div>
                     
-                    <!-- Isi / Konten yang diekspansi -->
                     <div class="accordion-content border-t-[0.5px] border-gray-100" id="content-${note.id}">
                         <div class="accordion-inner bg-white">
                             <div class="p-4">
@@ -628,8 +628,8 @@
                 const note = notes.find(n => n.id === id);
                 if(note) {
                     idInput.value = note.id;
-                    titleInput.value = note.title;
-                    contentInput.value = note.content;
+                    titleInput.value = note.title || '';
+                    contentInput.value = note.content || '';
                     modalTitle.innerText = "Edit Note";
                 }
             } else {
@@ -643,7 +643,6 @@
                 modal.classList.remove('translate-y-full');
             }, 10);
             
-            // Auto focus pada input content
             setTimeout(() => contentInput.focus(), 300);
         }
 
@@ -670,13 +669,13 @@
                     notes[index].updatedAt = Date.now();
                 }
             } else {
-                notes.push({ id: Date.now(), title, content, timestamp: Date.now(), updatedAt: Date.now() });
+                notes.push({ id: Date.now(), title, content, timestamp: Date.now(), updatedAt: Date.now(), deleted: false });
             }
             saveToLocal();
             closeModal();
         }
 
-        // --- MANAJEMEN ALERT HAPUS ---
+        // --- MANAJEMEN ALERT HAPUS (SOFT DELETE) ---
         function openDeleteAlert(id) {
             noteToDelete = id;
             const overlay = document.getElementById('alert-overlay');
@@ -694,7 +693,13 @@
 
         function confirmDelete() {
             if (noteToDelete) {
-                notes = notes.filter(n => n.id !== noteToDelete);
+                // Diubah menggunakan SOFT DELETE (deleted: true). Supaya ketika disinkronisasi,
+                // PC / HP lain juga ikut menghapus data ini.
+                const index = notes.findIndex(n => n.id === noteToDelete);
+                if (index !== -1) {
+                    notes[index].deleted = true;
+                    notes[index].updatedAt = Date.now();
+                }
                 saveToLocal(); 
                 closeDeleteAlert();
             }
@@ -749,10 +754,17 @@
                 try { targetNotes = JSON.parse(savedTargetNotes); } catch (e) { targetNotes = []; }
             }
 
-            targetNotes.push(note);
+            // Copy ke folder target
+            const noteCopy = { ...note, updatedAt: Date.now(), deleted: false };
+            const existingIdx = targetNotes.findIndex(n => n.id === noteCopy.id);
+            if (existingIdx !== -1) targetNotes[existingIdx] = noteCopy;
+            else targetNotes.push(noteCopy);
+            
             localStorage.setItem(targetConfig.storageKey, JSON.stringify(targetNotes));
 
-            notes.splice(noteIndex, 1);
+            // Tandai dihapus di folder asal
+            notes[noteIndex].deleted = true;
+            notes[noteIndex].updatedAt = Date.now();
             saveToLocal(); 
             
             closeTransferModal();
@@ -774,12 +786,11 @@
                 btn.innerHTML = `<i class="${icon} w-6 text-center mr-3 text-[18px]"></i> <span class="font-medium">${text}</span>`;
                 btn.onclick = () => {
                     closeActionsModal();
-                    setTimeout(() => onClickFn(id), 300); // Tunggu sampai animasi action sheet selesai turun
+                    setTimeout(() => onClickFn(id), 300);
                 };
                 return btn;
             };
 
-            // Inject tombol ke Action Sheet secara dinamis
             optionsContainer.appendChild(createBtn('fa-regular fa-copy', 'Copy Text', copyNote));
             optionsContainer.appendChild(createBtn('fa-solid fa-download', 'Download File', downloadNote));
             
@@ -791,7 +802,6 @@
             optionsContainer.appendChild(createBtn('fa-regular fa-folder-open', 'Move to...', openTransferModal));
             optionsContainer.appendChild(createBtn('fa-regular fa-trash-can', 'Delete', openDeleteAlert, true));
 
-            // Set judul Action Sheet sesuai catatan
             let displayTitle = note.title;
             if (!displayTitle && note.content) {
                 const words = note.content.trim().split(/\s+/);
@@ -817,7 +827,7 @@
             setTimeout(() => { overlay.classList.add('hidden'); overlay.classList.remove('flex'); }, 300);
         }
 
-        // --- MANAJEMEN EXPORT & IMPORT DATA (BACKUP) ---
+        // --- MANAJEMEN EXPORT & IMPORT DATA (SYNC / MERGE) ---
         function exportData() {
             const backupData = {};
             for (const key in appsConfig) {
@@ -836,7 +846,7 @@
             downloadAnchorNode.setAttribute("href", dataStr);
             
             const dateStr = new Date().toISOString().slice(0,10).replace(/-/g, "");
-            downloadAnchorNode.setAttribute("download", `Backup_${dateStr}.json`);
+            downloadAnchorNode.setAttribute("download", `Backup_Sync_${dateStr}.json`);
             
             document.body.appendChild(downloadAnchorNode); 
             downloadAnchorNode.click();
@@ -855,24 +865,59 @@
                     const backupData = JSON.parse(e.target.result);
                     let importedCount = 0;
                     
+                    // PROSES MERGE DATA (GABUNGKAN DAN PILIH YANG TERBARU)
                     for (const key in appsConfig) {
                         const storageKey = appsConfig[key].storageKey;
+                        
                         if (backupData[storageKey]) {
-                            localStorage.setItem(storageKey, JSON.stringify(backupData[storageKey]));
+                            const incomingNotes = backupData[storageKey];
+                            if (!Array.isArray(incomingNotes)) continue;
+
+                            // 1. Ambil data lokal yang sudah ada
+                            let existingNotes = [];
+                            const existingDataStr = localStorage.getItem(storageKey);
+                            if (existingDataStr) {
+                                try { existingNotes = JSON.parse(existingDataStr); } catch(err) {}
+                            }
+
+                            // 2. Buat Map dari data lokal untuk pencarian cepat berdasarkan ID
+                            const notesMap = new Map();
+                            existingNotes.forEach(note => notesMap.set(note.id, note));
+
+                            // 3. Masukkan / Timpa dengan data dari file JSON yang masuk (berdasarkan updatedAt terbaru)
+                            incomingNotes.forEach(incomingNote => {
+                                const existingNote = notesMap.get(incomingNote.id);
+                                if (existingNote) {
+                                    const incomingTime = incomingNote.updatedAt || incomingNote.timestamp || 0;
+                                    const existingTime = existingNote.updatedAt || existingNote.timestamp || 0;
+
+                                    // Jika data import lebih baru dari data lokal, timpa
+                                    if (incomingTime > existingTime) {
+                                        notesMap.set(incomingNote.id, incomingNote);
+                                    }
+                                } else {
+                                    // Jika data belum ada, tambahkan
+                                    notesMap.set(incomingNote.id, incomingNote);
+                                }
+                            });
+
+                            // 4. Ubah kembali ke array dan simpan
+                            const mergedNotes = Array.from(notesMap.values());
+                            localStorage.setItem(storageKey, JSON.stringify(mergedNotes));
                             importedCount++;
                         }
                     }
                     
                     if (importedCount > 0) {
                         loadNotes(); 
-                        showToast("Data restored");
+                        showToast("Data synced successfully!");
                     } else {
-                        showToast("Invalid file");
+                        showToast("No valid data to sync");
                     }
                 } catch (err) {
-                    showToast("Failed to read file");
+                    showToast("Failed to read sync file");
                 }
-                event.target.value = '';
+                event.target.value = ''; // Reset input
             };
             reader.readAsText(file);
             
