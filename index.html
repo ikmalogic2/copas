@@ -160,9 +160,14 @@
                         <div class="w-7 h-7 rounded-md bg-[#AF52DE] text-white flex items-center justify-center mr-3"><i class="fa-solid fa-link text-sm"></i></div>
                         <span class="flex-1 text-left text-[16px]">My Link</span>
                     </button>
-                    <button id="nav-memo" onclick="switchApp('memo')" class="nav-btn w-full flex items-center p-3 active:bg-gray-100">
+                    <button id="nav-memo" onclick="switchApp('memo')" class="nav-btn w-full flex items-center p-3 border-b-[0.5px] border-gray-200 active:bg-gray-100">
                         <div class="w-7 h-7 rounded-md bg-[#FFCC00] text-white flex items-center justify-center mr-3"><i class="fa-solid fa-list-check text-sm"></i></div>
                         <span class="flex-1 text-left text-[16px]">Memo Tasks</span>
+                    </button>
+                    <!-- MODUL BARU: CAROUSEL -->
+                    <button id="nav-carousel" onclick="switchApp('carousel')" class="nav-btn w-full flex items-center p-3 active:bg-gray-100">
+                        <div class="w-7 h-7 rounded-md bg-[#FF2D55] text-white flex items-center justify-center mr-3"><i class="fa-solid fa-layer-group text-sm"></i></div>
+                        <span class="flex-1 text-left text-[16px]">Carousel Note</span>
                     </button>
                 </div>
             </div>
@@ -214,8 +219,15 @@
             </button>
             
             <input type="hidden" id="note-id">
-            <input type="text" id="note-title" placeholder="Title" class="w-full text-[22px] font-semibold focus:outline-none text-black placeholder-gray-400 py-2 border-b-[0.5px] border-gray-200 mb-2">
+            <input type="text" id="note-title" placeholder="Title" class="w-full text-[22px] font-semibold focus:outline-none text-black placeholder-gray-400 py-2 border-b-[0.5px] border-gray-200 mb-2 shrink-0">
+            
+            <!-- Kontainer Input Catatan Normal -->
             <textarea id="note-content" placeholder="Content..." class="w-full flex-1 text-[16px] focus:outline-none text-black placeholder-gray-400 resize-none leading-relaxed mt-2 font-normal"></textarea>
+            
+            <!-- Kontainer Input 8 Kartu Carousel (Hanya tampil saat modul Carousel aktif) -->
+            <div id="carousel-inputs" class="hidden flex-col w-full pb-10 space-y-4 mt-4">
+                <!-- 8 Kartu di-inject melalui JavaScript -->
+            </div>
         </div>
     </div>
 
@@ -310,6 +322,11 @@
                 id: 'memo', title: "Memo Tasks", tintColor: "#FFCC00", // Yellow
                 storageKey: "terminal_notes_memo",
                 inputPlaceholder: "Notes or tasks...", titlePlaceholder: "Memo Title"
+            },
+            carousel: {
+                id: 'carousel', title: "Carousel Note", tintColor: "#FF2D55", // Pink/Red
+                storageKey: "terminal_notes_carousel",
+                inputPlaceholder: "Content for items...", titlePlaceholder: "Carousel Group Title"
             }
         };
 
@@ -317,8 +334,23 @@
         let notes = [];
         let noteToDelete = null;
         let noteToTransfer = null;
-        let activeNoteId = null; // Menyimpan ID note yang sedang dibuka aksinya
+        let activeNoteId = null; 
         let openAccordions = new Set();
+
+        // Meng-inject 8 form ke dalam kontainer modal Carousel
+        function initCarouselInputs() {
+            const container = document.getElementById('carousel-inputs');
+            let html = '';
+            for(let i=1; i<=8; i++) {
+                html += `
+                    <div class="bg-gray-50/80 border border-gray-200 rounded-xl p-3 shadow-sm relative mt-2">
+                        <div class="absolute -top-2.5 -left-2.5 bg-[#FF2D55] text-white w-6 h-6 flex items-center justify-center rounded-full text-[11px] font-bold shadow-sm">${i}</div>
+                        <textarea id="car-content-${i}" placeholder="Card ${i} content..." class="w-full bg-transparent text-[15px] focus:outline-none text-black placeholder-gray-400 resize-none leading-relaxed mt-1 h-20"></textarea>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+        }
 
         // --- SISTEM SIDEBAR ---
         function toggleSidebar() {
@@ -341,7 +373,6 @@
             currentApp = appId;
             const config = appsConfig[appId];
 
-            // Set iOS Dynamic Tint Color
             document.documentElement.style.setProperty('--app-tint', config.tintColor);
             
             document.getElementById('app-title').innerText = config.title;
@@ -450,7 +481,6 @@
             const container = document.getElementById('notes-container');
             container.innerHTML = '';
 
-            // HANYA MENGAMBIL DATA YANG TIDAK DIHAPUS (deleted: false / undefined)
             const activeNotes = notes.filter(n => !n.deleted);
 
             if (activeNotes.length === 0) {
@@ -474,7 +504,7 @@
                 let displayTitle = 'New Note';
                 if (note.title) {
                     displayTitle = escapeHTML(note.title);
-                } else if (note.content) {
+                } else if (note.content && currentApp !== 'carousel') {
                     const words = note.content.trim().split(/\s+/);
                     displayTitle = escapeHTML(words.slice(0, 3).join(' '));
                     if (words.length > 3) displayTitle += '...';
@@ -486,7 +516,43 @@
                 }
 
                 let renderedContentHTML = '';
-                if (currentApp === 'memo') {
+                
+                if (currentApp === 'carousel') {
+                    // Logic Rendering Khusus Carousel
+                    let items = [];
+                    try { items = JSON.parse(note.content); } catch(e) { items = []; }
+                    if (!Array.isArray(items)) items = [];
+                    
+                    let cardsHtml = '';
+                    items.forEach((item, idx) => {
+                        let cContent = escapeHTML(item.content);
+                        let linkedContent = cContent.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" onclick="event.stopPropagation()" class="text-[#007AFF] underline underline-offset-2">$1</a>');
+                        
+                        let safeContent = cContent.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+
+                        cardsHtml += `
+                            <div class="snap-center shrink-0 w-[230px] bg-white border border-gray-200 rounded-xl p-3 flex flex-col shadow-sm max-h-[220px]">
+                                <div class="flex justify-between items-center mb-2 border-b-[0.5px] border-gray-100 pb-2">
+                                    <span class="text-[13px] text-gray-400 font-medium">Card ${idx+1}</span>
+                                    <button onclick="copyDirectText('${safeContent}'); event.stopPropagation();" class="text-gray-400 active:text-[var(--app-tint)] transition-colors">
+                                        <i class="fa-regular fa-copy text-[14px]"></i>
+                                    </button>
+                                </div>
+                                <div class="text-[14px] text-gray-700 whitespace-pre-wrap overflow-y-auto hide-scrollbar flex-1 leading-relaxed">${linkedContent}</div>
+                            </div>
+                        `;
+                    });
+
+                    // Bungkus dalam kontainer Horizontal Scroll
+                    renderedContentHTML = `
+                        <div class="bg-gray-100/50 -mx-4 -mt-4 p-4 pb-5 mb-[-1rem]">
+                            <div class="flex overflow-x-auto gap-3 snap-x hide-scrollbar">
+                                ${cardsHtml}
+                            </div>
+                        </div>
+                    `;
+
+                } else if (currentApp === 'memo') {
                     const lines = note.content.split('\n');
                     let taskIdx = 0;
                     renderedContentHTML = lines.map(line => {
@@ -543,7 +609,7 @@
             });
         }
 
-        // --- INTERAKSI UI ---
+        // --- INTERAKSI UI & COPY PASTE ---
         function toggleAccordion(id) {
             const content = document.getElementById(`content-${id}`);
             const icon = document.getElementById(`icon-${id}`);
@@ -570,10 +636,42 @@
             }, 2000);
         }
 
+        // Fungsi khusus menyalin catatan individu dalam Carousel
+        window.copyDirectText = function(content) {
+            if(!content) {
+                showToast("Card is empty");
+                return;
+            }
+            const textToCopy = content;
+            const textArea = document.createElement("textarea");
+            textArea.value = textToCopy;
+            textArea.style.position = "fixed"; document.body.appendChild(textArea);
+            textArea.focus(); textArea.select();
+            try { document.execCommand('copy'); showToast("Card Copied"); } 
+            catch (err) { showToast("Failed to copy"); }
+            document.body.removeChild(textArea);
+        };
+
         function copyNote(id) {
             const note = notes.find(n => n.id === id);
             if (!note) return;
-            const textToCopy = note.title ? `${note.title}\n\n${note.content}` : note.content;
+            let textToCopy = '';
+
+            if (currentApp === 'carousel') {
+                // Saat menyalin induk Carousel, satukan 8 catatan
+                let items = [];
+                try { items = JSON.parse(note.content); } catch(e) {}
+                let formatted = [];
+                if(note.title) formatted.push(`== ${note.title} ==\n`);
+                items.forEach((it, idx) => {
+                    if(it.content) {
+                        formatted.push(`[Card ${idx+1}]\n${it.content}\n`);
+                    }
+                });
+                textToCopy = formatted.join('\n');
+            } else {
+                textToCopy = note.title ? `${note.title}\n\n${note.content}` : note.content;
+            }
             
             const textArea = document.createElement("textarea");
             textArea.value = textToCopy;
@@ -589,7 +687,22 @@
             const note = notes.find(n => n.id === id);
             if (!note) return;
             
-            const textToDownload = note.title ? `${note.title}\n\n${note.content}` : note.content;
+            let textToDownload = '';
+            if (currentApp === 'carousel') {
+                let items = [];
+                try { items = JSON.parse(note.content); } catch(e) {}
+                let formatted = [];
+                if(note.title) formatted.push(`== ${note.title} ==\n`);
+                items.forEach((it, idx) => {
+                    if(it.content) {
+                        formatted.push(`[Card ${idx+1}]\n${it.content}\n`);
+                    }
+                });
+                textToDownload = formatted.join('\n');
+            } else {
+                textToDownload = note.title ? `${note.title}\n\n${note.content}` : note.content;
+            }
+
             const blob = new Blob([textToDownload], { type: 'text/plain' });
             const url = URL.createObjectURL(blob);
             
@@ -620,21 +733,50 @@
             const overlay = document.getElementById('modal-overlay');
             const modal = document.getElementById('modal');
             const titleInput = document.getElementById('note-title');
-            const contentInput = document.getElementById('note-content');
+            const normalContent = document.getElementById('note-content');
+            const carouselContent = document.getElementById('carousel-inputs');
             const idInput = document.getElementById('note-id');
             const modalTitle = document.getElementById('modal-title');
+
+            // Setelan Tampilan Tipe Note
+            if (currentApp === 'carousel') {
+                normalContent.classList.add('hidden');
+                carouselContent.classList.remove('hidden');
+                carouselContent.classList.add('flex');
+            } else {
+                normalContent.classList.remove('hidden');
+                carouselContent.classList.add('hidden');
+                carouselContent.classList.remove('flex');
+            }
 
             if (id) {
                 const note = notes.find(n => n.id === id);
                 if(note) {
                     idInput.value = note.id;
                     titleInput.value = note.title || '';
-                    contentInput.value = note.content || '';
                     modalTitle.innerText = "Edit Note";
+                    
+                    if (currentApp === 'carousel') {
+                        let parsed = [];
+                        try { parsed = JSON.parse(note.content); } catch(e) {}
+                        for(let i=1; i<=8; i++) {
+                            const item = parsed[i-1] || {content: ''};
+                            document.getElementById(`car-content-${i}`).value = item.content || '';
+                        }
+                    } else {
+                        normalContent.value = note.content || '';
+                    }
                 }
             } else {
-                idInput.value = ""; titleInput.value = ""; contentInput.value = "";
+                idInput.value = ""; titleInput.value = ""; 
                 modalTitle.innerText = "New Note";
+                if (currentApp === 'carousel') {
+                    for(let i=1; i<=8; i++) {
+                        document.getElementById(`car-content-${i}`).value = '';
+                    }
+                } else {
+                    normalContent.value = "";
+                }
             }
 
             overlay.classList.remove('hidden');
@@ -643,7 +785,11 @@
                 modal.classList.remove('translate-y-full');
             }, 10);
             
-            setTimeout(() => contentInput.focus(), 300);
+            // Auto focus
+            setTimeout(() => {
+                if(currentApp === 'carousel') document.getElementById('car-content-1').focus();
+                else normalContent.focus();
+            }, 300);
         }
 
         function closeModal() {
@@ -657,19 +803,32 @@
         function saveNote() {
             const idInput = document.getElementById('note-id').value;
             const title = document.getElementById('note-title').value.trim();
-            const content = document.getElementById('note-content').value.trim();
+            let contentStr = '';
 
-            if (!title && !content) return; // Silent return for empty saves like iOS
+            if (currentApp === 'carousel') {
+                const carouselData = [];
+                let hasData = false;
+                for(let i=1; i<=8; i++) {
+                    const cContent = document.getElementById(`car-content-${i}`).value.trim();
+                    if(cContent) hasData = true;
+                    carouselData.push({ content: cContent });
+                }
+                if (!title && !hasData) return; // Kosong
+                contentStr = JSON.stringify(carouselData);
+            } else {
+                contentStr = document.getElementById('note-content').value.trim();
+                if (!title && !contentStr) return; 
+            }
 
             if (idInput) {
                 const index = notes.findIndex(n => n.id === parseInt(idInput));
                 if (index !== -1) {
                     notes[index].title = title; 
-                    notes[index].content = content; 
+                    notes[index].content = contentStr; 
                     notes[index].updatedAt = Date.now();
                 }
             } else {
-                notes.push({ id: Date.now(), title, content, timestamp: Date.now(), updatedAt: Date.now(), deleted: false });
+                notes.push({ id: Date.now(), title, content: contentStr, timestamp: Date.now(), updatedAt: Date.now(), deleted: false });
             }
             saveToLocal();
             closeModal();
@@ -693,8 +852,6 @@
 
         function confirmDelete() {
             if (noteToDelete) {
-                // Diubah menggunakan SOFT DELETE (deleted: true). Supaya ketika disinkronisasi,
-                // PC / HP lain juga ikut menghapus data ini.
                 const index = notes.findIndex(n => n.id === noteToDelete);
                 if (index !== -1) {
                     notes[index].deleted = true;
@@ -754,7 +911,6 @@
                 try { targetNotes = JSON.parse(savedTargetNotes); } catch (e) { targetNotes = []; }
             }
 
-            // Copy ke folder target
             const noteCopy = { ...note, updatedAt: Date.now(), deleted: false };
             const existingIdx = targetNotes.findIndex(n => n.id === noteCopy.id);
             if (existingIdx !== -1) targetNotes[existingIdx] = noteCopy;
@@ -762,7 +918,6 @@
             
             localStorage.setItem(targetConfig.storageKey, JSON.stringify(targetNotes));
 
-            // Tandai dihapus di folder asal
             notes[noteIndex].deleted = true;
             notes[noteIndex].updatedAt = Date.now();
             saveToLocal(); 
@@ -803,7 +958,7 @@
             optionsContainer.appendChild(createBtn('fa-regular fa-trash-can', 'Delete', openDeleteAlert, true));
 
             let displayTitle = note.title;
-            if (!displayTitle && note.content) {
+            if (!displayTitle && note.content && currentApp !== 'carousel') {
                 const words = note.content.trim().split(/\s+/);
                 displayTitle = words.slice(0, 3).join(' ') + (words.length > 3 ? '...' : '');
             }
@@ -865,7 +1020,6 @@
                     const backupData = JSON.parse(e.target.result);
                     let importedCount = 0;
                     
-                    // PROSES MERGE DATA (GABUNGKAN DAN PILIH YANG TERBARU)
                     for (const key in appsConfig) {
                         const storageKey = appsConfig[key].storageKey;
                         
@@ -873,35 +1027,29 @@
                             const incomingNotes = backupData[storageKey];
                             if (!Array.isArray(incomingNotes)) continue;
 
-                            // 1. Ambil data lokal yang sudah ada
                             let existingNotes = [];
                             const existingDataStr = localStorage.getItem(storageKey);
                             if (existingDataStr) {
                                 try { existingNotes = JSON.parse(existingDataStr); } catch(err) {}
                             }
 
-                            // 2. Buat Map dari data lokal untuk pencarian cepat berdasarkan ID
                             const notesMap = new Map();
                             existingNotes.forEach(note => notesMap.set(note.id, note));
 
-                            // 3. Masukkan / Timpa dengan data dari file JSON yang masuk (berdasarkan updatedAt terbaru)
                             incomingNotes.forEach(incomingNote => {
                                 const existingNote = notesMap.get(incomingNote.id);
                                 if (existingNote) {
                                     const incomingTime = incomingNote.updatedAt || incomingNote.timestamp || 0;
                                     const existingTime = existingNote.updatedAt || existingNote.timestamp || 0;
 
-                                    // Jika data import lebih baru dari data lokal, timpa
                                     if (incomingTime > existingTime) {
                                         notesMap.set(incomingNote.id, incomingNote);
                                     }
                                 } else {
-                                    // Jika data belum ada, tambahkan
                                     notesMap.set(incomingNote.id, incomingNote);
                                 }
                             });
 
-                            // 4. Ubah kembali ke array dan simpan
                             const mergedNotes = Array.from(notesMap.values());
                             localStorage.setItem(storageKey, JSON.stringify(mergedNotes));
                             importedCount++;
@@ -917,7 +1065,7 @@
                 } catch (err) {
                     showToast("Failed to read sync file");
                 }
-                event.target.value = ''; // Reset input
+                event.target.value = ''; 
             };
             reader.readAsText(file);
             
@@ -926,7 +1074,10 @@
         }
 
         // EKSEKUSI AWAL
-        window.onload = () => switchApp('copasional');
+        window.onload = () => {
+            initCarouselInputs();
+            switchApp('copasional');
+        };
     </script>
 </body>
 </html>
