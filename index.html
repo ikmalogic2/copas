@@ -1,47 +1,50 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>MULTI TERMINAL APP</title>
+    <title>Simple Categorized Notes</title>
     
+    <!-- Google Fonts: Space Grotesk -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
     
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        :root {
-            /* iOS Colors */
-            --ios-bg: #F2F2F7;
-            --ios-card: #FFFFFF;
-            --ios-text-main: #000000;
-            --ios-text-secondary: #8E8E93;
-            --ios-divider: #C6C6C8;
-            
-            /* Dynamic App Tint (Default Blue) */
-            --app-tint: #007AFF;
-            --app-tint-bg: rgba(0, 122, 255, 0.1);
-        }
-
         body {
-            background-color: var(--ios-bg);
-            color: var(--ios-text-main);
-            /* Font sistem iOS */
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             -webkit-tap-highlight-color: transparent;
-            -webkit-font-smoothing: antialiased;
         }
 
-        /* Styling Scrollbar Transparan */
         ::-webkit-scrollbar { width: 0px; height: 0px; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* Animasi Transisi Halus iOS */
-        .ios-transition { transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
+        /* Animasi Modal */
+        .modal-enter { transform: translateY(100%); opacity: 0; transition: all 0.3s ease-out; }
+        .modal-active { transform: translateY(0); opacity: 1; }
         
-        /* Akordion */
+        .glass-header {
+            background-color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .dark .glass-header {
+            background-color: rgba(17, 24, 39, 0.85);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* Akordion Setup */
         .accordion-content {
             display: grid;
             grid-template-rows: 0fr;
@@ -52,1050 +55,799 @@
 
         .chevron-icon { transition: transform 0.3s ease; }
         .chevron-icon.open { transform: rotate(180deg); }
-
-        /* Custom Checkbox (Lingkaran ala iOS) */
-        input[type="checkbox"].theme-checkbox {
-            appearance: none;
-            background-color: transparent;
-            margin: 0;
-            width: 22px;
-            height: 22px;
-            border: 1.5px solid var(--ios-text-secondary);
-            border-radius: 50%;
-            display: grid;
-            place-content: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            position: relative;
-        }
-
-        input[type="checkbox"].theme-checkbox:checked {
-            background-color: var(--app-tint);
-            border-color: var(--app-tint);
-        }
-
-        input[type="checkbox"].theme-checkbox:checked::before {
-            content: "";
-            width: 6px;
-            height: 11px;
-            border: solid white;
-            border-width: 0 2px 2px 0;
-            transform: rotate(45deg) translate(-1px, -1px);
-        }
-
-        /* Komponen iOS */
-        .ios-btn-text {
-            color: var(--app-tint);
-            font-weight: 500;
-        }
-        .ios-btn-text:active { opacity: 0.5; }
-        
-        .ios-btn-icon:active { opacity: 0.5; }
-
-        /* Glassmorphism Header */
-        .ios-header {
-            background-color: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-bottom: 0.5px solid rgba(0,0,0,0.15);
-        }
-        
-        /* Alert Dialog Styling */
-        .ios-alert-border-b { border-bottom: 0.5px solid rgba(60,60,67,0.29); }
-        .ios-alert-border-r { border-right: 0.5px solid rgba(60,60,67,0.29); }
     </style>
 </head>
+<body class="flex flex-col h-screen overflow-hidden bg-[#F2F2F7] dark:bg-gray-900 transition-colors duration-300">
 
-<body class="flex flex-col h-screen w-full overflow-hidden" id="app-body">
-
-    <!-- Header Navigation Bar -->
-    <header class="ios-header fixed top-0 w-full z-20 h-12 pt-safe flex items-center justify-between px-4">
-        <button onclick="toggleSidebar()" class="w-10 h-10 flex items-center justify-start text-black active:opacity-50 transition-opacity text-[24px]">
-            <i class="fa-solid fa-bars"></i>
-        </button>
+    <!-- Header dengan Tombol Aksi -->
+    <header class="glass-header fixed top-0 w-full z-20 h-14 flex items-center justify-between px-4 md:px-5">
+        <h1 class="text-[17px] font-bold text-gray-800 dark:text-white tracking-tight">My Notes</h1>
         
-        <h1 id="app-title" class="text-[17px] font-semibold tracking-tight absolute left-1/2 transform -translate-x-1/2 pointer-events-none">
-            App Title
-        </h1>
+        <div class="flex items-center space-x-3">
+            <input type="file" id="import-file" accept=".json" class="hidden" onchange="importData(event)">
+            
+            <button onclick="document.getElementById('import-file').click()" class="w-8 h-8 flex items-center justify-center text-gray-500 dark:text-gray-400 active:opacity-50 text-[18px]" title="Import Data">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+            </button>
+            <button onclick="exportData()" class="w-8 h-8 flex items-center justify-center text-gray-500 dark:text-gray-400 active:opacity-50 text-[18px]" title="Export Data">
+                <i class="fa-solid fa-cloud-arrow-down"></i>
+            </button>
+            
+            <div class="w-px h-5 bg-gray-300 dark:bg-gray-700 mx-1"></div>
+            
+            <!-- Tombol Toggle Theme -->
+            <button onclick="toggleTheme()" id="btn-theme" class="w-8 h-8 flex items-center justify-center text-yellow-500 active:opacity-50 text-[18px]" title="Ubah Tema">
+                <i class="fa-solid fa-sun" id="theme-icon"></i>
+            </button>
 
-        <button onclick="openModal()" class="w-10 h-10 flex items-center justify-end text-black active:opacity-50 transition-opacity text-[24px]">
-            <i class="fa-solid fa-plus"></i>
-        </button>
+            <button onclick="toggleGroupView()" id="btn-group" class="w-8 h-8 flex items-center justify-center text-indigo-500 active:opacity-50 text-[18px]" title="Kategorikan">
+                <i class="fa-solid fa-layer-group"></i>
+            </button>
+            <button onclick="openModal()" class="w-8 h-8 flex items-center justify-center text-blue-600 dark:text-blue-400 active:opacity-50 text-[24px]" title="Tambah Catatan">
+                <i class="fa-solid fa-circle-plus"></i>
+            </button>
+        </div>
     </header>
 
-    <!-- Overlay Sidebar -->
-    <div id="sidebar-backdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/40 z-30 hidden transition-opacity duration-300 opacity-0"></div>
-
-    <!-- Sidebar Layout (Slide dari kiri) -->
-    <aside id="sidebar" class="fixed top-0 left-0 h-full w-[280px] bg-[#F2F2F7] transition-transform duration-300 z-40 -translate-x-full shadow-2xl flex flex-col">
-        <div class="h-12 ios-header flex items-center px-4 pt-safe shrink-0">
-            <h2 class="font-semibold text-[17px]">Modules</h2>
-        </div>
-        
-        <nav class="flex-1 overflow-y-auto hide-scrollbar p-4 space-y-6">
-            <!-- App Navigation Group -->
-            <div>
-                <div class="bg-white rounded-xl overflow-hidden shadow-sm">
-                    <button id="nav-copasional" onclick="switchApp('copasional')" class="nav-btn w-full flex items-center p-3 border-b-[0.5px] border-gray-200 active:bg-gray-100">
-                        <div class="w-7 h-7 rounded-md bg-[#34C759] text-white flex items-center justify-center mr-3"><i class="fa-solid fa-clipboard text-sm"></i></div>
-                        <span class="flex-1 text-left text-[16px]">Copasional</span>
-                    </button>
-                    
-                    <!-- MODULE CAROUSEL DITAMBAHKAN -->
-                    <button id="nav-carousel" onclick="switchApp('carousel')" class="nav-btn w-full flex items-center p-3 border-b-[0.5px] border-gray-200 active:bg-gray-100">
-                        <div class="w-7 h-7 rounded-md bg-[#FF2D55] text-white flex items-center justify-center mr-3"><i class="fa-solid fa-layer-group text-sm"></i></div>
-                        <span class="flex-1 text-left text-[16px]">Carousel Notes</span>
-                    </button>
-
-                    <button id="nav-error" onclick="switchApp('error')" class="nav-btn w-full flex items-center p-3 border-b-[0.5px] border-gray-200 active:bg-gray-100">
-                        <div class="w-7 h-7 rounded-md bg-[#FF3B30] text-white flex items-center justify-center mr-3"><i class="fa-solid fa-bug text-sm"></i></div>
-                        <span class="flex-1 text-left text-[16px]">Error Book</span>
-                    </button>
-                    <button id="nav-myprompt" onclick="switchApp('myprompt')" class="nav-btn w-full flex items-center p-3 border-b-[0.5px] border-gray-200 active:bg-gray-100">
-                        <div class="w-7 h-7 rounded-md bg-[#FF9500] text-white flex items-center justify-center mr-3"><i class="fa-solid fa-keyboard text-sm"></i></div>
-                        <span class="flex-1 text-left text-[16px]">My Prompt</span>
-                    </button>
-                    <button id="nav-myinstruction" onclick="switchApp('myinstruction')" class="nav-btn w-full flex items-center p-3 border-b-[0.5px] border-gray-200 active:bg-gray-100">
-                        <div class="w-7 h-7 rounded-md bg-[#5856D6] text-white flex items-center justify-center mr-3"><i class="fa-solid fa-code text-sm"></i></div>
-                        <span class="flex-1 text-left text-[16px]">Instruction</span>
-                    </button>
-                    <button id="nav-mylink" onclick="switchApp('mylink')" class="nav-btn w-full flex items-center p-3 border-b-[0.5px] border-gray-200 active:bg-gray-100">
-                        <div class="w-7 h-7 rounded-md bg-[#AF52DE] text-white flex items-center justify-center mr-3"><i class="fa-solid fa-link text-sm"></i></div>
-                        <span class="flex-1 text-left text-[16px]">My Link</span>
-                    </button>
-                    <button id="nav-memo" onclick="switchApp('memo')" class="nav-btn w-full flex items-center p-3 active:bg-gray-100">
-                        <div class="w-7 h-7 rounded-md bg-[#FFCC00] text-white flex items-center justify-center mr-3"><i class="fa-solid fa-list-check text-sm"></i></div>
-                        <span class="flex-1 text-left text-[16px]">Memo Tasks</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Settings Group -->
-            <div>
-                <h3 class="text-[13px] uppercase text-gray-500 font-medium ml-4 mb-1">Backup & Restore</h3>
-                <div class="bg-white rounded-xl overflow-hidden shadow-sm">
-                    <button onclick="exportData()" class="w-full flex items-center p-3 border-b-[0.5px] border-gray-200 active:bg-gray-100">
-                        <i class="fa-solid fa-cloud-arrow-down text-[20px] text-[#007AFF] w-7 text-center mr-2"></i>
-                        <span class="text-left text-[16px] text-[#007AFF]">Export Data</span>
-                    </button>
-                    <button onclick="document.getElementById('import-file').click()" class="w-full flex items-center p-3 active:bg-gray-100">
-                        <i class="fa-solid fa-cloud-arrow-up text-[20px] text-[#007AFF] w-7 text-center mr-2"></i>
-                        <span class="text-left text-[16px] text-[#007AFF]">Import & Sync Data</span>
-                    </button>
-                    <input type="file" id="import-file" accept=".json" class="hidden" onchange="importData(event)">
-                </div>
-            </div>
-        </nav>
-    </aside>
-
-    <!-- Area Utama / List Konten -->
-    <main class="flex-1 overflow-y-auto hide-scrollbar pt-[60px] pb-10 px-4" id="main-scroll-area">
-        <div id="notes-container" class="w-full max-w-5xl mx-auto space-y-4">
-            <!-- Kartu catatan via JS -->
+    <!-- Area Utama -->
+    <main class="flex-1 overflow-y-auto hide-scrollbar pt-16 pb-10 px-4" id="main-area">
+        <div id="notes-container" class="w-full max-w-3xl mx-auto space-y-4">
+            <!-- Catatan akan di-render di sini via JavaScript -->
         </div>
     </main>
 
-    <!-- Modal Form (Bottom Sheet ala iOS) -->
-    <div id="modal-overlay" class="fixed inset-0 bg-black/40 z-30 hidden opacity-0 transition-opacity duration-300" onclick="closeModal()"></div>
+    <!-- MODAL TAMBAH/EDIT CATATAN -->
+    <div id="modal-overlay" class="fixed inset-0 bg-black/50 dark:bg-black/70 z-30 hidden opacity-0 transition-opacity duration-300" onclick="closeModal()"></div>
     
-    <div id="modal" class="fixed inset-x-0 bottom-0 z-40 bg-white rounded-t-2xl transform translate-y-full transition-transform duration-300 h-[85vh] md:h-[70vh] flex flex-col w-full md:max-w-2xl md:mx-auto shadow-2xl">
-        
-        <!-- Handle & Header Modal -->
-        <div class="flex flex-col items-center justify-center pt-2 pb-2 ios-alert-border-b bg-gray-50 rounded-t-2xl shrink-0">
-            <div class="w-10 h-1.5 bg-gray-300 rounded-full mb-2 mt-1"></div>
-            <div class="flex justify-between items-center w-full px-4">
-                <button onclick="closeModal()" class="text-black active:opacity-50 transition-opacity text-[16px]">Cancel</button>
-                <h2 class="font-semibold text-[17px]" id="modal-title">New Note</h2>
-                <button onclick="saveNote()" class="text-black active:opacity-50 transition-opacity text-[16px] font-semibold">Save</button>
-            </div>
+    <div id="modal" class="fixed inset-x-0 bottom-0 z-40 bg-white dark:bg-gray-800 rounded-t-3xl h-[85vh] md:max-w-2xl md:mx-auto shadow-2xl modal-enter flex flex-col transition-colors">
+        <div class="flex justify-between items-center px-5 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded-t-3xl shrink-0">
+            <button onclick="closeModal()" class="text-gray-500 dark:text-gray-400 font-medium">Batal</button>
+            <h2 class="font-semibold text-[17px] text-gray-800 dark:text-white" id="modal-title">Buat Catatan</h2>
+            <button onclick="saveNote()" class="text-blue-600 dark:text-blue-400 font-bold">Simpan</button>
         </div>
         
-        <!-- Area Input -->
-        <div class="p-4 flex-1 flex flex-col overflow-y-auto hide-scrollbar bg-white relative">
-            <button id="btn-insert-checkbox" onclick="insertCheckbox()" class="hidden absolute right-4 top-4 bg-gray-100 text-gray-700 px-3 py-1.5 rounded-full text-[13px] font-medium active:bg-gray-200 z-10">
-                <i class="fa-solid fa-check-square mr-1"></i> Add Task
-            </button>
-            
+        <div class="p-5 flex-1 overflow-y-auto hide-scrollbar bg-white dark:bg-gray-800">
             <input type="hidden" id="note-id">
-            <!-- Global Title Input (Dipakai oleh Mode Normal maupun Mode Carousel) -->
-            <input type="text" id="note-title" placeholder="Title" class="w-full text-[22px] font-semibold focus:outline-none text-black placeholder-gray-400 py-2 border-b-[0.5px] border-gray-200 mb-2 shrink-0">
             
-            <!-- Kontainer Input Normal -->
-            <div id="normal-inputs" class="w-full flex-1 flex flex-col">
-                <textarea id="note-content" placeholder="Content..." class="w-full flex-1 text-[16px] focus:outline-none text-black placeholder-gray-400 resize-none leading-relaxed mt-2 font-normal"></textarea>
+            <div class="mb-4">
+                <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1">Pilih Kategori</label>
+                <div class="relative">
+                    <select id="note-category" onchange="toggleInputFields()" class="w-full appearance-none bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-3 px-4 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-gray-600 transition-colors">
+                        <option value="copasional">📋 Copasional</option>
+                        <option value="carousel">🗂️ Carousel Notes</option>
+                        <option value="mypassword">🔑 My Password</option>
+                        <option value="error">🐛 Error Book</option>
+                        <option value="myprompt">⌨️ My Prompt</option>
+                        <option value="myinstruction">💻 Instruction</option>
+                        <option value="mylink">🔗 My Link</option>
+                        <option value="memo">📝 Memo Tasks</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500 dark:text-gray-400">
+                        <i class="fa-solid fa-chevron-down text-sm"></i>
+                    </div>
+                </div>
             </div>
 
-            <!-- Kontainer Input Carousel (8 Kartu) -->
-            <div id="carousel-inputs" class="w-full flex flex-col hidden pb-10">
-                <!-- Di-inject via JS: 8 Textarea Konten -->
+            <div class="mb-4">
+                <input type="text" id="note-title" placeholder="Judul Catatan..." class="w-full text-[20px] font-bold focus:outline-none text-black dark:text-white bg-transparent placeholder-gray-300 dark:placeholder-gray-500 py-2 border-b border-gray-100 dark:border-gray-700">
+            </div>
+
+            <!-- Bagian Lampiran (Upload Gambar / File) -->
+            <div class="mb-4">
+                <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">Lampiran (Maks 2MB/File)</label>
+                <div class="flex space-x-2 mb-2">
+                    <button onclick="document.getElementById('attach-image').click()" class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 px-3 py-2 rounded-lg text-sm font-medium transition"><i class="fa-solid fa-image text-blue-500 dark:text-blue-400 mr-1"></i> Gambar</button>
+                    <button onclick="document.getElementById('attach-file').click()" class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 px-3 py-2 rounded-lg text-sm font-medium transition"><i class="fa-solid fa-paperclip text-purple-500 dark:text-purple-400 mr-1"></i> File</button>
+                    <input type="file" id="attach-image" accept="image/*" class="hidden" onchange="handleFileUpload(event, 'image')" multiple>
+                    <input type="file" id="attach-file" accept=".txt,.pdf,.html,.json,.doc,.docx,.xls,.xlsx,.csv" class="hidden" onchange="handleFileUpload(event, 'file')" multiple>
+                </div>
+                <!-- Tempat Preview File yang Diunggah -->
+                <div id="attachment-preview" class="flex flex-wrap gap-2"></div>
+            </div>
+            
+            <!-- Mode Teks Biasa -->
+            <div id="normal-input-container" class="w-full flex-col flex h-48">
+                <textarea id="note-content" placeholder="Ketik isi catatan di sini..." class="w-full h-full text-[16px] focus:outline-none text-gray-700 dark:text-gray-200 placeholder-gray-300 dark:placeholder-gray-500 resize-none leading-relaxed bg-gray-50 dark:bg-gray-700 p-3 rounded-xl border border-gray-100 dark:border-gray-600"></textarea>
+            </div>
+
+            <!-- Mode Carousel -->
+            <div id="carousel-input-container" class="w-full flex-col hidden space-y-3 pb-5"></div>
+            
+            <!-- Mode My Password -->
+            <div id="mypassword-input-container" class="w-full flex-col hidden space-y-4 pb-5">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-1">Username / Email</label>
+                    <input type="text" id="pw-username" placeholder="Masukkan Username..." class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-1">Password</label>
+                    <input type="text" id="pw-password" placeholder="Masukkan Password..." class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-1">Link / URL</label>
+                    <input type="url" id="pw-link" placeholder="https://..." class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Alert Konfirmasi Hapus (iOS Style) -->
-    <div id="alert-overlay" class="fixed inset-0 bg-black/40 z-50 hidden items-center justify-center opacity-0 transition-opacity duration-300 backdrop-blur-[2px]">
-        <div id="alert-box" class="bg-white/90 backdrop-blur-xl w-[270px] rounded-2xl overflow-hidden transform scale-100 transition-transform duration-300 text-center">
-            <div class="pt-5 pb-4 px-4 ios-alert-border-b">
-                <h3 class="font-semibold text-[17px] text-black">Delete Note?</h3>
-                <p class="text-[13px] text-black mt-1">This action cannot be undone.</p>
+    <!-- CUSTOM DELETE CONFIRMATION ALERT -->
+    <div id="delete-alert-overlay" class="fixed inset-0 bg-black/50 dark:bg-black/70 z-50 hidden flex-col items-center justify-center opacity-0 transition-opacity duration-300 backdrop-blur-[2px]">
+        <div id="delete-alert-box" class="bg-white dark:bg-gray-800 w-[270px] rounded-2xl overflow-hidden transform scale-95 transition-transform duration-300 text-center shadow-2xl">
+            <div class="pt-5 pb-4 px-4 border-b border-gray-100 dark:border-gray-700">
+                <h3 class="font-semibold text-[17px] text-gray-900 dark:text-white">Hapus Catatan?</h3>
+                <p class="text-[13px] text-gray-500 dark:text-gray-400 mt-1">Tindakan ini tidak dapat dibatalkan.</p>
             </div>
             <div class="flex h-11">
-                <button onclick="closeDeleteAlert()" class="flex-1 text-[#007AFF] text-[17px] ios-alert-border-r active:bg-gray-200/50">Cancel</button>
-                <button onclick="confirmDelete()" class="flex-1 text-[#FF3B30] font-semibold text-[17px] active:bg-gray-200/50">Delete</button>
+                <button onclick="closeDeleteAlert()" class="flex-1 text-blue-600 dark:text-blue-400 text-[17px] border-r border-gray-100 dark:border-gray-700 active:bg-gray-50 dark:active:bg-gray-700 transition-colors">Batal</button>
+                <button onclick="confirmDelete()" class="flex-1 text-red-600 dark:text-red-400 font-semibold text-[17px] active:bg-gray-50 dark:active:bg-gray-700 transition-colors">Hapus</button>
             </div>
         </div>
     </div>
 
-    <!-- Modal Transfer (iOS Action Sheet) -->
-    <div id="transfer-overlay" class="fixed inset-0 bg-black/40 z-50 hidden flex-col justify-end p-2 opacity-0 transition-opacity duration-300 backdrop-blur-[2px]">
-        <div id="transfer-box" class="w-full max-w-sm mx-auto transform translate-y-full transition-transform duration-300 mb-safe">
-            <div class="bg-white/90 backdrop-blur-xl rounded-xl overflow-hidden mb-2">
-                <div class="py-3 px-4 text-center ios-alert-border-b">
-                    <span class="text-[13px] text-gray-500 font-semibold">Move Note To...</span>
-                </div>
-                <div id="transfer-options" class="flex flex-col max-h-[50vh] overflow-y-auto hide-scrollbar">
-                    <!-- Opsi Jendela Sidebar diinject via JS -->
-                </div>
-            </div>
-            <button onclick="closeTransferModal()" class="w-full bg-white rounded-xl py-3.5 text-[#007AFF] font-semibold text-[20px] active:bg-gray-100">
-                Cancel
-            </button>
-        </div>
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-800 dark:bg-white text-white dark:text-gray-900 px-5 py-3 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-300 translate-y-20 opacity-0 z-50 flex items-center pointer-events-none">
+        <i class="fa-solid fa-check-circle text-green-400 dark:text-green-500 text-lg mr-3"></i>
+        <span id="toast-message" class="text-[14px] font-medium">Teks berhasil disalin!</span>
     </div>
 
-    <!-- Modal Note Actions (iOS Action Sheet) -->
-    <div id="actions-overlay" class="fixed inset-0 bg-black/40 z-50 hidden flex-col justify-end p-2 opacity-0 transition-opacity duration-300 backdrop-blur-[2px]">
-        <div id="actions-box" class="w-full max-w-sm mx-auto transform translate-y-full transition-transform duration-300 mb-safe">
-            <div class="bg-white/90 backdrop-blur-xl rounded-xl overflow-hidden mb-2">
-                <div class="py-3 px-4 text-center ios-alert-border-b">
-                    <span class="text-[13px] text-gray-500 font-semibold" id="actions-title">Note Actions</span>
-                </div>
-                <div id="actions-options" class="flex flex-col">
-                    <!-- Opsi tombol fungsi diinject via JS -->
-                </div>
-            </div>
-            <button onclick="closeActionsModal()" class="w-full bg-white rounded-xl py-3.5 text-[#007AFF] font-semibold text-[20px] active:bg-gray-100">
-                Cancel
-            </button>
-        </div>
-    </div>
-
-    <!-- Custom Notification/HUD -->
-    <div id="toast" class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-gray-800/90 backdrop-blur-md text-white px-5 py-2.5 rounded-full z-[70] transition-all duration-300 -translate-y-4 opacity-0 pointer-events-none shadow-lg flex items-center shadow-[0_4px_12px_rgba(0,0,0,0.15)]">
-        <i class="fa-solid fa-check-circle mr-2 text-[18px]"></i>
-        <span id="toast-msg" class="font-medium text-[15px]">Message</span>
-    </div>
-
+    <!-- Script JavaScript Utama -->
     <script>
-        // --- KONFIGURASI MULTI-APP DENGAN TEMA iOS ---
-        // Catatan: Kinerja Harian telah DIHAPUS. Carousel DITAMBAHKAN.
-        const appsConfig = {
-            copasional: {
-                id: 'copasional', title: "Copasional", tintColor: "#34C759", // Green
-                storageKey: "terminal_notes_copasional",
-                inputPlaceholder: "Paste text to copy...", titlePlaceholder: "Title"
-            },
-            carousel: {
-                id: 'carousel', title: "Carousel Notes", tintColor: "#FF2D55", // Pink/Red
-                storageKey: "terminal_notes_carousel",
-                inputPlaceholder: "Card content...", titlePlaceholder: "Group Title"
-            },
-            error: {
-                id: 'error', title: "Error Book", tintColor: "#FF3B30", // Red
-                storageKey: "terminal_notes_error",
-                inputPlaceholder: "System error logs...", titlePlaceholder: "Error Title"
-            },
-            myprompt: {
-                id: 'myprompt', title: "My Prompt", tintColor: "#FF9500", // Orange
-                storageKey: "terminal_notes_myprompt",
-                inputPlaceholder: "AI instructions or prompts...", titlePlaceholder: "Prompt Title"
-            },
-            myinstruction: {
-                id: 'myinstruction', title: "Instruction", tintColor: "#5856D6", // Indigo
-                storageKey: "terminal_notes_myinstruction",
-                inputPlaceholder: "System instructions...", titlePlaceholder: "Instruction Title"
-            },
-            mylink: {
-                id: 'mylink', title: "My Link", tintColor: "#AF52DE", // Purple
-                storageKey: "terminal_notes_mylink",
-                inputPlaceholder: "URL links...", titlePlaceholder: "Link Title"
-            },
-            memo: {
-                id: 'memo', title: "Memo Tasks", tintColor: "#FFCC00", // Yellow
-                storageKey: "terminal_notes_memo",
-                inputPlaceholder: "Notes or tasks...", titlePlaceholder: "Memo Title"
-            }
+        const categories = {
+            copasional: { title: "Copasional", icon: "📋", color: "text-green-500 dark:text-green-400", bg: "bg-green-100 dark:bg-green-900/30" },
+            carousel: { title: "Carousel Notes", icon: "🗂️", color: "text-pink-500 dark:text-pink-400", bg: "bg-pink-100 dark:bg-pink-900/30" },
+            mypassword: { title: "My Password", icon: "🔑", color: "text-teal-500 dark:text-teal-400", bg: "bg-teal-100 dark:bg-teal-900/30" },
+            error: { title: "Error Book", icon: "🐛", color: "text-red-500 dark:text-red-400", bg: "bg-red-100 dark:bg-red-900/30" },
+            myprompt: { title: "My Prompt", icon: "⌨️", color: "text-orange-500 dark:text-orange-400", bg: "bg-orange-100 dark:bg-orange-900/30" },
+            myinstruction: { title: "Instruction", icon: "💻", color: "text-indigo-500 dark:text-indigo-400", bg: "bg-indigo-100 dark:bg-indigo-900/30" },
+            mylink: { title: "My Link", icon: "🔗", color: "text-purple-500 dark:text-purple-400", bg: "bg-purple-100 dark:bg-purple-900/30" },
+            memo: { title: "Memo Tasks", icon: "📝", color: "text-yellow-500 dark:text-yellow-400", bg: "bg-yellow-100 dark:bg-yellow-900/30" }
         };
 
-        let currentApp = 'copasional';
         let notes = [];
-        let noteToDelete = null;
-        let noteToTransfer = null;
-        let activeNoteId = null; // Menyimpan ID note yang sedang dibuka aksinya
-        let openAccordions = new Set();
+        const STORAGE_KEY = "simple_app_notes";
+        
+        // Status State
+        let isGrouped = false; 
+        let openNotes = new Set();
+        let openCategories = new Set();
+        
+        // State Lampiran dan Hapus
+        let currentAttachments = [];
+        let toastTimeout;
+        let noteIdToDelete = null;
 
-        // --- SISTEM INISIALISASI ---
-        function initCarouselForm() {
-            const container = document.getElementById('carousel-inputs');
-            let html = '';
+        window.onload = () => {
+            initTheme();
+            initCarouselInputs();
+            loadNotes();
+        };
+
+        // --- SISTEM TEMA / MODE GELAP ---
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            
+            // Default adalah Dark
+            if (savedTheme === 'light') {
+                html.classList.remove('dark');
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+                document.getElementById('btn-theme').classList.replace('text-yellow-500', 'text-gray-500');
+            } else {
+                html.classList.add('dark');
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+                document.getElementById('btn-theme').classList.replace('text-gray-500', 'text-yellow-500');
+            }
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const btn = document.getElementById('btn-theme');
+            
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+                btn.classList.replace('text-yellow-500', 'text-gray-500');
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.add('dark');
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+                btn.classList.replace('text-gray-500', 'text-yellow-500');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // --- SISTEM TOAST NOTIFICATION ---
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').innerText = message;
+            
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // --- STREAMING_CHUNK:Handling Input Toggles... ---
+        function initCarouselInputs() {
+            const container = document.getElementById('carousel-input-container');
+            let html = '<p class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase">Isi Kartu Carousel (Maks 8)</p>';
             for(let i=1; i<=8; i++) {
                 html += `
-                    <div class="bg-gray-50/80 border border-gray-200 rounded-xl p-3 shadow-sm relative mt-5">
-                        <div class="absolute -top-3 -left-3 bg-[#FF2D55] text-white w-7 h-7 flex items-center justify-center rounded-full text-[12px] font-bold shadow-sm">${i}</div>
-                        <textarea id="car-content-${i}" placeholder="Card ${i} content..." class="w-full bg-transparent text-[15px] focus:outline-none text-black placeholder-gray-400 resize-none leading-relaxed mt-1 h-20"></textarea>
+                    <div class="relative">
+                        <div class="absolute -top-2 -left-2 bg-pink-500 text-white w-6 h-6 flex items-center justify-center rounded-full text-[11px] font-bold shadow-md z-10">${i}</div>
+                        <textarea id="car-content-${i}" placeholder="Konten kartu ke-${i}..." class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-200 dark:focus:ring-pink-800 resize-none h-20"></textarea>
                     </div>
                 `;
             }
             container.innerHTML = html;
         }
 
-        // --- STREAMING_CHUNK:Defining sidebar toggling and app switching... ---
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const backdrop = document.getElementById('sidebar-backdrop');
-            
-            if (sidebar.classList.contains('-translate-x-full')) {
-                sidebar.classList.remove('-translate-x-full');
-                backdrop.classList.remove('hidden');
-                setTimeout(() => backdrop.classList.remove('opacity-0'), 10);
-            } else {
-                sidebar.classList.add('-translate-x-full');
-                backdrop.classList.add('opacity-0');
-                setTimeout(() => backdrop.classList.add('hidden'), 300);
-            }
-        }
+        function toggleInputFields() {
+            const category = document.getElementById('note-category').value;
+            const normalContainer = document.getElementById('normal-input-container');
+            const carouselContainer = document.getElementById('carousel-input-container');
+            const pwContainer = document.getElementById('mypassword-input-container');
 
-        function switchApp(appId) {
-            currentApp = appId;
-            const config = appsConfig[appId];
-
-            // Set iOS Dynamic Tint Color
-            document.documentElement.style.setProperty('--app-tint', config.tintColor);
-            
-            document.getElementById('app-title').innerText = config.title;
-            document.title = config.title;
-
-            document.getElementById('note-title').placeholder = config.titlePlaceholder;
-            document.getElementById('note-content').placeholder = config.inputPlaceholder;
-
-            // Atur tombol Task
-            const btnInsert = document.getElementById('btn-insert-checkbox');
-            if (currentApp === 'memo') {
-                btnInsert.classList.remove('hidden');
-                btnInsert.classList.add('block');
-            } else {
-                btnInsert.classList.add('hidden');
-                btnInsert.classList.remove('block');
+            normalContainer.classList.add('hidden');
+            normalContainer.classList.remove('flex');
+            carouselContainer.classList.add('hidden');
+            carouselContainer.classList.remove('flex');
+            if (pwContainer) {
+                pwContainer.classList.add('hidden');
+                pwContainer.classList.remove('flex');
             }
 
-            // Ganti Layout Input Modal (Normal vs Carousel)
-            const normalInputs = document.getElementById('normal-inputs');
-            const carouselInputs = document.getElementById('carousel-inputs');
-            if (currentApp === 'carousel') {
-                normalInputs.classList.add('hidden');
-                carouselInputs.classList.remove('hidden');
-            } else {
-                normalInputs.classList.remove('hidden');
-                carouselInputs.classList.add('hidden');
-            }
-
-            updateSidebarUI();
-            openAccordions.clear();
-            loadNotes();
-            
-            const sidebar = document.getElementById('sidebar');
-            if (!sidebar.classList.contains('-translate-x-full')) toggleSidebar();
-        }
-
-        function updateSidebarUI() {
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('bg-gray-100');
-            });
-            const activeBtn = document.getElementById(`nav-${currentApp}`);
-            if (activeBtn) {
-                activeBtn.classList.add('bg-gray-100');
-            }
-        }
-
-        // --- STREAMING_CHUNK:Handling local storage and data retrieval... ---
-        function loadNotes() {
-            const config = appsConfig[currentApp];
-            const savedNotes = localStorage.getItem(config.storageKey);
-            if (savedNotes) {
-                try { notes = JSON.parse(savedNotes); } catch (e) { notes = []; }
-            } else { notes = []; }
-            renderNotes();
-        }
-
-        function saveToLocal() {
-            const config = appsConfig[currentApp];
-            localStorage.setItem(config.storageKey, JSON.stringify(notes));
-            renderNotes();
-        }
-
-        // --- HELPERS ---
-        function formatDateTime(timestamp) {
-            const date = new Date(timestamp);
-            return date.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-        }
-
-        function escapeHTML(str) {
-            if (!str) return '';
-            return str.replace(/[&<>'"]/g, tag => ({
-                '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
-            }[tag] || tag));
-        }
-
-        function insertCheckbox() {
-            const textarea = document.getElementById('note-content');
-            const start = textarea.selectionStart;
-            const end = textarea.selectionEnd;
-            const text = textarea.value;
-            const before = text.substring(0, start);
-            const after  = text.substring(end, text.length);
-            
-            const newline = (before.length === 0 || before.endsWith('\n')) ? '' : '\n';
-            textarea.value = before + newline + '- [ ] ' + after;
-            textarea.focus();
-            textarea.selectionStart = textarea.selectionEnd = start + newline.length + 6;
-        }
-
-        window.toggleTask = function(noteId, taskIndex, isCurrentlyChecked) {
-            const note = notes.find(n => n.id === noteId);
-            if (!note) return;
-
-            let currentIdx = 0;
-            const lines = note.content.split('\n');
-            
-            for (let i = 0; i < lines.length; i++) {
-                if (lines[i].trim().match(/^- \[[ xX]\]/)) {
-                    if (currentIdx === taskIndex) {
-                        if (isCurrentlyChecked) {
-                            lines[i] = lines[i].replace(/^- \[[xX]\]/i, '- [ ]');
-                        } else {
-                            lines[i] = lines[i].replace(/^- \[ \]/, '- [x]');
-                        }
-                        break;
-                    }
-                    currentIdx++;
+            if (category === 'carousel') {
+                carouselContainer.classList.remove('hidden');
+                carouselContainer.classList.add('flex');
+            } else if (category === 'mypassword') {
+                if (pwContainer) {
+                    pwContainer.classList.remove('hidden');
+                    pwContainer.classList.add('flex');
                 }
+            } else {
+                normalContainer.classList.remove('hidden');
+                normalContainer.classList.add('flex');
             }
-            note.content = lines.join('\n');
-            note.updatedAt = Date.now();
-            saveToLocal();
-        };
+        }
 
-        // Copy untuk kartu individu dalam Carousel
-        window.copyDirectText = function(content) {
-            if(!content) {
-                showToast("Card is empty");
-                return;
-            }
-            const textToCopy = content;
-            const textArea = document.createElement("textarea");
-            textArea.value = textToCopy;
-            textArea.style.position = "fixed"; document.body.appendChild(textArea);
-            textArea.focus(); textArea.select();
-            try { document.execCommand('copy'); showToast("Card Copied"); } 
-            catch (err) { showToast("Failed to copy"); }
-            document.body.removeChild(textArea);
-        };
+        // --- MANAJEMEN LAMPIRAN FILE/GAMBAR ---
+        function handleFileUpload(event, type) {
+            const files = event.target.files;
+            if (!files) return;
 
-        // --- STREAMING_CHUNK:Rendering the list of notes to the UI... ---
-        function renderNotes() {
-            const container = document.getElementById('notes-container');
-            container.innerHTML = '';
-
-            // HANYA MENGAMBIL DATA YANG TIDAK DIHAPUS (deleted: false / undefined)
-            const activeNotes = notes.filter(n => !n.deleted);
-
-            if (activeNotes.length === 0) {
-                container.className = 'w-full h-full flex flex-col items-center justify-center pt-32 pb-10';
-                container.innerHTML = `
-                    <div class="flex flex-col items-center justify-center text-gray-400">
-                        <i class="fa-regular fa-folder-open text-6xl mb-4 text-gray-300"></i>
-                        <p class="text-[17px] font-medium text-gray-500">No Notes</p>
-                        <p class="text-[14px] mt-1">Tap the + button to add one.</p>
-                    </div>
-                `;
-                return;
-            }
-
-            container.className = 'columns-1 md:columns-2 xl:columns-3 gap-4 w-full max-w-7xl mx-auto';
-
-            activeNotes.sort((a, b) => b.timestamp - a.timestamp).forEach(note => {
-                const card = document.createElement('div');
-                card.className = 'bg-white rounded-xl shadow-sm overflow-hidden mb-4 inline-block w-full border border-gray-100';
-                
-                let displayTitle = 'New Note';
-                if (note.title) {
-                    displayTitle = escapeHTML(note.title);
-                } else if (currentApp !== 'carousel' && note.content) {
-                    const words = note.content.trim().split(/\s+/);
-                    displayTitle = escapeHTML(words.slice(0, 3).join(' '));
-                    if (words.length > 3) displayTitle += '...';
-                } else if (currentApp === 'carousel') {
-                    displayTitle = "Carousel Group"; // Default if title is empty
+            Array.from(files).forEach(file => {
+                if (file.size > 1024 * 1024 * 2) { 
+                    showToast(`File ${file.name} terlalu besar (Maks 2MB).`);
+                    return;
                 }
 
-                let timeDisplay = formatDateTime(note.timestamp);
-                if (note.updatedAt && note.updatedAt !== note.timestamp) {
-                    timeDisplay = `Edited ${formatDateTime(note.updatedAt)}`;
-                }
-
-                let renderedContentHTML = '';
-                
-                if (currentApp === 'carousel') {
-                    // RENDER CAROUSEL HORIZONTAL CARDS
-                    let items = [];
-                    try { items = JSON.parse(note.content); } catch(e) { items = []; }
-                    if (!Array.isArray(items)) items = [];
-                    
-                    let cardsHtml = '';
-                    items.forEach((item, idx) => {
-                        let cContent = escapeHTML(item.content);
-                        let linkedContent = cContent.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" onclick="event.stopPropagation()" class="text-[#007AFF] underline underline-offset-2">$1</a>');
-                        
-                        // Siapkan konten untuk fungsi onclick salin
-                        let safeContent = item.content.replace(/'/g, "\\'").replace(/"/g, "&quot;").replace(/\n/g, "\\n");
-
-                        cardsHtml += `
-                            <div class="snap-center shrink-0 w-[240px] bg-white border border-gray-200 rounded-xl p-3 flex flex-col shadow-sm max-h-[220px]">
-                                <div class="flex justify-between items-center mb-2 border-b-[0.5px] border-gray-100 pb-2">
-                                    <span class="text-[13px] text-gray-400 font-medium">Card ${idx+1}</span>
-                                    <button onclick="copyDirectText('${safeContent}'); event.stopPropagation();" class="text-gray-400 active:text-[var(--app-tint)] transition-colors">
-                                        <i class="fa-regular fa-copy text-[15px]"></i>
-                                    </button>
-                                </div>
-                                <div class="text-[14px] text-gray-700 whitespace-pre-wrap overflow-y-auto hide-scrollbar flex-1 leading-relaxed">${linkedContent}</div>
-                            </div>
-                        `;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    currentAttachments.push({
+                        id: Date.now() + Math.random(),
+                        type: type,
+                        name: file.name,
+                        data: e.target.result,
+                        mimeType: file.type
                     });
+                    renderAttachmentPreview();
+                };
+                reader.readAsDataURL(file);
+            });
+            event.target.value = ''; 
+        }
 
-                    renderedContentHTML = `
-                        <div class="bg-gray-100/50 -mx-4 -mt-4 p-4 pb-5 mb-[-1rem]">
-                            <div class="flex overflow-x-auto hide-scrollbar gap-4 snap-x snap-mandatory">
-                                ${cardsHtml || '<div class="text-gray-400 text-sm italic">No cards added</div>'}
-                            </div>
+        function removeAttachment(id) {
+            currentAttachments = currentAttachments.filter(a => a.id !== id);
+            renderAttachmentPreview();
+        }
+
+        function renderAttachmentPreview() {
+            const container = document.getElementById('attachment-preview');
+            container.innerHTML = '';
+            currentAttachments.forEach(att => {
+                if (att.type === 'image') {
+                    container.innerHTML += `
+                        <div class="relative w-16 h-16 rounded-lg border border-gray-200 dark:border-gray-600 overflow-hidden shrink-0 shadow-sm">
+                            <img src="${att.data}" class="object-cover w-full h-full" />
+                            <button onclick="removeAttachment(${att.id})" class="absolute top-0 right-0 bg-red-500/90 text-white w-5 h-5 flex items-center justify-center text-xs"><i class="fa-solid fa-times"></i></button>
                         </div>
                     `;
-
-                } else if (currentApp === 'memo') {
-                    const lines = note.content.split('\n');
-                    let taskIdx = 0;
-                    renderedContentHTML = lines.map(line => {
-                        if (line.trim().match(/^- \[[ xX]\]/)) {
-                            const isChecked = !!line.trim().match(/^- \[[xX]\]/i);
-                            const text = escapeHTML(line.replace(/^- \[[ xX]\]\s*/i, ''));
-                            const checkState = isChecked ? 'checked' : '';
-                            const textClass = isChecked ? 'line-through text-gray-400' : 'text-black';
-                            return `
-                                <div class="flex items-start my-2.5" onclick="event.stopPropagation()">
-                                    <input type="checkbox" ${checkState} class="theme-checkbox mt-[2px] mr-3 shrink-0" onchange="toggleTask(${note.id}, ${taskIdx++}, ${isChecked})">
-                                    <span class="${textClass} text-[15px] transition-colors leading-snug">${text || '&nbsp;'}</span>
-                                </div>`;
-                        } else {
-                            return `<div class="min-h-[1.5em] text-[15px] text-gray-800 whitespace-pre-wrap leading-relaxed">${escapeHTML(line)}</div>`;
-                        }
-                    }).join('');
-                } else if (currentApp === 'mylink') {
-                    const escapedContent = escapeHTML(note.content);
-                    const linkedContent = escapedContent.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" onclick="event.stopPropagation()" class="text-[#007AFF] underline underline-offset-2">$1</a>');
-                    renderedContentHTML = `<div class="whitespace-pre-wrap text-[15px] text-gray-800 leading-relaxed">${linkedContent}</div>`;
                 } else {
-                    renderedContentHTML = `<div class="whitespace-pre-wrap text-[15px] text-gray-800 leading-relaxed">${escapeHTML(note.content)}</div>`;
-                }
-
-                card.innerHTML = `
-                    <div class="px-4 py-3.5 flex justify-between items-center cursor-pointer active:bg-gray-50 transition-colors" onclick="toggleAccordion(${note.id})">
-                        <div class="flex-1 pr-3 overflow-hidden">
-                            <h3 class="font-semibold text-[17px] text-black truncate">${displayTitle}</h3>
-                            <p class="text-[13px] text-gray-500 mt-0.5">${timeDisplay}</p>
+                    container.innerHTML += `
+                        <div class="relative bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 px-3 py-2 rounded-lg text-xs flex items-center max-w-[150px] shadow-sm text-gray-700 dark:text-gray-200">
+                            <i class="fa-solid fa-file text-gray-400 mr-2"></i> <span class="truncate pr-4">${att.name}</span>
+                            <button onclick="removeAttachment(${att.id})" class="absolute top-1 right-1 bg-red-500/90 text-white w-4 h-4 rounded-full flex items-center justify-center text-[10px]"><i class="fa-solid fa-times"></i></button>
                         </div>
-                        <div class="flex items-center space-x-2">
-                            <button onclick="openActionsModal(${note.id}); event.stopPropagation();" class="w-8 h-8 flex items-center justify-center text-gray-400 active:text-[var(--app-tint)] transition-colors">
-                                <i class="fa-solid fa-ellipsis-vertical text-xl"></i>
-                            </button>
-                            <i class="fa-solid fa-chevron-down text-gray-400 text-sm chevron-icon ml-1" id="icon-${note.id}"></i>
-                        </div>
-                    </div>
-                    
-                    <div class="accordion-content border-t-[0.5px] border-gray-100" id="content-${note.id}">
-                        <div class="accordion-inner bg-white">
-                            <div class="p-4">
-                                ${renderedContentHTML}
-                            </div>
-                        </div>
-                    </div>
-                `;
-                container.appendChild(card);
-
-                if (openAccordions.has(note.id)) {
-                    document.getElementById(`content-${note.id}`).classList.add('open');
-                    document.getElementById(`icon-${note.id}`).classList.add('open');
+                    `;
                 }
             });
         }
 
-        // --- STREAMING_CHUNK:Implementing note interactions and modal handlers... ---
-        function toggleAccordion(id) {
-            const content = document.getElementById(`content-${id}`);
-            const icon = document.getElementById(`icon-${id}`);
-            
-            const isOpen = content.classList.toggle('open');
-            icon.classList.toggle('open');
-
-            if (isOpen) openAccordions.add(id);
-            else openAccordions.delete(id);
-        }
-
-        let toastTimeout;
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toast-msg').innerText = message;
-            
-            toast.classList.remove('-translate-y-4', 'opacity-0');
-            toast.classList.add('translate-y-0', 'opacity-100');
-            
-            clearTimeout(toastTimeout);
-            toastTimeout = setTimeout(() => {
-                toast.classList.add('-translate-y-4', 'opacity-0');
-                toast.classList.remove('translate-y-0', 'opacity-100');
-            }, 2000);
-        }
-
-        function copyNote(id) {
-            const note = notes.find(n => n.id === id);
-            if (!note) return;
-            
-            let textToCopy = '';
-            if (currentApp === 'carousel') {
-                let items = [];
-                try { items = JSON.parse(note.content); } catch(e) {}
-                let formatted = [];
-                if(note.title) formatted.push(`== ${note.title} ==\n`);
-                items.forEach((it, idx) => {
-                    if(it.content) {
-                        formatted.push(`[Card ${idx+1}]\n${it.content}\n`);
-                    }
-                });
-                textToCopy = formatted.join('\n');
-            } else {
-                textToCopy = note.title ? `${note.title}\n\n${note.content}` : note.content;
-            }
-            
-            const textArea = document.createElement("textarea");
-            textArea.value = textToCopy;
-            textArea.style.position = "fixed"; document.body.appendChild(textArea);
-            textArea.focus(); textArea.select();
-            
-            try { document.execCommand('copy'); showToast("Copied to clipboard"); } 
-            catch (err) { showToast("Failed to copy"); }
-            document.body.removeChild(textArea);
-        }
-
-        function downloadNote(id) {
-            const note = notes.find(n => n.id === id);
-            if (!note) return;
-            
-            let textToDownload = '';
-            if (currentApp === 'carousel') {
-                let items = [];
-                try { items = JSON.parse(note.content); } catch(e) {}
-                let formatted = [];
-                if(note.title) formatted.push(`== ${note.title} ==\n`);
-                items.forEach((it, idx) => {
-                    if(it.content) {
-                        formatted.push(`[Card ${idx+1}]\n${it.content}\n`);
-                    }
-                });
-                textToDownload = formatted.join('\n');
-            } else {
-                textToDownload = note.title ? `${note.title}\n\n${note.content}` : note.content;
-            }
-            
-            const blob = new Blob([textToDownload], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            
-            const a = document.createElement('a');
-            a.href = url;
-            let filename = note.title ? note.title.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '.txt' : `note_${note.id}.txt`;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            showToast("Saved to device");
-        }
-
-        function visitSite(id) {
-            const note = notes.find(n => n.id === id);
-            if (!note) return;
-            const urlMatch = note.content.match(/(https?:\/\/[^\s]+)/);
-            if (urlMatch) {
-                window.open(urlMatch[0], '_blank');
-            } else {
-                showToast("No valid URL found");
-            }
-        }
-
-        // --- STREAMING_CHUNK:Building input modal save routines and UI state... ---
-        function openModal(id = null) {
+        // --- STREAMING_CHUNK:Defining Modal open and close logic... ---
+        // --- MANAJEMEN MODAL & CATATAN ---
+        function openModal(editId = null) {
             const overlay = document.getElementById('modal-overlay');
             const modal = document.getElementById('modal');
-            const titleInput = document.getElementById('note-title');
-            const normalContent = document.getElementById('note-content');
-            const idInput = document.getElementById('note-id');
-            const modalTitle = document.getElementById('modal-title');
+            
+            document.getElementById('note-id').value = "";
+            document.getElementById('note-title').value = "";
+            document.getElementById('note-content').value = "";
+            
+            if (document.getElementById('pw-username')) {
+                document.getElementById('pw-username').value = "";
+                document.getElementById('pw-password').value = "";
+                document.getElementById('pw-link').value = "";
+            }
+            
+            currentAttachments = []; 
+            
+            for(let i=1; i<=8; i++) document.getElementById(`car-content-${i}`).value = "";
+            document.getElementById('modal-title').innerText = "Buat Catatan";
 
-            if (id) {
-                const note = notes.find(n => n.id === id);
-                if(note) {
-                    idInput.value = note.id;
-                    titleInput.value = note.title || '';
-                    modalTitle.innerText = "Edit Note";
+            if (editId) {
+                const note = notes.find(n => n.id === editId);
+                if (note) {
+                    document.getElementById('note-id').value = note.id;
+                    document.getElementById('note-title').value = note.title;
+                    document.getElementById('note-category').value = note.category;
+                    document.getElementById('modal-title').innerText = "Edit Catatan";
+                    
+                    if (note.attachments) {
+                        currentAttachments = [...note.attachments];
+                    }
 
-                    if (currentApp === 'carousel') {
+                    if (note.category === 'carousel') {
                         let parsed = [];
                         try { parsed = JSON.parse(note.content); } catch(e) {}
                         for(let i=1; i<=8; i++) {
-                            const item = parsed[i-1] || {content: ''};
-                            document.getElementById(`car-content-${i}`).value = item.content || '';
+                            document.getElementById(`car-content-${i}`).value = parsed[i-1]?.content || '';
+                        }
+                    } else if (note.category === 'mypassword') {
+                        let pwData = { username: '', password: '', link: '' };
+                        try { pwData = JSON.parse(note.content); } catch(e) {}
+                        if (document.getElementById('pw-username')) {
+                            document.getElementById('pw-username').value = pwData.username || '';
+                            document.getElementById('pw-password').value = pwData.password || '';
+                            document.getElementById('pw-link').value = pwData.link || '';
                         }
                     } else {
-                        normalContent.value = note.content || '';
+                        document.getElementById('note-content').value = note.content;
                     }
-                }
-            } else {
-                idInput.value = ""; titleInput.value = ""; 
-                modalTitle.innerText = "New Note";
-                
-                if (currentApp === 'carousel') {
-                    for(let i=1; i<=8; i++) {
-                        document.getElementById(`car-content-${i}`).value = '';
-                    }
-                } else {
-                    normalContent.value = "";
                 }
             }
+
+            renderAttachmentPreview();
+            toggleInputFields();
 
             overlay.classList.remove('hidden');
             setTimeout(() => {
                 overlay.classList.remove('opacity-0');
-                modal.classList.remove('translate-y-full');
+                modal.classList.add('modal-active');
             }, 10);
-            
-            // Auto focus
-            setTimeout(() => {
-                if(currentApp === 'carousel') {
-                    document.getElementById('car-content-1').focus();
-                } else {
-                    normalContent.focus();
-                }
-            }, 300);
         }
 
         function closeModal() {
             const overlay = document.getElementById('modal-overlay');
             const modal = document.getElementById('modal');
+            
             overlay.classList.add('opacity-0');
-            modal.classList.add('translate-y-full');
+            modal.classList.remove('modal-active');
             setTimeout(() => overlay.classList.add('hidden'), 300);
         }
 
-        function saveNote() {
-            const idInput = document.getElementById('note-id').value;
-            const title = document.getElementById('note-title').value.trim();
-            let contentStr = '';
-
-            if (currentApp === 'carousel') {
-                const carouselData = [];
-                let hasData = false;
-                for(let i=1; i<=8; i++) {
-                    const cContent = document.getElementById(`car-content-${i}`).value.trim();
-                    if(cContent) hasData = true;
-                    carouselData.push({ content: cContent });
-                }
-                if (!title && !hasData) return; // Silent return for empty 
-                contentStr = JSON.stringify(carouselData);
-            } else {
-                contentStr = document.getElementById('note-content').value.trim();
-                if (!title && !contentStr) return; // Silent return for empty
-            }
-
-            if (idInput) {
-                const index = notes.findIndex(n => n.id === parseInt(idInput));
-                if (index !== -1) {
-                    notes[index].title = title; 
-                    notes[index].content = contentStr; 
-                    notes[index].updatedAt = Date.now();
-                }
-            } else {
-                notes.push({ id: Date.now(), title, content: contentStr, timestamp: Date.now(), updatedAt: Date.now(), deleted: false });
-            }
-            saveToLocal();
-            closeModal();
+        // --- STREAMING_CHUNK:Implementing Storage and Data actions... ---
+        function loadNotes() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            notes = saved ? JSON.parse(saved) : [];
+            renderNotes();
         }
 
-        // --- MANAJEMEN ALERT HAPUS (SOFT DELETE) ---
+        function saveNote() {
+            const id = document.getElementById('note-id').value;
+            const category = document.getElementById('note-category').value;
+            const title = document.getElementById('note-title').value.trim() || "Tanpa Judul";
+            let content = "";
+
+            if (category === 'carousel') {
+                const carouselData = [];
+                for(let i=1; i<=8; i++) {
+                    const txt = document.getElementById(`car-content-${i}`).value.trim();
+                    if(txt) carouselData.push({ content: txt });
+                }
+                content = JSON.stringify(carouselData);
+            } else if (category === 'mypassword') {
+                const pwData = {
+                    username: document.getElementById('pw-username').value.trim(),
+                    password: document.getElementById('pw-password').value.trim(),
+                    link: document.getElementById('pw-link').value.trim()
+                };
+                content = JSON.stringify(pwData);
+            } else {
+                content = document.getElementById('note-content').value.trim();
+            }
+
+            const attachmentsToSave = [...currentAttachments];
+
+            if (id) {
+                const index = notes.findIndex(n => n.id == id);
+                if(index > -1) {
+                    notes[index] = { ...notes[index], category, title, content, attachments: attachmentsToSave, updatedAt: Date.now() };
+                }
+            } else {
+                notes.push({ id: Date.now(), category, title, content, attachments: attachmentsToSave, timestamp: Date.now() });
+            }
+
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+                showToast("Catatan berhasil disimpan!");
+                closeModal();
+                renderNotes();
+            } catch (error) {
+                if (error.name === 'QuotaExceededError' || error.name === 'DOMException') {
+                    showToast("Gagal! Penyimpanan penuh, hapus lampiran lama.");
+                } else {
+                    showToast("Terjadi kesalahan saat menyimpan.");
+                }
+            }
+        }
+
+        // --- CUSTOM CONFIRM DELETE ---
         function openDeleteAlert(id) {
-            noteToDelete = id;
-            const overlay = document.getElementById('alert-overlay');
+            noteIdToDelete = id;
+            const overlay = document.getElementById('delete-alert-overlay');
+            const box = document.getElementById('delete-alert-box');
+            
             overlay.classList.remove('hidden');
             overlay.classList.add('flex');
-            setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+            setTimeout(() => {
+                overlay.classList.remove('opacity-0');
+                box.classList.remove('scale-95');
+                box.classList.add('scale-100');
+            }, 10);
         }
 
         function closeDeleteAlert() {
-            noteToDelete = null;
-            const overlay = document.getElementById('alert-overlay');
+            const overlay = document.getElementById('delete-alert-overlay');
+            const box = document.getElementById('delete-alert-box');
+            
             overlay.classList.add('opacity-0');
-            setTimeout(() => { overlay.classList.add('hidden'); overlay.classList.remove('flex'); }, 300);
+            box.classList.remove('scale-100');
+            box.classList.add('scale-95');
+            setTimeout(() => { 
+                overlay.classList.add('hidden'); 
+                overlay.classList.remove('flex');
+                noteIdToDelete = null; 
+            }, 300);
         }
 
         function confirmDelete() {
-            if (noteToDelete) {
-                // Diubah menggunakan SOFT DELETE (deleted: true). Supaya ketika disinkronisasi,
-                // PC / HP lain juga ikut menghapus data ini.
-                const index = notes.findIndex(n => n.id === noteToDelete);
-                if (index !== -1) {
-                    notes[index].deleted = true;
-                    notes[index].updatedAt = Date.now();
-                }
-                saveToLocal(); 
+            if (noteIdToDelete !== null) {
+                notes = notes.filter(n => n.id !== noteIdToDelete);
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+                renderNotes();
+                showToast("Catatan berhasil dihapus.");
                 closeDeleteAlert();
             }
         }
 
-        // --- STREAMING_CHUNK:Setting up cross-app data transfer logic... ---
-        // --- MANAJEMEN TRANSFER / PINDAH JENDELA ---
-        function openTransferModal(id) {
-            noteToTransfer = id;
-            const optionsContainer = document.getElementById('transfer-options');
-            optionsContainer.innerHTML = ''; 
-
-            Object.values(appsConfig).forEach(app => {
-                if (app.id !== currentApp) {
-                    const btn = document.createElement('button');
-                    btn.className = 'w-full text-center py-4 text-[17px] text-[#007AFF] ios-alert-border-b active:bg-gray-100 bg-white last:border-b-0';
-                    btn.innerText = `Move to ${app.title}`;
-                    btn.onclick = () => executeTransfer(app.id);
-                    optionsContainer.appendChild(btn);
-                }
-            });
-
-            const overlay = document.getElementById('transfer-overlay');
-            const box = document.getElementById('transfer-box');
-            overlay.classList.remove('hidden');
-            overlay.classList.add('flex');
-            setTimeout(() => { 
-                overlay.classList.remove('opacity-0'); 
-                box.classList.remove('translate-y-full'); 
-            }, 10);
-        }
-
-        function closeTransferModal() {
-            noteToTransfer = null;
-            const overlay = document.getElementById('transfer-overlay');
-            const box = document.getElementById('transfer-box');
-            box.classList.add('translate-y-full');
-            overlay.classList.add('opacity-0');
-            setTimeout(() => { overlay.classList.add('hidden'); overlay.classList.remove('flex'); }, 300);
-        }
-
-        function executeTransfer(targetAppId) {
-            if (!noteToTransfer) return;
-
-            const noteIndex = notes.findIndex(n => n.id === noteToTransfer);
-            if (noteIndex === -1) return;
-            const note = notes[noteIndex]; 
-
-            const targetConfig = appsConfig[targetAppId];
-            let targetNotes = [];
-            const savedTargetNotes = localStorage.getItem(targetConfig.storageKey);
-            if (savedTargetNotes) {
-                try { targetNotes = JSON.parse(savedTargetNotes); } catch (e) { targetNotes = []; }
-            }
-
-            // Copy ke folder target
-            const noteCopy = { ...note, updatedAt: Date.now(), deleted: false };
-            const existingIdx = targetNotes.findIndex(n => n.id === noteCopy.id);
-            if (existingIdx !== -1) targetNotes[existingIdx] = noteCopy;
-            else targetNotes.push(noteCopy);
-            
-            localStorage.setItem(targetConfig.storageKey, JSON.stringify(targetNotes));
-
-            // Tandai dihapus di folder asal
-            notes[noteIndex].deleted = true;
-            notes[noteIndex].updatedAt = Date.now();
-            saveToLocal(); 
-            
-            closeTransferModal();
-            showToast("Note moved successfully");
-        }
-
-        // --- STREAMING_CHUNK:Finalizing Action menu and data Synchronization system... ---
-        // --- MANAJEMEN ACTIONS MODAL (TITIK TIGA) ---
-        function openActionsModal(id) {
-            activeNoteId = id;
+        // --- STREAMING_CHUNK:Implementing helper utilities... ---
+        // --- COPY NOTE ---
+        function copyNoteText(id) {
             const note = notes.find(n => n.id === id);
-            if(!note) return;
-
-            const optionsContainer = document.getElementById('actions-options');
-            optionsContainer.innerHTML = '';
-
-            const createBtn = (icon, text, onClickFn, isDestructive = false) => {
-                const btn = document.createElement('button');
-                btn.className = `w-full flex items-center py-3.5 px-5 text-[17px] active:bg-gray-100 bg-white ios-alert-border-b last:border-b-0 ${isDestructive ? 'text-[#FF3B30]' : 'text-[#007AFF]'}`;
-                btn.innerHTML = `<i class="${icon} w-6 text-center mr-3 text-[18px]"></i> <span class="font-medium">${text}</span>`;
-                btn.onclick = () => {
-                    closeActionsModal();
-                    setTimeout(() => onClickFn(id), 300);
-                };
-                return btn;
-            };
-
-            optionsContainer.appendChild(createBtn('fa-regular fa-copy', 'Copy All Text', copyNote));
-            optionsContainer.appendChild(createBtn('fa-solid fa-download', 'Download File', downloadNote));
+            if (!note) return;
             
-            if (currentApp === 'mylink') {
-                optionsContainer.appendChild(createBtn('fa-solid fa-arrow-up-right-from-square', 'Visit Link', visitSite));
+            let textToCopy = `${note.title}\n\n`;
+            
+            if (note.category === 'carousel') {
+                try {
+                    let items = JSON.parse(note.content);
+                    textToCopy += items.map((it, idx) => `[Kartu ${idx + 1}]\n${it.content}`).join('\n\n---\n\n');
+                } catch(e) {}
+            } else if (note.category === 'mypassword') {
+                try {
+                    let pw = JSON.parse(note.content);
+                    textToCopy += `Username: ${pw.username}\nPassword: ${pw.password}\nLink: ${pw.link}`;
+                } catch(e) {}
+            } else {
+                textToCopy += note.content;
             }
-
-            optionsContainer.appendChild(createBtn('fa-regular fa-pen-to-square', 'Edit Note', openModal));
-            optionsContainer.appendChild(createBtn('fa-regular fa-folder-open', 'Move to...', openTransferModal));
-            optionsContainer.appendChild(createBtn('fa-regular fa-trash-can', 'Delete', openDeleteAlert, true));
-
-            let displayTitle = note.title;
-            if (!displayTitle && currentApp === 'carousel') {
-                displayTitle = "Carousel Group";
-            } else if (!displayTitle && note.content) {
-                const words = note.content.trim().split(/\s+/);
-                displayTitle = words.slice(0, 3).join(' ') + (words.length > 3 ? '...' : '');
+            
+            const textarea = document.createElement('textarea');
+            textarea.value = textToCopy;
+            document.body.appendChild(textarea);
+            textarea.select();
+            
+            try {
+                document.execCommand('copy');
+                showToast("Teks berhasil disalin!");
+            } catch (err) {
+                showToast("Gagal menyalin teks.");
             }
-            document.getElementById('actions-title').innerText = displayTitle || 'Note Actions';
-
-            const overlay = document.getElementById('actions-overlay');
-            const box = document.getElementById('actions-box');
-            overlay.classList.remove('hidden');
-            overlay.classList.add('flex');
-            setTimeout(() => { 
-                overlay.classList.remove('opacity-0'); 
-                box.classList.remove('translate-y-full'); 
-            }, 10);
+            
+            document.body.removeChild(textarea);
         }
 
-        function closeActionsModal() {
-            const overlay = document.getElementById('actions-overlay');
-            const box = document.getElementById('actions-box');
-            box.classList.add('translate-y-full');
-            overlay.classList.add('opacity-0');
-            setTimeout(() => { overlay.classList.add('hidden'); overlay.classList.remove('flex'); }, 300);
+        // --- VISIT LINK ---
+        function visitLink(id) {
+            const note = notes.find(n => n.id === id);
+            if (!note) return;
+            
+            if (note.category === 'mypassword') {
+                try {
+                    const pw = JSON.parse(note.content);
+                    if (pw.link) {
+                        let url = pw.link;
+                        if (!url.match(/^https?:\/\//i)) {
+                            url = 'https://' + url;
+                        }
+                        window.open(url, '_blank');
+                        showToast("Membuka tautan...");
+                        return;
+                    }
+                } catch(e) {}
+                showToast("Tidak ditemukan link pada password ini.");
+                return;
+            }
+
+            const urlRegex = /(https?:\/\/[^\s]+)/g;
+            const matches = note.content.match(urlRegex);
+            
+            if (matches && matches.length > 0) {
+                window.open(matches[0], '_blank');
+                showToast("Membuka tautan...");
+            } else {
+                showToast("Tidak ditemukan link (http/https) pada catatan ini.");
+            }
         }
 
-        // --- MANAJEMEN EXPORT & IMPORT DATA (SYNC / MERGE) ---
+        // --- SISTEM AKORDION ---
+        function toggleCategory(catKey) {
+            const content = document.getElementById(`cat-body-${catKey}`);
+            const icon = document.getElementById(`cat-icon-${catKey}`);
+            const isOpen = content.classList.toggle('open');
+            icon.classList.toggle('open');
+            if (isOpen) openCategories.add(catKey);
+            else openCategories.delete(catKey);
+        }
+
+        function toggleNote(noteId) {
+            const content = document.getElementById(`note-body-${noteId}`);
+            const icon = document.getElementById(`note-icon-${noteId}`);
+            const isOpen = content.classList.toggle('open');
+            icon.classList.toggle('open');
+            if (isOpen) openNotes.add(noteId);
+            else openNotes.delete(noteId);
+        }
+
+        function toggleGroupView() {
+            isGrouped = !isGrouped;
+            const btn = document.getElementById('btn-group');
+            if (isGrouped) {
+                btn.innerHTML = '<i class="fa-solid fa-list"></i>'; 
+                btn.classList.add('bg-indigo-100', 'dark:bg-indigo-900/40', 'rounded-lg');
+            } else {
+                btn.innerHTML = '<i class="fa-solid fa-layer-group"></i>';
+                btn.classList.remove('bg-indigo-100', 'dark:bg-indigo-900/40', 'rounded-lg');
+            }
+            renderNotes();
+        }
+
+        // --- EXPORT / IMPORT JSON ---
         function exportData() {
-            const backupData = {};
-            for (const key in appsConfig) {
-                const storageKey = appsConfig[key].storageKey;
-                const data = localStorage.getItem(storageKey);
-                if (data) {
-                    try { backupData[storageKey] = JSON.parse(data); }
-                    catch(e) { backupData[storageKey] = []; }
-                } else {
-                    backupData[storageKey] = [];
-                }
-            }
-            
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData));
-            const downloadAnchorNode = document.createElement('a');
-            downloadAnchorNode.setAttribute("href", dataStr);
-            
-            const dateStr = new Date().toISOString().slice(0,10).replace(/-/g, "");
-            downloadAnchorNode.setAttribute("download", `Backup_Sync_${dateStr}.json`);
-            
-            document.body.appendChild(downloadAnchorNode); 
-            downloadAnchorNode.click();
-            downloadAnchorNode.remove();
-            
-            showToast("Backup exported");
+            if (notes.length === 0) return showToast("Tidak ada data untuk diekspor!");
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(notes));
+            const downloadNode = document.createElement('a');
+            downloadNode.setAttribute("href", dataStr);
+            downloadNode.setAttribute("download", `MyNotes_Backup_${new Date().toISOString().slice(0,10)}.json`);
+            document.body.appendChild(downloadNode);
+            downloadNode.click();
+            downloadNode.remove();
+            showToast("Berhasil diekspor!");
         }
 
         function importData(event) {
             const file = event.target.files[0];
             if (!file) return;
-
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
-                    const backupData = JSON.parse(e.target.result);
-                    let importedCount = 0;
-                    
-                    // PROSES MERGE DATA (GABUNGKAN DAN PILIH YANG TERBARU)
-                    for (const key in appsConfig) {
-                        const storageKey = appsConfig[key].storageKey;
+                    const importedNotes = JSON.parse(e.target.result);
+                    if (Array.isArray(importedNotes)) {
+                        const notesMap = new Map();
+                        notes.forEach(n => notesMap.set(n.id, n));
+                        importedNotes.forEach(n => notesMap.set(n.id, n));
+                        notes = Array.from(notesMap.values());
                         
-                        if (backupData[storageKey]) {
-                            const incomingNotes = backupData[storageKey];
-                            if (!Array.isArray(incomingNotes)) continue;
-
-                            // 1. Ambil data lokal yang sudah ada
-                            let existingNotes = [];
-                            const existingDataStr = localStorage.getItem(storageKey);
-                            if (existingDataStr) {
-                                try { existingNotes = JSON.parse(existingDataStr); } catch(err) {}
-                            }
-
-                            // 2. Buat Map dari data lokal untuk pencarian cepat berdasarkan ID
-                            const notesMap = new Map();
-                            existingNotes.forEach(note => notesMap.set(note.id, note));
-
-                            // 3. Masukkan / Timpa dengan data dari file JSON yang masuk (berdasarkan updatedAt terbaru)
-                            incomingNotes.forEach(incomingNote => {
-                                const existingNote = notesMap.get(incomingNote.id);
-                                if (existingNote) {
-                                    const incomingTime = incomingNote.updatedAt || incomingNote.timestamp || 0;
-                                    const existingTime = existingNote.updatedAt || existingNote.timestamp || 0;
-
-                                    // Jika data import lebih baru dari data lokal, timpa
-                                    if (incomingTime > existingTime) {
-                                        notesMap.set(incomingNote.id, incomingNote);
-                                    }
-                                } else {
-                                    // Jika data belum ada, tambahkan
-                                    notesMap.set(incomingNote.id, incomingNote);
-                                }
-                            });
-
-                            // 4. Ubah kembali ke array dan simpan
-                            const mergedNotes = Array.from(notesMap.values());
-                            localStorage.setItem(storageKey, JSON.stringify(mergedNotes));
-                            importedCount++;
-                        }
-                    }
-                    
-                    if (importedCount > 0) {
-                        loadNotes(); 
-                        showToast("Data synced successfully!");
+                        localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+                        renderNotes();
+                        showToast("Data berhasil diimpor!");
+                    } else { showToast("Format file tidak valid."); }
+                } catch (err) { 
+                    if (err.name === 'QuotaExceededError') {
+                         showToast("Gagal! Penyimpanan browser penuh.");
                     } else {
-                        showToast("No valid data to sync");
+                         showToast("Gagal membaca file JSON."); 
                     }
-                } catch (err) {
-                    showToast("Failed to read sync file");
                 }
-                event.target.value = ''; // Reset input
+                event.target.value = ''; 
             };
             reader.readAsText(file);
-            
-            const sidebar = document.getElementById('sidebar');
-            if (!sidebar.classList.contains('-translate-x-full')) toggleSidebar();
         }
 
-        // EKSEKUSI AWAL
-        window.onload = () => {
-            initCarouselForm(); // Persiapkan Form HTML untuk Carousel
-            switchApp('copasional');
-        };
+        function escapeHTML(str) {
+            if (!str) return '';
+            return str.replace(/[&<>'"]/g, tag => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'}[tag] || tag));
+        }
+
+        // --- STREAMING_CHUNK:Building the note card UI... ---
+        // --- BUILDER KARTU CATATAN ---
+        function buildNoteCard(note, showBadge = false) {
+            const catConfig = categories[note.category] || categories['memo'];
+            const isNoteOpen = openNotes.has(note.id);
+            const openClass = isNoteOpen ? "open" : "";
+            
+            // 1. Proses Konten Teks
+            let previewContent = '';
+            if (note.category === 'carousel') {
+                let items = [];
+                try { items = JSON.parse(note.content); } catch(e){}
+                previewContent = `<div class="flex gap-2 overflow-x-auto hide-scrollbar py-2">`;
+                items.forEach((it) => {
+                    previewContent += `<div class="shrink-0 w-40 bg-gray-50 dark:bg-gray-700 p-2 rounded-lg border border-gray-100 dark:border-gray-600 text-[13px] text-gray-800 dark:text-gray-200 whitespace-pre-wrap">${escapeHTML(it.content)}</div>`;
+                });
+                previewContent += `</div>`;
+                if(items.length === 0) previewContent = '<p class="text-[13px] text-gray-400 dark:text-gray-500 italic">Carousel kosong</p>';
+            } else if (note.category === 'mypassword') {
+                let pw = {username: '', password: '', link: ''};
+                try { pw = JSON.parse(note.content); } catch(e){}
+                
+                let safeLink = escapeHTML(pw.link);
+                let linkUrl = safeLink.match(/^https?:\/\//i) ? safeLink : 'https://' + safeLink;
+                let linkHtml = safeLink ? `<a href="${linkUrl}" target="_blank" onclick="event.stopPropagation()" class="text-blue-500 dark:text-blue-400 hover:underline break-all">${safeLink}</a>` : '-';
+                
+                previewContent = `
+                    <div class="space-y-3 text-[14px] text-gray-700 dark:text-gray-300">
+                        <div class="flex flex-col"><span class="text-[11px] text-gray-400 dark:text-gray-500 uppercase font-bold tracking-wider mb-0.5">Username / Email</span><span class="font-medium select-all">${escapeHTML(pw.username) || '-'}</span></div>
+                        <div class="flex flex-col"><span class="text-[11px] text-gray-400 dark:text-gray-500 uppercase font-bold tracking-wider mb-0.5">Password</span><span class="font-mono bg-gray-100 dark:bg-gray-700/50 px-2 py-1 rounded inline-block w-fit select-all">${escapeHTML(pw.password) || '-'}</span></div>
+                        <div class="flex flex-col"><span class="text-[11px] text-gray-400 dark:text-gray-500 uppercase font-bold tracking-wider mb-0.5">Link / URL</span><span class="">${linkHtml}</span></div>
+                    </div>
+                `;
+            } else {
+                previewContent = `<div class="text-[14px] text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">${escapeHTML(note.content)}</div>`;
+            }
+
+            // 2. Proses Lampiran
+            let attachmentsHtml = '';
+            if (note.attachments && note.attachments.length > 0) {
+                attachmentsHtml = `<div class="mt-4 pt-3 border-t border-gray-100 dark:border-gray-700 flex flex-wrap gap-2">`;
+                note.attachments.forEach(att => {
+                    if (att.type === 'image') {
+                        attachmentsHtml += `<a href="${att.data}" target="_blank" title="Klik untuk lihat penuh" class="block w-20 h-20 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-600 shrink-0 shadow-sm"><img src="${att.data}" class="object-cover w-full h-full hover:scale-110 transition"></a>`;
+                    } else {
+                        attachmentsHtml += `<a href="${att.data}" download="${att.name}" title="Klik untuk unduh" class="bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 px-3 py-2 rounded-lg text-[13px] text-blue-600 dark:text-blue-400 font-medium flex items-center transition border border-gray-200 dark:border-gray-600 shadow-sm"><i class="fa-solid fa-file-arrow-down mr-2 text-gray-400 dark:text-gray-500"></i> <span class="truncate max-w-[140px]">${att.name}</span></a>`;
+                    }
+                });
+                attachmentsHtml += `</div>`;
+            }
+
+            const badgeHtml = showBadge ? `<span class="px-2 py-0.5 rounded-md ${catConfig.bg} ${catConfig.color} text-[11px] font-bold ml-2 shrink-0">${catConfig.icon} ${catConfig.title}</span>` : '';
+
+            return `
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mb-3 transition-colors">
+                    <div class="px-4 py-3.5 flex justify-between items-center cursor-pointer active:bg-gray-50 dark:active:bg-gray-700 transition" onclick="toggleNote(${note.id})">
+                        <div class="flex-1 pr-2 flex items-center overflow-hidden">
+                            <h3 class="font-bold text-gray-900 dark:text-white text-[15px] truncate">${escapeHTML(note.title)}</h3>
+                            ${badgeHtml}
+                            ${note.attachments && note.attachments.length > 0 ? '<i class="fa-solid fa-paperclip text-gray-400 dark:text-gray-500 text-[11px] ml-2"></i>' : ''}
+                        </div>
+                        
+                        <div class="flex items-center space-x-0.5 shrink-0">
+                            ${['mylink', 'mypassword'].includes(note.category) ? `
+                            <button onclick="visitLink(${note.id}); event.stopPropagation();" class="w-8 h-8 flex items-center justify-center text-indigo-600 dark:text-indigo-400 active:bg-indigo-50 dark:active:bg-indigo-900/30 rounded-full transition" title="Kunjungi Link">
+                                <i class="fa-solid fa-arrow-up-right-from-square text-[13px]"></i>
+                            </button>
+                            ` : ''}
+                            <button onclick="copyNoteText(${note.id}); event.stopPropagation();" class="w-8 h-8 flex items-center justify-center text-green-600 dark:text-green-400 active:bg-green-50 dark:active:bg-green-900/30 rounded-full transition" title="Salin Teks">
+                                <i class="fa-regular fa-copy text-[13px]"></i>
+                            </button>
+                            <button onclick="openModal(${note.id}); event.stopPropagation();" class="w-8 h-8 flex items-center justify-center text-blue-500 dark:text-blue-400 active:bg-blue-50 dark:active:bg-blue-900/30 rounded-full transition" title="Edit Catatan">
+                                <i class="fa-solid fa-pen text-[13px]"></i>
+                            </button>
+                            <button onclick="openDeleteAlert(${note.id}); event.stopPropagation();" class="w-8 h-8 flex items-center justify-center text-red-500 dark:text-red-400 active:bg-red-50 dark:active:bg-red-900/30 rounded-full transition" title="Hapus Catatan">
+                                <i class="fa-solid fa-trash text-[13px]"></i>
+                            </button>
+                            <div class="w-px h-4 bg-gray-200 dark:bg-gray-600 mx-1"></div>
+                            <i class="fa-solid fa-chevron-down text-gray-400 dark:text-gray-500 text-sm chevron-icon pl-1 ${openClass}" id="note-icon-${note.id}"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-content border-t border-gray-100 dark:border-gray-700 ${openClass}" id="note-body-${note.id}">
+                        <div class="accordion-inner bg-gray-50/50 dark:bg-gray-800/50">
+                            <div class="p-4">
+                                ${previewContent}
+                                ${attachmentsHtml}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- STREAMING_CHUNK:Rendering the main notes list... ---
+        // --- RENDER UTAMA ---
+        function renderNotes() {
+            const container = document.getElementById('notes-container');
+            container.innerHTML = '';
+
+            if (notes.length === 0) {
+                container.innerHTML = `
+                    <div class="flex flex-col items-center justify-center text-gray-400 dark:text-gray-500 pt-20">
+                        <i class="fa-regular fa-folder-open text-6xl mb-4 text-gray-300 dark:text-gray-600"></i>
+                        <p class="font-medium">Belum ada catatan.</p>
+                        <p class="text-sm">Klik tombol + untuk menambah.</p>
+                    </div>`;
+                return;
+            }
+
+            let html = '';
+
+            if (isGrouped) {
+                Object.keys(categories).forEach(catKey => {
+                    const catNotes = notes.filter(n => n.category === catKey).sort((a,b) => b.timestamp - a.timestamp);
+                    if (catNotes.length > 0) {
+                        const config = categories[catKey];
+                        const isCatOpen = openCategories.has(catKey);
+                        const openClass = isCatOpen ? "open" : "";
+                        
+                        html += `
+                            <div class="mb-4">
+                                <div class="flex justify-between items-center bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 cursor-pointer active:bg-gray-50 dark:active:bg-gray-700 shadow-sm transition-colors" onclick="toggleCategory('${catKey}')">
+                                    <div class="flex items-center">
+                                        <div class="w-8 h-8 rounded-lg ${config.bg} ${config.color} flex items-center justify-center mr-3">
+                                            ${config.icon}
+                                        </div>
+                                        <h2 class="text-[16px] font-bold text-gray-800 dark:text-white">${config.title}</h2>
+                                        <span class="ml-2 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 px-2 py-0.5 rounded-full text-xs font-bold">${catNotes.length}</span>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-down text-gray-400 dark:text-gray-500 text-sm chevron-icon ${openClass}" id="cat-icon-${catKey}"></i>
+                                </div>
+                                
+                                <div class="accordion-content ${openClass}" id="cat-body-${catKey}">
+                                    <div class="accordion-inner">
+                                        <div class="pt-3 pl-2 pr-2">
+                        `;
+
+                        catNotes.forEach(note => { html += buildNoteCard(note, false); });
+
+                        html += `       </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+            } else {
+                const allNotes = [...notes].sort((a,b) => b.timestamp - a.timestamp);
+                html += `<div class="pt-2">`;
+                allNotes.forEach(note => { html += buildNoteCard(note, true); });
+                html += `</div>`;
+            }
+
+            container.innerHTML = html;
+        }
     </script>
 </body>
 </html>
