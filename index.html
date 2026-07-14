@@ -58,7 +58,7 @@
 <body class="flex flex-col h-screen overflow-hidden bg-[#F2F2F7] dark:bg-gray-900 transition-colors duration-300">
 
     <!-- Header dengan Tombol Aksi -->
-    <header class="glass-header fixed top-0 w-full z-20 h-14 flex items-center justify-between px-4 md:px-5">
+    <header class="glass-header fixed top-0 w-full z-20 h-14 flex items-center justify-between px-4 md:px-6 lg:px-8">
         <h1 class="text-[17px] font-bold text-gray-800 dark:text-white tracking-tight">My Notes</h1>
         
         <div class="flex items-center space-x-3">
@@ -86,9 +86,9 @@
         </div>
     </header>
 
-    <!-- Area Utama -->
-    <main class="flex-1 overflow-y-auto hide-scrollbar pt-16 pb-10 px-4" id="main-area">
-        <div id="notes-container" class="w-full max-w-3xl mx-auto space-y-4">
+    <!-- Area Utama: Penuh pada Desktop -->
+    <main class="flex-1 overflow-y-auto hide-scrollbar pt-20 pb-10 px-4 lg:px-8" id="main-area">
+        <div id="notes-container" class="w-full max-w-[1600px] mx-auto">
             <!-- Catatan akan di-render di sini via JavaScript -->
         </div>
     </main>
@@ -384,12 +384,9 @@
         function handleOneShotInput(e) {
             const visibleEl = document.getElementById('oneshot-fs-visible');
             const hiddenEl = document.getElementById('oneshot-fs-hidden');
-            // Ganti spasi non-breaking bawaan contenteditable agar deteksi regex presisi
             let val = visibleEl.innerText.replace(/\u00A0/g, " "); 
 
             if (val.includes(' ') || val.includes('\n')) {
-                // Regex memisahkan teks menjadi dua grup: 
-                // Grup 1: teks sebelumnya beserta spasinya, Grup 2: kata terakhir yang sedang diketik
                 const match = val.match(/^(.*[\s\n]+)([^\s\n]*)$/);
                 if (match) {
                     hiddenEl.value += match[1];
@@ -454,7 +451,6 @@
             const revContainer = document.getElementById('revisi-input-container');
             const oneshotContainer = document.getElementById('oneshot-input-container');
 
-            // Hide all first
             [normalContainer, carouselContainer, pwContainer, revContainer, oneshotContainer].forEach(el => {
                 if(el) {
                     el.classList.add('hidden');
@@ -462,7 +458,6 @@
                 }
             });
 
-            // Show selected
             if (category === 'carousel') {
                 carouselContainer.classList.remove('hidden'); carouselContainer.classList.add('flex');
             } else if (category === 'mypassword') {
@@ -476,7 +471,6 @@
             }
         }
 
-        // --- STREAMING_CHUNK:Implementing Carousel dynamic features... ---
         function initCarouselInputs(count = 3) {
             currentCarouselCount = count;
             document.getElementById('carousel-count-display').innerText = count;
@@ -624,7 +618,6 @@
             });
         }
 
-        // --- STREAMING_CHUNK:Handling Note Creation Modal lifecycle... ---
         function openModal(editId = null) {
             const overlay = document.getElementById('modal-overlay');
             const modal = document.getElementById('modal');
@@ -751,7 +744,6 @@
             renderNotes();
         }
 
-        // --- STREAMING_CHUNK:Handling Note Serialization and Saving... ---
         function saveNote() {
             const id = document.getElementById('note-id').value;
             const category = document.getElementById('note-category').value;
@@ -832,7 +824,6 @@
                 rawTextForTitle = content;
             }
 
-            // AUTO-TITLE LOGIC
             let title = titleInput;
             if (!title) {
                 if (rawTextForTitle) {
@@ -870,7 +861,6 @@
             }
         }
 
-        // --- STREAMING_CHUNK:Defining Modals and Inline Actions... ---
         function openDeleteAlert(id) {
             noteIdToDelete = id;
             const overlay = document.getElementById('delete-alert-overlay');
@@ -1028,7 +1018,6 @@
             } catch(e) {}
         }
 
-        // --- COPY NOTE ---
         function copyNoteText(id) {
             const note = notes.find(n => n.id === id);
             if (!note) return;
@@ -1102,7 +1091,6 @@
             }
         }
 
-        // --- STREAMING_CHUNK:Accordion and View Controls... ---
         function toggleCategory(catKey) {
             const content = document.getElementById(`cat-body-${catKey}`);
             const icon = document.getElementById(`cat-icon-${catKey}`);
@@ -1189,7 +1177,6 @@
             }).replace(/\./g, ':');
         }
 
-        // --- STREAMING_CHUNK:Building Note Cards based on Category... ---
         function buildNoteCard(note, showBadge = false) {
             const catConfig = categories[note.category] || categories['memo'];
             const isNoteOpen = openNotes.has(note.id);
@@ -1294,8 +1281,9 @@
                 Dibuat: ${timeCreated} ${timeEdited ? ` &bull; Diedit: ${timeEdited}` : ''}
             </div>`;
 
+            // break-inside-avoid dan inline-block w-full ditambahkan untuk layout Masonry (kolom PC)
             return `
-                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-colors">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-colors break-inside-avoid inline-block w-full mb-4 md:mb-5">
                     <div class="px-4 py-3.5 flex justify-between items-center cursor-pointer active:bg-gray-50 dark:active:bg-gray-700 transition" onclick="toggleNote(${note.id})">
                         <div class="flex-1 pr-2 flex flex-col overflow-hidden justify-center">
                             <div class="flex items-center overflow-hidden">
@@ -1338,7 +1326,6 @@
             `;
         }
 
-        // --- STREAMING_CHUNK:Final render loop and DOM updates... ---
         function renderNotes() {
             const container = document.getElementById('notes-container');
             container.innerHTML = '';
@@ -1356,6 +1343,9 @@
             let html = '';
 
             if (isGrouped) {
+                // Layout Masonry (Kolom) untuk Kategori Besar pada Desktop
+                html += `<div class="columns-1 lg:columns-2 xl:columns-3 gap-5 md:gap-6">`;
+                
                 Object.keys(categories).forEach(catKey => {
                     const catNotes = notes.filter(n => n.category === catKey).sort((a,b) => b.timestamp - a.timestamp);
                     if (catNotes.length > 0) {
@@ -1364,7 +1354,7 @@
                         const openClass = isCatOpen ? "open" : "";
                         
                         html += `
-                            <div class="mb-5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm overflow-hidden transition-colors">
+                            <div class="mb-5 md:mb-6 break-inside-avoid inline-block w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm overflow-hidden transition-colors">
                                 <div class="flex justify-between items-center px-4 py-3.5 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 active:bg-gray-100 dark:active:bg-gray-700 transition-colors" onclick="toggleCategory('${catKey}')">
                                     <div class="flex items-center">
                                         <div class="w-8 h-8 rounded-lg ${config.bg} ${config.color} flex items-center justify-center mr-3">
@@ -1378,7 +1368,7 @@
                                 
                                 <div class="accordion-content ${openClass}" id="cat-body-${catKey}">
                                     <div class="accordion-inner bg-gray-50/50 dark:bg-gray-900/30 border-t border-gray-100 dark:border-gray-700">
-                                        <div class="p-3.5 space-y-3">
+                                        <div class="p-3.5 pb-0">
                         `;
 
                         catNotes.forEach(note => { html += buildNoteCard(note, false); });
@@ -1390,9 +1380,12 @@
                         `;
                     }
                 });
+                
+                html += `</div>`;
             } else {
+                // Layout Masonry (Kolom) untuk Semua Catatan pada Desktop
                 const allNotes = [...notes].sort((a,b) => b.timestamp - a.timestamp);
-                html += `<div class="pt-2 space-y-3">`;
+                html += `<div class="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 md:gap-5 lg:gap-6 pt-2">`;
                 allNotes.forEach(note => { html += buildNoteCard(note, true); });
                 html += `</div>`;
             }
