@@ -28,7 +28,6 @@
         ::-webkit-scrollbar { width: 0px; height: 0px; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* Animasi Modal */
         .modal-enter { transform: translateY(100%); opacity: 0; transition: all 0.3s ease-out; }
         .modal-active { transform: translateY(0); opacity: 1; }
         
@@ -44,7 +43,6 @@
             border-bottom: 1px solid rgba(255,255,255,0.05);
         }
 
-        /* Akordion Setup */
         .accordion-content {
             display: grid;
             grid-template-rows: 0fr;
@@ -75,7 +73,6 @@
             
             <div class="w-px h-5 bg-gray-300 dark:bg-gray-700 mx-1"></div>
             
-            <!-- Tombol Toggle Theme -->
             <button onclick="toggleTheme()" id="btn-theme" class="w-8 h-8 flex items-center justify-center text-yellow-500 active:opacity-50 text-[18px]" title="Ubah Tema">
                 <i class="fa-solid fa-sun" id="theme-icon"></i>
             </button>
@@ -113,9 +110,12 @@
                 <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1">Pilih Kategori</label>
                 <div class="relative">
                     <select id="note-category" onchange="toggleInputFields()" class="w-full appearance-none bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-3 px-4 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-gray-600 transition-colors">
-                        <option value="copasional">📋 Copasional</option>
+                        <option value="copas">📋 Copas</option>
                         <option value="carousel">🗂️ Carousel Notes</option>
                         <option value="mypassword">🔑 My Password</option>
+                        <option value="revisi">🔄 Revisi</option>
+                        <option value="ideation">💡 Ideation</option>
+                        <option value="oneshot">🎯 One Shot</option>
                         <option value="error">🐛 Error Book</option>
                         <option value="myprompt">⌨️ My Prompt</option>
                         <option value="myinstruction">💻 Instruction</option>
@@ -132,7 +132,7 @@
                 <input type="text" id="note-title" placeholder="Judul Catatan..." class="w-full text-[20px] font-bold focus:outline-none text-black dark:text-white bg-transparent placeholder-gray-300 dark:placeholder-gray-500 py-2 border-b border-gray-100 dark:border-gray-700">
             </div>
 
-            <!-- Bagian Lampiran (Upload Gambar / File) -->
+            <!-- Bagian Lampiran -->
             <div class="mb-4">
                 <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">Lampiran (Maks 2MB/File)</label>
                 <div class="flex space-x-2 mb-2">
@@ -141,7 +141,6 @@
                     <input type="file" id="attach-image" accept="image/*" class="hidden" onchange="handleFileUpload(event, 'image')" multiple>
                     <input type="file" id="attach-file" accept=".txt,.pdf,.html,.json,.doc,.docx,.xls,.xlsx,.csv" class="hidden" onchange="handleFileUpload(event, 'file')" multiple>
                 </div>
-                <!-- Tempat Preview File yang Diunggah -->
                 <div id="attachment-preview" class="flex flex-wrap gap-2"></div>
             </div>
             
@@ -180,6 +179,28 @@
                     <input type="url" id="pw-link" placeholder="https://..." class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
             </div>
+
+            <!-- Mode Revisi -->
+            <div id="revisi-input-container" class="w-full flex-col hidden space-y-4 pb-5">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-1">Tujuan Revisi</label>
+                    <input type="text" id="rev-tujuan" placeholder="Misal: Perbaiki grammar, kurangi pengulangan..." class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-1">Teks Utama</label>
+                    <textarea id="rev-content" placeholder="Ketik teks yang akan atau telah direvisi..." class="w-full h-40 bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none leading-relaxed"></textarea>
+                </div>
+            </div>
+
+            <!-- Mode One Shot -->
+            <div id="oneshot-input-container" class="w-full flex-col hidden pb-5 items-center justify-center py-6">
+                <div class="w-20 h-20 bg-rose-100 dark:bg-rose-900/30 text-rose-500 rounded-full flex items-center justify-center text-4xl mb-4">🎯</div>
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Mode Anti-Distraksi</h3>
+                <p class="text-center text-sm text-gray-500 dark:text-gray-400 mb-6 px-4">Teks akan otomatis hilang per kata saat Anda menekan spasi untuk melatih aliran ide tanpa henti.</p>
+                <button onclick="openOneShotFullscreen()" class="bg-rose-500 hover:bg-rose-600 text-white px-8 py-3.5 rounded-2xl font-bold transition-colors shadow-lg active:scale-95 w-full md:w-auto flex items-center justify-center">
+                    <i class="fa-solid fa-expand mr-2"></i> Buka Kanvas One Shot
+                </button>
+            </div>
         </div>
     </div>
 
@@ -206,7 +227,35 @@
         <span id="toast-message" class="text-[14px] font-medium">Teks berhasil disalin!</span>
     </div>
 
-    <!-- HIDDEN INPUT UNTUK GAMBAR CAROUSEL INDIVIDUAL (MODE EDIT KARTU LUAR) -->
+    <!-- CUSTOM ONE SHOT FULLSCREEN KANVAS -->
+    <div id="oneshot-fullscreen-overlay" class="fixed inset-0 bg-[#F2F2F7] dark:bg-gray-900 z-[100] hidden flex-col transition-opacity duration-300 opacity-0">
+        <!-- Floating Header/Controls -->
+        <div class="absolute top-6 left-6 right-6 flex justify-between items-center z-30 pointer-events-none">
+            <div id="oneshot-fs-stats" class="text-sm font-bold text-rose-500 bg-rose-100 dark:bg-rose-900/30 px-4 py-2 rounded-full shadow-sm pointer-events-auto">0 Kata</div>
+            <button onclick="closeOneShotFullscreen()" class="w-12 h-12 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full shadow-lg flex items-center justify-center text-gray-800 dark:text-white hover:scale-105 active:scale-95 transition pointer-events-auto" title="Selesai / Keluar Kanvas">
+                <i class="fa-solid fa-check text-xl"></i>
+            </button>
+        </div>
+
+        <!-- Hidden content store -->
+        <textarea id="oneshot-fs-hidden" class="hidden"></textarea>
+
+        <!-- Big Input Centered -->
+        <div class="flex-1 flex items-center justify-center p-8 relative overflow-hidden z-10">
+            <div id="oneshot-fs-visible" contenteditable="true" oninput="handleOneShotInput(event)" class="w-full max-w-5xl mx-auto text-center text-5xl md:text-[6vw] font-black text-gray-800 dark:text-gray-200 focus:outline-none empty:before:content-[attr(data-placeholder)] empty:before:text-gray-300 dark:empty:before:text-gray-700 leading-tight break-words" data-placeholder="Ketik di sini..."></div>
+        </div>
+
+        <!-- Preview Box (Absolute Centered) -->
+        <div id="oneshot-fs-preview-box" class="absolute inset-x-6 top-24 bottom-28 md:inset-x-24 md:top-32 md:bottom-32 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-3xl shadow-2xl p-8 hidden overflow-y-auto text-lg md:text-2xl leading-relaxed text-gray-800 dark:text-gray-200 z-20 border border-gray-200 dark:border-gray-700"></div>
+
+        <!-- Floating Bottom Control -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30 pointer-events-auto">
+            <button onclick="toggleOneShotPreview()" id="btn-oneshot-preview" class="bg-gray-800 dark:bg-white text-white dark:text-gray-900 px-6 py-3 rounded-full font-bold shadow-xl hover:scale-105 active:scale-95 transition flex items-center text-sm md:text-base">
+                <i class="fa-solid fa-eye mr-2"></i> <span id="oneshot-preview-btn-text">Intip Teks</span>
+            </button>
+        </div>
+    </div>
+
     <input type="file" id="carousel-image-input" accept="image/*" class="hidden" onchange="handleCarouselImageUpload(event)">
 
     <!-- CUSTOM EDIT CAROUSEL CARD MODAL -->
@@ -226,12 +275,14 @@
         </div>
     </div>
 
-    <!-- Script JavaScript Utama -->
     <script>
         const categories = {
-            copasional: { title: "Copasional", icon: "📋", color: "text-green-500 dark:text-green-400", bg: "bg-green-100 dark:bg-green-900/30" },
+            copas: { title: "Copas", icon: "📋", color: "text-green-500 dark:text-green-400", bg: "bg-green-100 dark:bg-green-900/30" },
             carousel: { title: "Carousel Notes", icon: "🗂️", color: "text-pink-500 dark:text-pink-400", bg: "bg-pink-100 dark:bg-pink-900/30" },
             mypassword: { title: "My Password", icon: "🔑", color: "text-teal-500 dark:text-teal-400", bg: "bg-teal-100 dark:bg-teal-900/30" },
+            revisi: { title: "Revisi", icon: "🔄", color: "text-cyan-500 dark:text-cyan-400", bg: "bg-cyan-100 dark:bg-cyan-900/30" },
+            ideation: { title: "Ideation", icon: "💡", color: "text-amber-500 dark:text-amber-400", bg: "bg-amber-100 dark:bg-amber-900/30" },
+            oneshot: { title: "One Shot", icon: "🎯", color: "text-rose-500 dark:text-rose-400", bg: "bg-rose-100 dark:bg-rose-900/30" },
             error: { title: "Error Book", icon: "🐛", color: "text-red-500 dark:text-red-400", bg: "bg-red-100 dark:bg-red-900/30" },
             myprompt: { title: "My Prompt", icon: "⌨️", color: "text-orange-500 dark:text-orange-400", bg: "bg-orange-100 dark:bg-orange-900/30" },
             myinstruction: { title: "Instruction", icon: "💻", color: "text-indigo-500 dark:text-indigo-400", bg: "bg-indigo-100 dark:bg-indigo-900/30" },
@@ -248,14 +299,13 @@
         
         let currentAttachments = [];
         let currentCarouselImages = {}; 
-        let currentCarouselCount = 3; // State jumlah kartu dinamis
+        let currentCarouselCount = 3; 
         let toastTimeout;
         let noteIdToDelete = null;
         let activeCarouselEdit = { noteId: null, cardId: null };
 
         window.onload = () => {
             initTheme();
-            // initCarouselInputs(3) dipanggil dinamis di openModal()
             loadNotes();
         };
 
@@ -311,18 +361,131 @@
             }, 3000);
         }
 
-        // --- MANAJEMEN DINAMIS KARTU CAROUSEL (TAMBAH / KURANG) ---
+        // --- MANAJEMEN ONE SHOT FULLSCREEN ---
+        function openOneShotFullscreen() {
+            const overlay = document.getElementById('oneshot-fullscreen-overlay');
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
+            setTimeout(() => {
+                overlay.classList.remove('opacity-0');
+                placeCaretAtEnd(document.getElementById('oneshot-fs-visible'));
+            }, 10);
+        }
+
+        function closeOneShotFullscreen() {
+            const overlay = document.getElementById('oneshot-fullscreen-overlay');
+            overlay.classList.add('opacity-0');
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+                overlay.classList.remove('flex');
+            }, 300);
+        }
+
+        function handleOneShotInput(e) {
+            const visibleEl = document.getElementById('oneshot-fs-visible');
+            const hiddenEl = document.getElementById('oneshot-fs-hidden');
+            // Ganti spasi non-breaking bawaan contenteditable agar deteksi regex presisi
+            let val = visibleEl.innerText.replace(/\u00A0/g, " "); 
+
+            if (val.includes(' ') || val.includes('\n')) {
+                // Regex memisahkan teks menjadi dua grup: 
+                // Grup 1: teks sebelumnya beserta spasinya, Grup 2: kata terakhir yang sedang diketik
+                const match = val.match(/^(.*[\s\n]+)([^\s\n]*)$/);
+                if (match) {
+                    hiddenEl.value += match[1];
+                    visibleEl.innerText = match[2];
+                    placeCaretAtEnd(visibleEl);
+                }
+            }
+            updateOneShotStats();
+            
+            const box = document.getElementById('oneshot-fs-preview-box');
+            if (!box.classList.contains('hidden')) {
+                box.innerText = hiddenEl.value + visibleEl.innerText;
+            }
+        }
+
+        function placeCaretAtEnd(el) {
+            el.focus();
+            if (typeof window.getSelection !== "undefined" && typeof document.createRange !== "undefined") {
+                const range = document.createRange();
+                range.selectNodeContents(el);
+                range.collapse(false);
+                const sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(range);
+            }
+        }
+
+        function updateOneShotStats() {
+            const hiddenVal = document.getElementById('oneshot-fs-hidden')?.value || "";
+            const visibleVal = document.getElementById('oneshot-fs-visible')?.innerText || "";
+            const text = (hiddenVal + visibleVal).trim();
+            const wordCount = text ? text.split(/\s+/).length : 0;
+            const statEl = document.getElementById('oneshot-fs-stats');
+            if(statEl) statEl.innerText = `${wordCount} Kata`;
+        }
+
+        function toggleOneShotPreview() {
+            const box = document.getElementById('oneshot-fs-preview-box');
+            const hidden = document.getElementById('oneshot-fs-hidden');
+            const visible = document.getElementById('oneshot-fs-visible');
+            const btnText = document.getElementById('oneshot-preview-btn-text');
+            const btnIcon = document.querySelector('#btn-oneshot-preview i');
+
+            if (box.classList.contains('hidden')) {
+                box.innerText = hidden.value + visible.innerText;
+                box.classList.remove('hidden');
+                btnText.innerText = "Tutup Intip";
+                btnIcon.className = "fa-solid fa-eye-slash mr-2";
+            } else {
+                box.classList.add('hidden');
+                btnText.innerText = "Intip Teks";
+                btnIcon.className = "fa-solid fa-eye mr-2";
+                placeCaretAtEnd(visible);
+            }
+        }
+
+        function toggleInputFields() {
+            const category = document.getElementById('note-category').value;
+            const normalContainer = document.getElementById('normal-input-container');
+            const carouselContainer = document.getElementById('carousel-input-container');
+            const pwContainer = document.getElementById('mypassword-input-container');
+            const revContainer = document.getElementById('revisi-input-container');
+            const oneshotContainer = document.getElementById('oneshot-input-container');
+
+            // Hide all first
+            [normalContainer, carouselContainer, pwContainer, revContainer, oneshotContainer].forEach(el => {
+                if(el) {
+                    el.classList.add('hidden');
+                    el.classList.remove('flex');
+                }
+            });
+
+            // Show selected
+            if (category === 'carousel') {
+                carouselContainer.classList.remove('hidden'); carouselContainer.classList.add('flex');
+            } else if (category === 'mypassword') {
+                pwContainer.classList.remove('hidden'); pwContainer.classList.add('flex');
+            } else if (category === 'revisi') {
+                revContainer.classList.remove('hidden'); revContainer.classList.add('flex');
+            } else if (category === 'oneshot') {
+                oneshotContainer.classList.remove('hidden'); oneshotContainer.classList.add('flex');
+            } else {
+                normalContainer.classList.remove('hidden'); normalContainer.classList.add('flex');
+            }
+        }
+
+        // --- STREAMING_CHUNK:Implementing Carousel dynamic features... ---
         function initCarouselInputs(count = 3) {
             currentCarouselCount = count;
             document.getElementById('carousel-count-display').innerText = count;
             const wrapper = document.getElementById('carousel-cards-wrapper');
             wrapper.innerHTML = '';
             
-            // Loop kartu reguler bernomor
             for(let i=1; i<=count; i++) {
                 wrapper.appendChild(createCarouselInputGroup(i, i));
             }
-            // Selalu tambahkan 1 kartu ekstra khusus Caption di urutan terakhir
             wrapper.appendChild(createCarouselInputGroup('caption', 'Caption'));
         }
 
@@ -331,7 +494,6 @@
             div.id = `car-input-group-${id}`;
             div.className = "relative bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl transition-colors mt-3";
             
-            // Badge beda warna: Ungu untuk caption, Pink untuk reguler
             const badgeClass = id === 'caption' ? 'bg-purple-500 w-auto px-2' : 'bg-pink-500 w-6';
             
             div.innerHTML = `
@@ -355,7 +517,6 @@
 
         function changeCarouselCount(delta) {
             const newCount = currentCarouselCount + delta;
-            // Batasan: minimal 1 kartu, maksimal 20 kartu
             if (newCount < 1 || newCount > 20) {
                 if (newCount > 20) showToast("Maksimal 20 kartu.");
                 return;
@@ -365,11 +526,9 @@
             const captionEl = document.getElementById('car-input-group-caption');
             
             if (delta > 0) {
-                // Tambah kartu baru reguler *SEBELUM* kartu caption
                 currentCarouselCount++;
                 wrapper.insertBefore(createCarouselInputGroup(currentCarouselCount, currentCarouselCount), captionEl);
             } else {
-                // Hapus kartu reguler terakhir
                 const lastChild = document.getElementById(`car-input-group-${currentCarouselCount}`);
                 if (lastChild) wrapper.removeChild(lastChild);
                 delete currentCarouselImages[currentCarouselCount]; 
@@ -413,35 +572,6 @@
             }
         }
 
-        function toggleInputFields() {
-            const category = document.getElementById('note-category').value;
-            const normalContainer = document.getElementById('normal-input-container');
-            const carouselContainer = document.getElementById('carousel-input-container');
-            const pwContainer = document.getElementById('mypassword-input-container');
-
-            normalContainer.classList.add('hidden');
-            normalContainer.classList.remove('flex');
-            carouselContainer.classList.add('hidden');
-            carouselContainer.classList.remove('flex');
-            if (pwContainer) {
-                pwContainer.classList.add('hidden');
-                pwContainer.classList.remove('flex');
-            }
-
-            if (category === 'carousel') {
-                carouselContainer.classList.remove('hidden');
-                carouselContainer.classList.add('flex');
-            } else if (category === 'mypassword') {
-                if (pwContainer) {
-                    pwContainer.classList.remove('hidden');
-                    pwContainer.classList.add('flex');
-                }
-            } else {
-                normalContainer.classList.remove('hidden');
-                normalContainer.classList.add('flex');
-            }
-        }
-
         function handleFileUpload(event, type) {
             const files = event.target.files;
             if (!files) return;
@@ -451,7 +581,6 @@
                     showToast(`File ${file.name} terlalu besar (Maks 2MB).`);
                     return;
                 }
-
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     currentAttachments.push({
@@ -495,6 +624,7 @@
             });
         }
 
+        // --- STREAMING_CHUNK:Handling Note Creation Modal lifecycle... ---
         function openModal(editId = null) {
             const overlay = document.getElementById('modal-overlay');
             const modal = document.getElementById('modal');
@@ -508,13 +638,22 @@
                 document.getElementById('pw-password').value = "";
                 document.getElementById('pw-link').value = "";
             }
+            if (document.getElementById('rev-tujuan')) {
+                document.getElementById('rev-tujuan').value = "";
+                document.getElementById('rev-content').value = "";
+            }
+            if (document.getElementById('oneshot-fs-hidden')) {
+                document.getElementById('oneshot-fs-hidden').value = "";
+                document.getElementById('oneshot-fs-visible').innerText = "";
+                updateOneShotStats();
+                document.getElementById('oneshot-fs-preview-box').classList.add('hidden');
+            }
             
             currentAttachments = []; 
-            currentCarouselImages = {}; // Reset gambar carousel
+            currentCarouselImages = {}; 
             
             document.getElementById('modal-title').innerText = "Buat Catatan";
-
-            let targetCarouselCount = 3; // Default jumlah kartu utama
+            let targetCarouselCount = 3; 
 
             if (editId) {
                 const note = notes.find(n => n.id === editId);
@@ -524,9 +663,7 @@
                     document.getElementById('note-category').value = note.category;
                     document.getElementById('modal-title').innerText = "Edit Catatan";
                     
-                    if (note.attachments) {
-                        currentAttachments = [...note.attachments];
-                    }
+                    if (note.attachments) currentAttachments = [...note.attachments];
 
                     if (note.category === 'carousel') {
                         let parsed = [];
@@ -536,9 +673,8 @@
                         const captionCard = parsed.find(c => c.isCaption);
                         
                         if (regularCards.length > 0) targetCarouselCount = regularCards.length;
-                        initCarouselInputs(targetCarouselCount); // Siapkan kolom input dinamis
+                        initCarouselInputs(targetCarouselCount); 
 
-                        // Muat data kartu reguler
                         for(let i=1; i<=targetCarouselCount; i++) {
                             if (regularCards[i-1]) {
                                 document.getElementById(`car-content-${i}`).value = regularCards[i-1].content || '';
@@ -549,7 +685,6 @@
                             }
                         }
                         
-                        // Muat data kartu caption
                         if (captionCard) {
                             const capEl = document.getElementById('car-content-caption');
                             if (capEl) capEl.value = captionCard.content || '';
@@ -566,14 +701,30 @@
                             document.getElementById('pw-password').value = pwData.password || '';
                             document.getElementById('pw-link').value = pwData.link || '';
                         }
-                        initCarouselInputs(targetCarouselCount); // Siapkan reset walau mode lain
+                        initCarouselInputs(targetCarouselCount);
+                    } else if (note.category === 'revisi') {
+                        let revData = { tujuan: '', content: '' };
+                        try { revData = JSON.parse(note.content); } catch(e) {}
+                        if (document.getElementById('rev-tujuan')) {
+                            document.getElementById('rev-tujuan').value = revData.tujuan || '';
+                            document.getElementById('rev-content').value = revData.content || '';
+                        }
+                        initCarouselInputs(targetCarouselCount);
+                    } else if (note.category === 'oneshot') {
+                        if (document.getElementById('oneshot-fs-hidden')) {
+                            document.getElementById('oneshot-fs-hidden').value = note.content || '';
+                            document.getElementById('oneshot-fs-visible').innerText = '';
+                            updateOneShotStats();
+                            document.getElementById('oneshot-fs-preview-box').classList.add('hidden');
+                        }
+                        initCarouselInputs(targetCarouselCount);
                     } else {
                         document.getElementById('note-content').value = note.content;
-                        initCarouselInputs(targetCarouselCount); // Siapkan reset walau mode lain
+                        initCarouselInputs(targetCarouselCount);
                     }
                 }
             } else {
-                initCarouselInputs(targetCarouselCount); // Buat catatan baru, siapkan 3 kartu
+                initCarouselInputs(targetCarouselCount);
             }
 
             renderAttachmentPreview();
@@ -589,7 +740,6 @@
         function closeModal() {
             const overlay = document.getElementById('modal-overlay');
             const modal = document.getElementById('modal');
-            
             overlay.classList.add('opacity-0');
             modal.classList.remove('modal-active');
             setTimeout(() => overlay.classList.add('hidden'), 300);
@@ -601,6 +751,7 @@
             renderNotes();
         }
 
+        // --- STREAMING_CHUNK:Handling Note Serialization and Saving... ---
         function saveNote() {
             const id = document.getElementById('note-id').value;
             const category = document.getElementById('note-category').value;
@@ -624,7 +775,6 @@
                 const oldCaption = parsedOld.find(c => c.isCaption);
 
                 let oldIdx = 0;
-                // Loop memuat Kartu Reguler
                 for(let i=1; i<=currentCarouselCount; i++) {
                     const elTxt = document.getElementById(`car-content-${i}`);
                     const txt = elTxt ? elTxt.value.trim() : "";
@@ -640,7 +790,6 @@
                     oldIdx++;
                 }
                 
-                // Simpan Kartu Ekstra: Caption
                 const capTxtEl = document.getElementById('car-content-caption');
                 const capTxt = capTxtEl ? capTxtEl.value.trim() : "";
                 const capImg = currentCarouselImages['caption'] || null;
@@ -654,6 +803,7 @@
                 if (!rawTextForTitle && capTxt) rawTextForTitle = capTxt;
                 
                 content = JSON.stringify(carouselData);
+
             } else if (category === 'mypassword') {
                 const pwData = {
                     username: document.getElementById('pw-username').value.trim(),
@@ -662,6 +812,21 @@
                 };
                 content = JSON.stringify(pwData);
                 rawTextForTitle = pwData.username || pwData.link || "My Password";
+
+            } else if (category === 'revisi') {
+                const revData = {
+                    tujuan: document.getElementById('rev-tujuan').value.trim(),
+                    content: document.getElementById('rev-content').value.trim()
+                };
+                content = JSON.stringify(revData);
+                rawTextForTitle = revData.tujuan || revData.content || "Revisi";
+
+            } else if (category === 'oneshot') {
+                const hiddenVal = document.getElementById('oneshot-fs-hidden').value;
+                const visibleVal = document.getElementById('oneshot-fs-visible').innerText;
+                content = hiddenVal + visibleVal;
+                rawTextForTitle = content;
+
             } else {
                 content = document.getElementById('note-content').value.trim();
                 rawTextForTitle = content;
@@ -705,11 +870,11 @@
             }
         }
 
+        // --- STREAMING_CHUNK:Defining Modals and Inline Actions... ---
         function openDeleteAlert(id) {
             noteIdToDelete = id;
             const overlay = document.getElementById('delete-alert-overlay');
             const box = document.getElementById('delete-alert-box');
-            
             overlay.classList.remove('hidden');
             overlay.classList.add('flex');
             setTimeout(() => {
@@ -722,11 +887,9 @@
         function closeDeleteAlert() {
             const overlay = document.getElementById('delete-alert-overlay');
             const box = document.getElementById('delete-alert-box');
-            
             overlay.classList.add('opacity-0');
             box.classList.remove('scale-100');
             box.classList.add('scale-95');
-            
             setTimeout(() => {
                 overlay.classList.add('hidden');
                 overlay.classList.remove('flex');
@@ -744,7 +907,6 @@
             }
         }
 
-        // --- MANAJEMEN AKSI KARTU CAROUSEL INDIVIDUAL (LUAR) ---
         function copyCarouselCard(noteId, cardId) {
             const note = notes.find(n => n.id === noteId);
             if (!note) return;
@@ -823,7 +985,6 @@
                 const card = items.find(i => i.id === cardId);
                 if (card) {
                     document.getElementById('edit-card-textarea').value = card.content;
-                    
                     const overlay = document.getElementById('edit-card-overlay');
                     const box = document.getElementById('edit-card-box');
                     overlay.classList.remove('hidden');
@@ -888,6 +1049,11 @@
                     let pw = JSON.parse(note.content);
                     textToCopy += `Username: ${pw.username}\nPassword: ${pw.password}\nLink: ${pw.link}`;
                 } catch(e) {}
+            } else if (note.category === 'revisi') {
+                try {
+                    let rev = JSON.parse(note.content);
+                    textToCopy += `Tujuan Revisi: ${rev.tujuan}\n\nTeks:\n${rev.content}`;
+                } catch(e) {}
             } else {
                 textToCopy += note.content;
             }
@@ -903,7 +1069,6 @@
             } catch (err) {
                 showToast("Gagal menyalin teks.");
             }
-            
             document.body.removeChild(textarea);
         }
 
@@ -916,9 +1081,7 @@
                     const pw = JSON.parse(note.content);
                     if (pw.link) {
                         let url = pw.link;
-                        if (!url.match(/^https?:\/\//i)) {
-                            url = 'https://' + url;
-                        }
+                        if (!url.match(/^https?:\/\//i)) { url = 'https://' + url; }
                         window.open(url, '_blank');
                         showToast("Membuka tautan...");
                         return;
@@ -939,6 +1102,7 @@
             }
         }
 
+        // --- STREAMING_CHUNK:Accordion and View Controls... ---
         function toggleCategory(catKey) {
             const content = document.getElementById(`cat-body-${catKey}`);
             const icon = document.getElementById(`cat-icon-${catKey}`);
@@ -1025,6 +1189,7 @@
             }).replace(/\./g, ':');
         }
 
+        // --- STREAMING_CHUNK:Building Note Cards based on Category... ---
         function buildNoteCard(note, showBadge = false) {
             const catConfig = categories[note.category] || categories['memo'];
             const isNoteOpen = openNotes.has(note.id);
@@ -1036,14 +1201,12 @@
                 let items = [];
                 try { items = JSON.parse(note.content); } catch(e){}
                 
-                // pl-2 & py-3 ditambahkan untuk memberi ruang margin pada badge absolutenya
                 previewContent = `<div class="flex gap-3 overflow-x-auto hide-scrollbar py-3 pl-2 items-start">`;
                 
                 let numIdx = 1;
                 items.forEach((it) => {
                     const imgHtml = it.image ? `<img src="${it.image}" class="w-full h-auto max-h-64 object-cover object-center rounded-lg mb-3 shadow-sm border border-gray-200 dark:border-gray-600">` : '';
                     
-                    // Pembedaan Badge UI antara Kartu Caption & Kartu Bernomor
                     const isCaption = it.isCaption;
                     const badgeHtml = isCaption 
                         ? `<div class="absolute -top-2 -left-2 bg-purple-500 text-white px-2 h-5 flex items-center justify-center rounded-full text-[10px] font-bold shadow-md z-10">Caption</div>`
@@ -1092,6 +1255,20 @@
                 });
                 previewContent = `<div class="text-[14px] text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">${linkedContent}</div>`;
                 
+            } else if (note.category === 'revisi') {
+                let rev = { tujuan: '', content: '' };
+                try { rev = JSON.parse(note.content); } catch(e){}
+                previewContent = `
+                    <div class="space-y-3">
+                        <div class="bg-cyan-50 dark:bg-cyan-900/20 p-3 rounded-xl border border-cyan-100 dark:border-cyan-800/50">
+                            <span class="block text-[11px] text-cyan-600 dark:text-cyan-400 uppercase font-bold tracking-wider mb-1">Tujuan Revisi</span>
+                            <span class="text-[13px] text-gray-800 dark:text-gray-200">${escapeHTML(rev.tujuan) || '-'}</span>
+                        </div>
+                        <div class="text-[14px] text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed px-1">
+                            ${escapeHTML(rev.content)}
+                        </div>
+                    </div>
+                `;
             } else {
                 previewContent = `<div class="text-[14px] text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">${escapeHTML(note.content)}</div>`;
             }
@@ -1161,6 +1338,7 @@
             `;
         }
 
+        // --- STREAMING_CHUNK:Final render loop and DOM updates... ---
         function renderNotes() {
             const container = document.getElementById('notes-container');
             container.innerHTML = '';
