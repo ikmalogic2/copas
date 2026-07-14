@@ -700,6 +700,15 @@
             return str.replace(/[&<>'"]/g, tag => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'}[tag] || tag));
         }
 
+        function formatTime(timestamp) {
+            if (!timestamp) return '';
+            const date = new Date(timestamp);
+            return date.toLocaleDateString('id-ID', {
+                day: 'numeric', month: 'short', year: 'numeric',
+                hour: '2-digit', minute: '2-digit'
+            }).replace(/\./g, ':');
+        }
+
         function buildNoteCard(note, showBadge = false) {
             const catConfig = categories[note.category] || categories['memo'];
             const isNoteOpen = openNotes.has(note.id);
@@ -760,13 +769,22 @@
 
             const badgeHtml = showBadge ? `<span class="px-2 py-0.5 rounded-md ${catConfig.bg} ${catConfig.color} text-[11px] font-bold ml-2 shrink-0">${catConfig.icon} ${catConfig.title}</span>` : '';
 
+            const timeCreated = formatTime(note.timestamp);
+            const timeEdited = note.updatedAt && note.updatedAt !== note.timestamp ? formatTime(note.updatedAt) : '';
+            const timeHtml = `<div class="text-[11px] text-gray-400 dark:text-gray-500 mt-1.5 truncate">
+                Dibuat: ${timeCreated} ${timeEdited ? ` &bull; Diedit: ${timeEdited}` : ''}
+            </div>`;
+
             return `
-                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mb-3 transition-colors">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-colors">
                     <div class="px-4 py-3.5 flex justify-between items-center cursor-pointer active:bg-gray-50 dark:active:bg-gray-700 transition" onclick="toggleNote(${note.id})">
-                        <div class="flex-1 pr-2 flex items-center overflow-hidden">
-                            <h3 class="font-bold text-gray-900 dark:text-white text-[15px] truncate">${escapeHTML(note.title)}</h3>
-                            ${badgeHtml}
-                            ${note.attachments && note.attachments.length > 0 ? '<i class="fa-solid fa-paperclip text-gray-400 dark:text-gray-500 text-[11px] ml-2"></i>' : ''}
+                        <div class="flex-1 pr-2 flex flex-col overflow-hidden justify-center">
+                            <div class="flex items-center overflow-hidden">
+                                <h3 class="font-bold text-gray-900 dark:text-white text-[15px] truncate">${escapeHTML(note.title)}</h3>
+                                ${badgeHtml}
+                                ${note.attachments && note.attachments.length > 0 ? '<i class="fa-solid fa-paperclip text-gray-400 dark:text-gray-500 text-[11px] ml-2 shrink-0"></i>' : ''}
+                            </div>
+                            ${timeHtml}
                         </div>
                         
                         <div class="flex items-center space-x-0.5 shrink-0">
@@ -826,8 +844,8 @@
                         const openClass = isCatOpen ? "open" : "";
                         
                         html += `
-                            <div class="mb-4">
-                                <div class="flex justify-between items-center bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 cursor-pointer active:bg-gray-50 dark:active:bg-gray-700 shadow-sm transition-colors" onclick="toggleCategory('${catKey}')">
+                            <div class="mb-5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm overflow-hidden transition-colors">
+                                <div class="flex justify-between items-center px-4 py-3.5 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 active:bg-gray-100 dark:active:bg-gray-700 transition-colors" onclick="toggleCategory('${catKey}')">
                                     <div class="flex items-center">
                                         <div class="w-8 h-8 rounded-lg ${config.bg} ${config.color} flex items-center justify-center mr-3">
                                             ${config.icon}
@@ -839,13 +857,13 @@
                                 </div>
                                 
                                 <div class="accordion-content ${openClass}" id="cat-body-${catKey}">
-                                    <div class="accordion-inner">
-                                        <div class="pt-3 pl-2 pr-2">
+                                    <div class="accordion-inner bg-gray-50/50 dark:bg-gray-900/30 border-t border-gray-100 dark:border-gray-700">
+                                        <div class="p-3.5 space-y-3">
                         `;
 
                         catNotes.forEach(note => { html += buildNoteCard(note, false); });
 
-                        html += `       </div>
+                        html += `               </div>
                                     </div>
                                 </div>
                             </div>
@@ -854,7 +872,7 @@
                 });
             } else {
                 const allNotes = [...notes].sort((a,b) => b.timestamp - a.timestamp);
-                html += `<div class="pt-2">`;
+                html += `<div class="pt-2 space-y-3">`;
                 allNotes.forEach(note => { html += buildNoteCard(note, true); });
                 html += `</div>`;
             }
