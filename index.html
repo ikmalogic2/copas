@@ -171,16 +171,19 @@
         </div>
     </div>
 
-    <!-- CUSTOM DELETE CONFIRMATION ALERT -->
-    <div id="delete-alert-overlay" class="fixed inset-0 bg-black/50 dark:bg-black/70 z-50 hidden flex-col items-center justify-center opacity-0 transition-opacity duration-300 backdrop-blur-[2px]">
-        <div id="delete-alert-box" class="bg-white dark:bg-gray-800 w-[270px] rounded-2xl overflow-hidden transform scale-95 transition-transform duration-300 text-center shadow-2xl">
-            <div class="pt-5 pb-4 px-4 border-b border-gray-100 dark:border-gray-700">
-                <h3 class="font-semibold text-[17px] text-gray-900 dark:text-white">Hapus Catatan?</h3>
-                <p class="text-[13px] text-gray-500 dark:text-gray-400 mt-1">Tindakan ini tidak dapat dibatalkan.</p>
+    <!-- CUSTOM DELETE ALERT OVERLAY -->
+    <div id="delete-alert-overlay" class="fixed inset-0 bg-black/50 dark:bg-black/70 z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+        <div id="delete-alert-box" class="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300">
+            <div class="p-6 text-center">
+                <div class="w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mx-auto mb-4 text-red-500">
+                    <i class="fa-solid fa-triangle-exclamation text-3xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Hapus Catatan?</h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Tindakan ini tidak dapat dibatalkan. Catatan akan dihapus permanen.</p>
             </div>
-            <div class="flex h-11">
-                <button onclick="closeDeleteAlert()" class="flex-1 text-blue-600 dark:text-blue-400 text-[17px] border-r border-gray-100 dark:border-gray-700 active:bg-gray-50 dark:active:bg-gray-700 transition-colors">Batal</button>
-                <button onclick="confirmDelete()" class="flex-1 text-red-600 dark:text-red-400 font-semibold text-[17px] active:bg-gray-50 dark:active:bg-gray-700 transition-colors">Hapus</button>
+            <div class="flex border-t border-gray-100 dark:border-gray-700">
+                <button onclick="closeDeleteAlert()" class="flex-1 py-3.5 text-gray-600 dark:text-gray-400 font-medium hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors border-r border-gray-100 dark:border-gray-700">Batal</button>
+                <button onclick="confirmDelete()" class="flex-1 py-3.5 text-red-600 dark:text-red-500 font-bold hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">Hapus</button>
             </div>
         </div>
     </div>
@@ -207,12 +210,10 @@
         let notes = [];
         const STORAGE_KEY = "simple_app_notes";
         
-        // Status State
         let isGrouped = false; 
         let openNotes = new Set();
         let openCategories = new Set();
         
-        // State Lampiran dan Hapus
         let currentAttachments = [];
         let toastTimeout;
         let noteIdToDelete = null;
@@ -223,13 +224,11 @@
             loadNotes();
         };
 
-        // --- SISTEM TEMA / MODE GELAP ---
         function initTheme() {
             const savedTheme = localStorage.getItem('theme');
             const html = document.documentElement;
             const icon = document.getElementById('theme-icon');
             
-            // Default adalah Dark
             if (savedTheme === 'light') {
                 html.classList.remove('dark');
                 icon.classList.remove('fa-sun');
@@ -263,7 +262,6 @@
             }
         }
 
-        // --- SISTEM TOAST NOTIFICATION ---
         function showToast(message) {
             const toast = document.getElementById('toast');
             document.getElementById('toast-message').innerText = message;
@@ -278,7 +276,6 @@
             }, 3000);
         }
 
-        // --- STREAMING_CHUNK:Handling Input Toggles... ---
         function initCarouselInputs() {
             const container = document.getElementById('carousel-input-container');
             let html = '<p class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase">Isi Kartu Carousel (Maks 8)</p>';
@@ -322,7 +319,6 @@
             }
         }
 
-        // --- MANAJEMEN LAMPIRAN FILE/GAMBAR ---
         function handleFileUpload(event, type) {
             const files = event.target.files;
             if (!files) return;
@@ -376,8 +372,6 @@
             });
         }
 
-        // --- STREAMING_CHUNK:Defining Modal open and close logic... ---
-        // --- MANAJEMEN MODAL & CATATAN ---
         function openModal(editId = null) {
             const overlay = document.getElementById('modal-overlay');
             const modal = document.getElementById('modal');
@@ -448,7 +442,6 @@
             setTimeout(() => overlay.classList.add('hidden'), 300);
         }
 
-        // --- STREAMING_CHUNK:Implementing Storage and Data actions... ---
         function loadNotes() {
             const saved = localStorage.getItem(STORAGE_KEY);
             notes = saved ? JSON.parse(saved) : [];
@@ -458,14 +451,19 @@
         function saveNote() {
             const id = document.getElementById('note-id').value;
             const category = document.getElementById('note-category').value;
-            const title = document.getElementById('note-title').value.trim() || "Tanpa Judul";
+            const titleInput = document.getElementById('note-title').value.trim();
+            
             let content = "";
+            let rawTextForTitle = "";
 
             if (category === 'carousel') {
                 const carouselData = [];
                 for(let i=1; i<=8; i++) {
                     const txt = document.getElementById(`car-content-${i}`).value.trim();
-                    if(txt) carouselData.push({ content: txt });
+                    if(txt) {
+                        carouselData.push({ content: txt });
+                        if (!rawTextForTitle) rawTextForTitle = txt; 
+                    }
                 }
                 content = JSON.stringify(carouselData);
             } else if (category === 'mypassword') {
@@ -475,8 +473,23 @@
                     link: document.getElementById('pw-link').value.trim()
                 };
                 content = JSON.stringify(pwData);
+                rawTextForTitle = pwData.username || pwData.link || "My Password";
             } else {
                 content = document.getElementById('note-content').value.trim();
+                rawTextForTitle = content;
+            }
+
+            // AUTO-TITLE LOGIC
+            let title = titleInput;
+            if (!title) {
+                if (rawTextForTitle) {
+                    let cleanText = rawTextForTitle.replace(/^- \[[xX ]\]\s*/i, '');
+                    const words = cleanText.trim().split(/\s+/);
+                    title = words.slice(0, 4).join(' '); 
+                    if (words.length > 4) title += '...';
+                } else {
+                    title = "Tanpa Judul";
+                }
             }
 
             const attachmentsToSave = [...currentAttachments];
@@ -504,7 +517,6 @@
             }
         }
 
-        // --- CUSTOM CONFIRM DELETE ---
         function openDeleteAlert(id) {
             noteIdToDelete = id;
             const overlay = document.getElementById('delete-alert-overlay');
@@ -526,10 +538,11 @@
             overlay.classList.add('opacity-0');
             box.classList.remove('scale-100');
             box.classList.add('scale-95');
-            setTimeout(() => { 
-                overlay.classList.add('hidden'); 
+            
+            setTimeout(() => {
+                overlay.classList.add('hidden');
                 overlay.classList.remove('flex');
-                noteIdToDelete = null; 
+                noteIdToDelete = null;
             }, 300);
         }
 
@@ -538,13 +551,11 @@
                 notes = notes.filter(n => n.id !== noteIdToDelete);
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
                 renderNotes();
-                showToast("Catatan berhasil dihapus.");
+                showToast("Catatan dihapus.");
                 closeDeleteAlert();
             }
         }
 
-        // --- STREAMING_CHUNK:Implementing helper utilities... ---
-        // --- COPY NOTE ---
         function copyNoteText(id) {
             const note = notes.find(n => n.id === id);
             if (!note) return;
@@ -580,7 +591,6 @@
             document.body.removeChild(textarea);
         }
 
-        // --- VISIT LINK ---
         function visitLink(id) {
             const note = notes.find(n => n.id === id);
             if (!note) return;
@@ -613,7 +623,6 @@
             }
         }
 
-        // --- SISTEM AKORDION ---
         function toggleCategory(catKey) {
             const content = document.getElementById(`cat-body-${catKey}`);
             const icon = document.getElementById(`cat-icon-${catKey}`);
@@ -645,7 +654,6 @@
             renderNotes();
         }
 
-        // --- EXPORT / IMPORT JSON ---
         function exportData() {
             if (notes.length === 0) return showToast("Tidak ada data untuk diekspor!");
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(notes));
@@ -692,15 +700,13 @@
             return str.replace(/[&<>'"]/g, tag => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'}[tag] || tag));
         }
 
-        // --- STREAMING_CHUNK:Building the note card UI... ---
-        // --- BUILDER KARTU CATATAN ---
         function buildNoteCard(note, showBadge = false) {
             const catConfig = categories[note.category] || categories['memo'];
             const isNoteOpen = openNotes.has(note.id);
             const openClass = isNoteOpen ? "open" : "";
             
-            // 1. Proses Konten Teks
             let previewContent = '';
+            
             if (note.category === 'carousel') {
                 let items = [];
                 try { items = JSON.parse(note.content); } catch(e){}
@@ -710,6 +716,7 @@
                 });
                 previewContent += `</div>`;
                 if(items.length === 0) previewContent = '<p class="text-[13px] text-gray-400 dark:text-gray-500 italic">Carousel kosong</p>';
+                
             } else if (note.category === 'mypassword') {
                 let pw = {username: '', password: '', link: ''};
                 try { pw = JSON.parse(note.content); } catch(e){}
@@ -725,19 +732,27 @@
                         <div class="flex flex-col"><span class="text-[11px] text-gray-400 dark:text-gray-500 uppercase font-bold tracking-wider mb-0.5">Link / URL</span><span class="">${linkHtml}</span></div>
                     </div>
                 `;
+                
+            } else if (note.category === 'mylink') {
+                const safeContent = escapeHTML(note.content);
+                const urlRegex = /(https?:\/\/[^\s]+)/g;
+                const linkedContent = safeContent.replace(urlRegex, function(url) {
+                    return `<a href="${url}" target="_blank" onclick="event.stopPropagation()" class="text-blue-500 dark:text-blue-400 hover:underline break-all">${url}</a>`;
+                });
+                previewContent = `<div class="text-[14px] text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">${linkedContent}</div>`;
+                
             } else {
                 previewContent = `<div class="text-[14px] text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">${escapeHTML(note.content)}</div>`;
             }
 
-            // 2. Proses Lampiran
             let attachmentsHtml = '';
             if (note.attachments && note.attachments.length > 0) {
                 attachmentsHtml = `<div class="mt-4 pt-3 border-t border-gray-100 dark:border-gray-700 flex flex-wrap gap-2">`;
                 note.attachments.forEach(att => {
                     if (att.type === 'image') {
-                        attachmentsHtml += `<a href="${att.data}" target="_blank" title="Klik untuk lihat penuh" class="block w-20 h-20 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-600 shrink-0 shadow-sm"><img src="${att.data}" class="object-cover w-full h-full hover:scale-110 transition"></a>`;
+                        attachmentsHtml += `<a href="${att.data}" target="_blank" title="Klik untuk lihat penuh" onclick="event.stopPropagation()" class="block w-20 h-20 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-600 shrink-0 shadow-sm"><img src="${att.data}" class="object-cover w-full h-full hover:scale-110 transition"></a>`;
                     } else {
-                        attachmentsHtml += `<a href="${att.data}" download="${att.name}" title="Klik untuk unduh" class="bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 px-3 py-2 rounded-lg text-[13px] text-blue-600 dark:text-blue-400 font-medium flex items-center transition border border-gray-200 dark:border-gray-600 shadow-sm"><i class="fa-solid fa-file-arrow-down mr-2 text-gray-400 dark:text-gray-500"></i> <span class="truncate max-w-[140px]">${att.name}</span></a>`;
+                        attachmentsHtml += `<a href="${att.data}" download="${att.name}" title="Klik untuk unduh" onclick="event.stopPropagation()" class="bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 px-3 py-2 rounded-lg text-[13px] text-blue-600 dark:text-blue-400 font-medium flex items-center transition border border-gray-200 dark:border-gray-600 shadow-sm"><i class="fa-solid fa-file-arrow-down mr-2 text-gray-400 dark:text-gray-500"></i> <span class="truncate max-w-[140px]">${att.name}</span></a>`;
                     }
                 });
                 attachmentsHtml += `</div>`;
@@ -786,8 +801,6 @@
             `;
         }
 
-        // --- STREAMING_CHUNK:Rendering the main notes list... ---
-        // --- RENDER UTAMA ---
         function renderNotes() {
             const container = document.getElementById('notes-container');
             container.innerHTML = '';
