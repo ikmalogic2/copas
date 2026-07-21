@@ -221,6 +221,23 @@
         </div>
     </div>
 
+    <!-- CUSTOM COPY OPTIONS OVERLAY -->
+    <div id="copy-options-overlay" class="fixed inset-0 bg-black/50 dark:bg-black/70 z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+        <div id="copy-options-box" class="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-xs overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300">
+            <div class="p-5 text-center border-b border-gray-100 dark:border-gray-700">
+                <div class="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mx-auto mb-3 text-blue-500">
+                    <i class="fa-regular fa-copy text-xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Opsi Salin</h3>
+            </div>
+            <div class="flex flex-col">
+                <button onclick="executeCopy(true)" class="py-4 text-gray-800 dark:text-gray-200 font-medium hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors border-b border-gray-100 dark:border-gray-700">Beserta Judul</button>
+                <button onclick="executeCopy(false)" class="py-4 text-gray-800 dark:text-gray-200 font-medium hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors border-b border-gray-100 dark:border-gray-700">Tanpa Judul</button>
+                <button onclick="closeCopyOptions()" class="py-4 text-red-500 font-medium hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">Batal</button>
+            </div>
+        </div>
+    </div>
+
     <!-- TOAST NOTIFICATION -->
     <div id="toast" class="fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-800 dark:bg-white text-white dark:text-gray-900 px-5 py-3 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-300 translate-y-20 opacity-0 z-50 flex items-center pointer-events-none">
         <i class="fa-solid fa-check-circle text-green-400 dark:text-green-500 text-lg mr-3"></i>
@@ -242,7 +259,8 @@
 
         <!-- Big Input Centered -->
         <div class="flex-1 flex items-center justify-center p-8 relative overflow-hidden z-10">
-            <div id="oneshot-fs-visible" contenteditable="true" oninput="handleOneShotInput(event)" class="w-full max-w-5xl mx-auto text-center text-5xl md:text-[6vw] font-black text-gray-800 dark:text-gray-200 focus:outline-none empty:before:content-[attr(data-placeholder)] empty:before:text-gray-300 dark:empty:before:text-gray-700 leading-tight break-words" data-placeholder="Ketik di sini..."></div>
+            <!-- Menambahkan autocapitalize="none" agar keyboard tidak override secara paksa -->
+            <div id="oneshot-fs-visible" contenteditable="true" autocapitalize="none" oninput="handleOneShotInput(event)" class="w-full max-w-5xl mx-auto text-center text-5xl md:text-[6vw] font-black text-gray-800 dark:text-gray-200 focus:outline-none empty:before:content-[attr(data-placeholder)] empty:before:text-gray-300 dark:empty:before:text-gray-700 leading-tight break-words" data-placeholder="Ketik di sini..."></div>
         </div>
 
         <!-- Preview Box (Absolute Centered) -->
@@ -302,6 +320,7 @@
         let currentCarouselCount = 3; 
         let toastTimeout;
         let noteIdToDelete = null;
+        let noteIdToCopy = null;
         let activeCarouselEdit = { noteId: null, cardId: null };
 
         window.onload = () => {
@@ -385,6 +404,16 @@
             const visibleEl = document.getElementById('oneshot-fs-visible');
             const hiddenEl = document.getElementById('oneshot-fs-hidden');
             let val = visibleEl.innerText.replace(/\u00A0/g, " "); 
+
+            // Kapitalisasi cerdas: Hanya huruf kapital jika input adalah huruf pertama setelah titik/akhir kalimat
+            if (val.length === 1 && val.match(/[a-z]/)) {
+                const hiddenVal = hiddenEl.value;
+                if (hiddenVal === "" || /(?:[.!?])[\s\n]*$/.test(hiddenVal)) {
+                    val = val.toUpperCase();
+                    visibleEl.innerText = val;
+                    placeCaretAtEnd(visibleEl);
+                }
+            }
 
             if (val.includes(' ') || val.includes('\n')) {
                 const match = val.match(/^(.*[\s\n]+)([^\s\n]*)$/);
@@ -1018,20 +1047,58 @@
             } catch(e) {}
         }
 
-        function copyNoteText(id) {
-            const note = notes.find(n => n.id === id);
-            if (!note) return;
+        // --- MANAJEMEN MODAL COPY NOTE ---
+        function openCopyOptions(id) {
+            noteIdToCopy = id;
+            const overlay = document.getElementById('copy-options-overlay');
+            const box = document.getElementById('copy-options-box');
             
-            let textToCopy = `${note.title}\n\n`;
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
+            setTimeout(() => {
+                overlay.classList.remove('opacity-0');
+                box.classList.remove('scale-95');
+                box.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeCopyOptions() {
+            const overlay = document.getElementById('copy-options-overlay');
+            const box = document.getElementById('copy-options-box');
+            
+            overlay.classList.add('opacity-0');
+            box.classList.remove('scale-100');
+            box.classList.add('scale-95');
+            
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+                overlay.classList.remove('flex');
+                noteIdToCopy = null;
+            }, 300);
+        }
+
+        function executeCopy(withTitle) {
+            if (noteIdToCopy === null) return;
+            const note = notes.find(n => n.id === noteIdToCopy);
+            if (!note) {
+                closeCopyOptions();
+                return;
+            }
+            
+            let textToCopy = "";
+            if (withTitle && note.title) {
+                textToCopy += `${note.title}\n\n`;
+            }
             
             if (note.category === 'carousel') {
                 try {
                     let items = JSON.parse(note.content);
                     let numIdx = 1;
-                    textToCopy += items.map((it) => {
+                    const cardTexts = items.map((it) => {
                         const title = it.isCaption ? 'Caption' : `Kartu ${numIdx++}`;
                         return `[${title}]\n${it.content}`;
                     }).join('\n\n---\n\n');
+                    textToCopy += cardTexts;
                 } catch(e) {}
             } else if (note.category === 'mypassword') {
                 try {
@@ -1048,7 +1115,7 @@
             }
             
             const textarea = document.createElement('textarea');
-            textarea.value = textToCopy;
+            textarea.value = textToCopy.trim();
             document.body.appendChild(textarea);
             textarea.select();
             
@@ -1058,7 +1125,9 @@
             } catch (err) {
                 showToast("Gagal menyalin teks.");
             }
+            
             document.body.removeChild(textarea);
+            closeCopyOptions();
         }
 
         function visitLink(id) {
@@ -1300,7 +1369,7 @@
                                 <i class="fa-solid fa-arrow-up-right-from-square text-[13px]"></i>
                             </button>
                             ` : ''}
-                            <button onclick="copyNoteText(${note.id}); event.stopPropagation();" class="w-8 h-8 flex items-center justify-center text-green-600 dark:text-green-400 active:bg-green-50 dark:active:bg-green-900/30 rounded-full transition" title="Salin Teks">
+                            <button onclick="openCopyOptions(${note.id}); event.stopPropagation();" class="w-8 h-8 flex items-center justify-center text-green-600 dark:text-green-400 active:bg-green-50 dark:active:bg-green-900/30 rounded-full transition" title="Salin Teks">
                                 <i class="fa-regular fa-copy text-[13px]"></i>
                             </button>
                             <button onclick="openModal(${note.id}); event.stopPropagation();" class="w-8 h-8 flex items-center justify-center text-blue-500 dark:text-blue-400 active:bg-blue-50 dark:active:bg-blue-900/30 rounded-full transition" title="Edit Catatan">
