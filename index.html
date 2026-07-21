@@ -64,11 +64,13 @@
         <div class="flex items-center space-x-3">
             <input type="file" id="import-file" accept=".json" class="hidden" onchange="importData(event)">
             
-            <button onclick="document.getElementById('import-file').click()" class="w-8 h-8 flex items-center justify-center text-gray-500 dark:text-gray-400 active:opacity-50 text-[18px]" title="Import Data">
-                <i class="fa-solid fa-cloud-arrow-up"></i>
+            <button onclick="document.getElementById('import-file').click()" class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 active:opacity-50 w-10" title="Import Data">
+                <i class="fa-solid fa-cloud-arrow-up text-[16px]"></i>
+                <span class="text-[9px] font-bold mt-0.5">IMPORT</span>
             </button>
-            <button onclick="exportData()" class="w-8 h-8 flex items-center justify-center text-gray-500 dark:text-gray-400 active:opacity-50 text-[18px]" title="Export Data">
-                <i class="fa-solid fa-cloud-arrow-down"></i>
+            <button onclick="exportData()" class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 active:opacity-50 w-10" title="Export Data">
+                <i class="fa-solid fa-cloud-arrow-down text-[16px]"></i>
+                <span class="text-[9px] font-bold mt-0.5">EXPORT</span>
             </button>
             
             <div class="w-px h-5 bg-gray-300 dark:bg-gray-700 mx-1"></div>
@@ -111,7 +113,7 @@
                 <div class="relative">
                     <select id="note-category" onchange="toggleInputFields()" class="w-full appearance-none bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-3 px-4 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-gray-600 transition-colors">
                         <option value="carousel">🗂️ Carousel Notes</option>
-                        <option value="copas">📋 Copas</option>
+                        <option value="copas" selected>📋 Copas</option>
                         <option value="efekfont">🔤 Efek Font</option>
                         <option value="error">🐛 Error Book</option>
                         <option value="ideation">💡 Ideation</option>
@@ -710,6 +712,7 @@
             document.getElementById('note-id').value = "";
             document.getElementById('note-title').value = "";
             document.getElementById('note-content').value = "";
+            // Baris document.getElementById('note-category').value = "copas"; DIHAPUS agar tidak reset terus
             
             if (document.getElementById('pw-username')) {
                 document.getElementById('pw-username').value = "";
