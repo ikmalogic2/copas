@@ -110,17 +110,18 @@
                 <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1">Pilih Kategori</label>
                 <div class="relative">
                     <select id="note-category" onchange="toggleInputFields()" class="w-full appearance-none bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-3 px-4 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-gray-600 transition-colors">
-                        <option value="copas">📋 Copas</option>
                         <option value="carousel">🗂️ Carousel Notes</option>
-                        <option value="mypassword">🔑 My Password</option>
-                        <option value="revisi">🔄 Revisi</option>
-                        <option value="ideation">💡 Ideation</option>
-                        <option value="oneshot">🎯 One Shot</option>
+                        <option value="copas">📋 Copas</option>
+                        <option value="efekfont">🔤 Efek Font</option>
                         <option value="error">🐛 Error Book</option>
-                        <option value="myprompt">⌨️ My Prompt</option>
+                        <option value="ideation">💡 Ideation</option>
                         <option value="myinstruction">💻 Instruction</option>
-                        <option value="mylink">🔗 My Link</option>
                         <option value="memo">📝 Memo Tasks</option>
+                        <option value="mylink">🔗 My Link</option>
+                        <option value="mypassword">🔑 My Password</option>
+                        <option value="myprompt">⌨️ My Prompt</option>
+                        <option value="oneshot">🎯 One Shot</option>
+                        <option value="revisi">🔄 Revisi</option>
                         <option value="styleart">🎨 Style Art</option>
                     </select>
                     <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500 dark:text-gray-400">
@@ -296,17 +297,18 @@
 
     <script>
         const categories = {
-            copas: { title: "Copas", icon: "📋", color: "text-green-500 dark:text-green-400", bg: "bg-green-100 dark:bg-green-900/30" },
             carousel: { title: "Carousel Notes", icon: "🗂️", color: "text-pink-500 dark:text-pink-400", bg: "bg-pink-100 dark:bg-pink-900/30" },
-            mypassword: { title: "My Password", icon: "🔑", color: "text-teal-500 dark:text-teal-400", bg: "bg-teal-100 dark:bg-teal-900/30" },
-            revisi: { title: "Revisi", icon: "🔄", color: "text-cyan-500 dark:text-cyan-400", bg: "bg-cyan-100 dark:bg-cyan-900/30" },
-            ideation: { title: "Ideation", icon: "💡", color: "text-amber-500 dark:text-amber-400", bg: "bg-amber-100 dark:bg-amber-900/30" },
-            oneshot: { title: "One Shot", icon: "🎯", color: "text-rose-500 dark:text-rose-400", bg: "bg-rose-100 dark:bg-rose-900/30" },
+            copas: { title: "Copas", icon: "📋", color: "text-green-500 dark:text-green-400", bg: "bg-green-100 dark:bg-green-900/30" },
+            efekfont: { title: "Efek Font", icon: "🔤", color: "text-emerald-500 dark:text-emerald-400", bg: "bg-emerald-100 dark:bg-emerald-900/30" },
             error: { title: "Error Book", icon: "🐛", color: "text-red-500 dark:text-red-400", bg: "bg-red-100 dark:bg-red-900/30" },
-            myprompt: { title: "My Prompt", icon: "⌨️", color: "text-orange-500 dark:text-orange-400", bg: "bg-orange-100 dark:bg-orange-900/30" },
+            ideation: { title: "Ideation", icon: "💡", color: "text-amber-500 dark:text-amber-400", bg: "bg-amber-100 dark:bg-amber-900/30" },
             myinstruction: { title: "Instruction", icon: "💻", color: "text-indigo-500 dark:text-indigo-400", bg: "bg-indigo-100 dark:bg-indigo-900/30" },
-            mylink: { title: "My Link", icon: "🔗", color: "text-purple-500 dark:text-purple-400", bg: "bg-purple-100 dark:bg-purple-900/30" },
             memo: { title: "Memo Tasks", icon: "📝", color: "text-yellow-500 dark:text-yellow-400", bg: "bg-yellow-100 dark:bg-yellow-900/30" },
+            mylink: { title: "My Link", icon: "🔗", color: "text-purple-500 dark:text-purple-400", bg: "bg-purple-100 dark:bg-purple-900/30" },
+            mypassword: { title: "My Password", icon: "🔑", color: "text-teal-500 dark:text-teal-400", bg: "bg-teal-100 dark:bg-teal-900/30" },
+            myprompt: { title: "My Prompt", icon: "⌨️", color: "text-orange-500 dark:text-orange-400", bg: "bg-orange-100 dark:bg-orange-900/30" },
+            oneshot: { title: "One Shot", icon: "🎯", color: "text-rose-500 dark:text-rose-400", bg: "bg-rose-100 dark:bg-rose-900/30" },
+            revisi: { title: "Revisi", icon: "🔄", color: "text-cyan-500 dark:text-cyan-400", bg: "bg-cyan-100 dark:bg-cyan-900/30" },
             styleart: { title: "Style Art", icon: "🎨", color: "text-fuchsia-500 dark:text-fuchsia-400", bg: "bg-fuchsia-100 dark:bg-fuchsia-900/30" }
         };
 
@@ -562,19 +564,58 @@
             document.getElementById('carousel-count-display').innerText = currentCarouselCount;
         }
 
+        // --- HELPER: KOMPRESI GAMBAR OTOMATIS ---
+        function processImageFile(file, callback) {
+            const MAX_SIZE = 2 * 1024 * 1024; // Batas 2MB
+            if (file.size <= MAX_SIZE) {
+                // Jika kurang dari 2MB, langsung baca seperti biasa
+                const reader = new FileReader();
+                reader.onload = e => callback(e.target.result, file.name, file.type);
+                reader.readAsDataURL(file);
+            } else {
+                // Jika lebih dari 2MB, jalankan auto compress
+                showToast("Mengkompresi gambar berukuran besar...");
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+                        
+                        // Batasi resolusi maksimal 1200px agar base64 tidak membengkak
+                        const MAX_DIMENSION = 1200;
+                        if (width > height && width > MAX_DIMENSION) {
+                            height = Math.round(height * MAX_DIMENSION / width);
+                            width = MAX_DIMENSION;
+                        } else if (height > MAX_DIMENSION) {
+                            width = Math.round(width * MAX_DIMENSION / height);
+                            height = MAX_DIMENSION;
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        // Kompresi ke format JPEG dengan kualitas 70%
+                        const dataURL = canvas.toDataURL('image/jpeg', 0.7);
+                        callback(dataURL, file.name, 'image/jpeg');
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
         function handleModalCarouselImage(event, index) {
             const file = event.target.files[0];
             if (!file) return;
-            if (file.size > 1024 * 1024 * 2) {
-                showToast('Gambar terlalu besar (Maks 2MB).');
-                return;
-            }
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                currentCarouselImages[index] = e.target.result;
+            
+            processImageFile(file, (dataUrl) => {
+                currentCarouselImages[index] = dataUrl;
                 renderModalCarouselImagePreview(index);
-            };
-            reader.readAsDataURL(file);
+            });
             event.target.value = '';
         }
 
@@ -592,8 +633,7 @@
                 img.src = currentCarouselImages[index];
                 box.classList.remove('hidden');
             } else {
-                img.src = '';
-                box.classList.add('hidden');
+                normalContainer.classList.remove('hidden'); normalContainer.classList.add('flex');
             }
         }
 
@@ -602,22 +642,36 @@
             if (!files) return;
 
             Array.from(files).forEach(file => {
-                if (file.size > 1024 * 1024 * 2) { 
-                    showToast(`File ${file.name} terlalu besar (Maks 2MB).`);
-                    return;
-                }
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    currentAttachments.push({
-                        id: Date.now() + Math.random(),
-                        type: type,
-                        name: file.name,
-                        data: e.target.result,
-                        mimeType: file.type
+                if (type === 'image') {
+                    processImageFile(file, (dataUrl, fileName, mimeType) => {
+                        currentAttachments.push({
+                            id: Date.now() + Math.random(),
+                            type: 'image',
+                            name: fileName,
+                            data: dataUrl,
+                            mimeType: mimeType
+                        });
+                        renderAttachmentPreview();
                     });
-                    renderAttachmentPreview();
-                };
-                reader.readAsDataURL(file);
+                } else {
+                    // Untuk file dokumen (PDF/TXT) tetap dibatasi 2MB karena tidak bisa dikompres
+                    if (file.size > 1024 * 1024 * 2) { 
+                        showToast(`File ${file.name} terlalu besar (Maks 2MB).`);
+                        return;
+                    }
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        currentAttachments.push({
+                            id: Date.now() + Math.random(),
+                            type: 'file',
+                            name: file.name,
+                            data: e.target.result,
+                            mimeType: file.type
+                        });
+                        renderAttachmentPreview();
+                    };
+                    reader.readAsDataURL(file);
+                }
             });
             event.target.value = ''; 
         }
@@ -969,19 +1023,15 @@
         function handleCarouselImageUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
-            if (file.size > 1024 * 1024 * 2) {
-                showToast(`Gambar terlalu besar (Maks 2MB).`);
-                return;
-            }
-            const reader = new FileReader();
-            reader.onload = function(e) {
+            
+            processImageFile(file, (dataUrl) => {
                 const note = notes.find(n => n.id === activeCarouselEdit.noteId);
                 if (note) {
                     try {
                         let items = JSON.parse(note.content);
                         let card = items.find(i => i.id === activeCarouselEdit.cardId);
                         if (card) {
-                            card.image = e.target.result;
+                            card.image = dataUrl;
                             note.content = JSON.stringify(items);
                             note.updatedAt = Date.now();
                             localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
@@ -992,8 +1042,7 @@
                         showToast("Gagal menyimpan gambar.");
                     }
                 }
-            };
-            reader.readAsDataURL(file);
+            });
             event.target.value = '';
         }
 
