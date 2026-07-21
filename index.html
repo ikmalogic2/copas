@@ -1329,17 +1329,31 @@
                 previewContent = `<div class="text-[14px] text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">${escapeHTML(note.content)}</div>`;
             }
 
-            let attachmentsHtml = '';
+            // Memisahkan Lampiran Gambar dan File Biasa
+            let imagesHtml = '';
+            let filesHtml = '';
+            
             if (note.attachments && note.attachments.length > 0) {
-                attachmentsHtml = `<div class="mt-4 pt-3 border-t border-gray-100 dark:border-gray-700 flex flex-wrap gap-2">`;
-                note.attachments.forEach(att => {
-                    if (att.type === 'image') {
-                        attachmentsHtml += `<a href="${att.data}" target="_blank" title="Klik untuk lihat penuh" onclick="event.stopPropagation()" class="block w-20 h-20 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-600 shrink-0 shadow-sm"><img src="${att.data}" class="object-cover w-full h-full hover:scale-110 transition"></a>`;
-                    } else {
-                        attachmentsHtml += `<a href="${att.data}" download="${att.name}" title="Klik untuk unduh" onclick="event.stopPropagation()" class="bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 px-3 py-2 rounded-lg text-[13px] text-blue-600 dark:text-blue-400 font-medium flex items-center transition border border-gray-200 dark:border-gray-600 shadow-sm"><i class="fa-solid fa-file-arrow-down mr-2 text-gray-400 dark:text-gray-500"></i> <span class="truncate max-w-[140px]">${att.name}</span></a>`;
-                    }
-                });
-                attachmentsHtml += `</div>`;
+                const imageAtts = note.attachments.filter(a => a.type === 'image');
+                const fileAtts = note.attachments.filter(a => a.type !== 'image');
+                
+                // Jika ada lampiran gambar, susun di atas teks dengan ukuran penuh
+                if (imageAtts.length > 0) {
+                    imagesHtml = `<div class="mb-4 space-y-3">`;
+                    imageAtts.forEach(att => {
+                        imagesHtml += `<a href="${att.data}" target="_blank" title="Klik untuk lihat penuh" onclick="event.stopPropagation()" class="block w-full rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm bg-gray-100 dark:bg-gray-900"><img src="${att.data}" class="w-full h-auto hover:opacity-90 transition"></a>`;
+                    });
+                    imagesHtml += `</div>`;
+                }
+                
+                // Jika ada lampiran file dokumen/lainnya, susun di bawah dengan ukuran kecil
+                if (fileAtts.length > 0) {
+                    filesHtml = `<div class="mt-4 pt-3 border-t border-gray-100 dark:border-gray-700 flex flex-wrap gap-2">`;
+                    fileAtts.forEach(att => {
+                        filesHtml += `<a href="${att.data}" download="${att.name}" title="Klik untuk unduh" onclick="event.stopPropagation()" class="bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 px-3 py-2 rounded-lg text-[13px] text-blue-600 dark:text-blue-400 font-medium flex items-center transition border border-gray-200 dark:border-gray-600 shadow-sm"><i class="fa-solid fa-file-arrow-down mr-2 text-gray-400 dark:text-gray-500"></i> <span class="truncate max-w-[140px]">${att.name}</span></a>`;
+                    });
+                    filesHtml += `</div>`;
+                }
             }
 
             const badgeHtml = showBadge ? `<span class="px-2 py-0.5 rounded-md ${catConfig.bg} ${catConfig.color} text-[11px] font-bold ml-2 shrink-0">${catConfig.icon} ${catConfig.title}</span>` : '';
@@ -1386,8 +1400,9 @@
                     <div class="accordion-content border-t border-gray-100 dark:border-gray-700 ${openClass}" id="note-body-${note.id}">
                         <div class="accordion-inner bg-gray-50/50 dark:bg-gray-800/50">
                             <div class="p-4">
+                                ${imagesHtml}
                                 ${previewContent}
-                                ${attachmentsHtml}
+                                ${filesHtml}
                             </div>
                         </div>
                     </div>
